@@ -91,7 +91,7 @@ class CreateDataModule(pl.LightningDataModule):
         self.friendly_score = friendly_score
         self.tokenizer = AutoTokenizer.from_pretrained(pretrained_model)
 
-    def setup(self):
+    def setup(self, stage=None):
         self.train_dataset = BertDataset(
             self.train_df,
             self.prompt_id,

@@ -265,10 +265,11 @@ def main(cfg: DictConfig):
     )
     trainer = pl.Trainer(
         max_epochs=cfg.training.n_epochs,
-        gpus=1,
         progress_bar_refresh_rate=30,
         callbacks=call_backs,
         logger=wandb_logger,
+        accelerator="gpu", 
+        devices=0,
     )
     trainer.fit(model, data_module)
 

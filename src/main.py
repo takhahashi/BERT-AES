@@ -158,35 +158,6 @@ class CustumBert(pl.LightningModule):
         loss = self.criterion(y_hat, y)
         return {"loss": loss, "batch_preds": y_hat, "batch_labels": y}
 
-    def training_epoch_end(self, outputs, mode="train"):
-        epoch_y_hats = torch.cat([x["batch_preds"] for x in outputs])
-        epoch_labels = torch.cat([x["batch_labels"] for x in outputs])
-        epoch_loss = self.criterion(epoch_y_hats, epoch_labels)
-        self.log(f"{mode}_loss", epoch_loss)
-        """
-        _, epoch_preds = torch.max(epoch_y_hats, 1)
-        epoch_accuracy = accuracy(epoch_preds, epoch_labels)
-        self.log(f"{mode}_accuracy", epoch_accuracy)
-
-        epoch_auroc = auroc(epoch_y_hats, epoch_labels, num_classes=self.n_classes)
-        self.log(f"{mode}_auroc", epoch_auroc)
-        """
-
-    def validation_epoch_end(self, outputs, mode="val"):
-        epoch_y_hats = torch.cat([x["batch_preds"] for x in outputs])
-        epoch_labels = torch.cat([x["batch_labels"] for x in outputs])
-        epoch_loss = self.criterion(epoch_y_hats, epoch_labels)
-        self.log(f"{mode}_loss", epoch_loss)
-
-        """
-        _, epoch_preds = torch.max(epoch_y_hats, 1)
-        epoch_accuracy = accuracy(epoch_preds, epoch_labels)
-        self.log(f"{mode}_accuracy", epoch_accuracy)
-
-        epoch_auroc = auroc(epoch_y_hats, epoch_labels, num_classes=self.n_classes)
-        self.log(f"{mode}_auroc", epoch_auroc)
-        """
-
     def configure_optimizers(self):
         return optim.Adam(self.parameters(), lr=self.lr)
 

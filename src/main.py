@@ -242,6 +242,7 @@ def main(cfg: DictConfig):
         logger=wandb_logger,
         accelerator="gpu", 
         devices = 1,
+        precision=16,
     )
     trainer.fit(model, data_module)
 

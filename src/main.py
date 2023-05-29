@@ -149,7 +149,8 @@ class CustumBert(pl.LightningModule):
         loss = self.criterion(y_hat, y)
         return {"loss": loss, "batch_preds": y_hat, "batch_labels": y}
 
-    def validation_step(self, batch):
+    def validation_step(self, batch, batch2):
+        print('validation_step, ', batch, batch2)
         x = {'input_ids':batch['input_ids'],
              'attention_mask':batch['attention_mask'],
              'token_type_ids':batch['token_type_ids']}

@@ -199,6 +199,7 @@ def simple_collate_fn(list_of_data):
   batched_tensor['labels'] = torch.tensor(labels)
   return batched_tensor
 
+"""
 @hydra.main(config_path=".", config_name="config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
@@ -245,7 +246,11 @@ def main(cfg: DictConfig):
         precision=16,
     )
     trainer.fit(model, data_module)
-
+"""
+@hydra.main(config_path=".", config_name="config")
+def main(cfg: DictConfig):
+    cwd = hydra.utils.get_original_cwd()
+    print(cwd)
 
 if __name__ == "__main__":
     main()

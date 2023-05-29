@@ -147,6 +147,7 @@ class CustumBert(pl.LightningModule):
         y = batch['labels']
         y_hat = self.forward(inputs=x)
         loss = self.criterion(y_hat, y)
+        self.log("train_loss", loss)
         return {"loss": loss, "batch_preds": y_hat, "batch_labels": y}
 
     def validation_step(self, batch, batch_idx):
@@ -156,6 +157,7 @@ class CustumBert(pl.LightningModule):
         y = batch['labels']
         y_hat = self.forward(inputs=x)
         loss = self.criterion(y_hat, y)
+        self.log("val_loss", loss)
         return {"loss": loss, "batch_preds": y_hat, "batch_labels": y}
 
     def configure_optimizers(self):

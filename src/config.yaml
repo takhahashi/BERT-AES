@@ -5,7 +5,7 @@ wandb:
 path:
   traindata_file_name: "/content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_0/train.tsv"
   devdata_file_name: "/content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_0/dev.tsv"
-  checkpoint_path: checkpoints
+  checkpoint_path: "/content/drive/MyDrive/GoogleColab/1.AES/ASAP/GithubTestAES/pt1/fold_0"
 training:
   test_size: 0.3
   n_epochs: 30

@@ -199,7 +199,7 @@ def simple_collate_fn(list_of_data):
   batched_tensor['labels'] = torch.tensor(labels)
   return batched_tensor
 
-"""
+
 @hydra.main(config_path=".", config_name="config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
@@ -209,9 +209,7 @@ def main(cfg: DictConfig):
         tags=cfg.wandb.tags,
         log_model=True,
     )
-    checkpoint_path = os.path.join(
-        wandb_logger.experiment.dir, cfg.path.checkpoint_path
-    )
+    checkpoint_path = fg.path.checkpoint_path
     wandb_logger.log_hyperparams(cfg)
     traindf = pd.read_table(cfg.path.traindata_file_name, sep='\t')
     devdf = pd.read_table(cfg.path.devdata_file_name, sep='\t')
@@ -252,6 +250,6 @@ def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
     print(cwd)
     print(os.getcwd())
-
+"""
 if __name__ == "__main__":
     main()

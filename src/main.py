@@ -251,6 +251,7 @@ def main(cfg: DictConfig):
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
     print(cwd)
+    print(os.getcwd())
 
 if __name__ == "__main__":
     main()

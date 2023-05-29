@@ -239,7 +239,7 @@ def main(cfg: DictConfig):
         callbacks=call_backs,
         logger=wandb_logger,
         accelerator="gpu", 
-        gpus=[0]
+        devices = 1,
     )
     trainer.fit(model, data_module)
 

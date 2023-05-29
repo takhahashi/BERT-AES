@@ -146,6 +146,7 @@ class CustumBert(pl.LightningModule):
              'token_type_ids':batch['token_type_ids']}
         y = batch['labels']
         y_hat = self.forward(inputs=x)
+        assert y.shape() == y_hat.shape()
         loss = self.criterion(y_hat, y)
         self.log("train_loss", loss)
         return {"loss": loss, "batch_preds": y_hat, "batch_labels": y}
@@ -156,6 +157,7 @@ class CustumBert(pl.LightningModule):
              'token_type_ids':batch['token_type_ids']}
         y = batch['labels']
         y_hat = self.forward(inputs=x)
+        assert y.shape() == y_hat.shape()
         loss = self.criterion(y_hat, y)
         self.log("val_loss", loss)
         return {"loss": loss, "batch_preds": y_hat, "batch_labels": y}

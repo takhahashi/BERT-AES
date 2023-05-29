@@ -169,7 +169,7 @@ def make_callbacks(min_delta, patience, checkpoint_path):
     checkpoint_callback = ModelCheckpoint(
         dirpath=checkpoint_path,
         filename="{epoch}",
-        save_top_k=3,
+        save_top_k=1,
         verbose=True,
         monitor="val_loss",
         mode="min",
@@ -209,7 +209,7 @@ def main(cfg: DictConfig):
         tags=cfg.wandb.tags,
         log_model=True,
     )
-    checkpoint_path = fg.path.checkpoint_path
+    checkpoint_path = cfg.path.checkpoint_path
     wandb_logger.log_hyperparams(cfg)
     traindf = pd.read_table(cfg.path.traindata_file_name, sep='\t')
     devdf = pd.read_table(cfg.path.devdata_file_name, sep='\t')

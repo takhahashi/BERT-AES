@@ -18,5 +18,5 @@ aes:
   prompt_id: 1
   friendly_score: True
 callbacks:
-  patience: 5
+  patience: 2
   patience_min_delta: 0

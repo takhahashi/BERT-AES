@@ -54,7 +54,7 @@ def main(cfg: DictConfig):
                                   cfg.path.valdata_file_name,
                                   tokenizer,
                                   cfg.training.batch_size,
-                                  cfg.model.max_lengh,
+                                  cfg.model.max_length,
                                   cfg.aes.prompt_id,
                                   collate_fn=collate_fn)
 

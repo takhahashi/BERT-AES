@@ -55,7 +55,7 @@ def main(cfg: DictConfig):
                                   tokenizer,
                                   cfg.training.batch_size,
                                   cfg.model.max_lengh,
-                                  cfg.aes.prompt_id
+                                  cfg.aes.prompt_id,
                                   collate_fn=collate_fn)
 
     data_module.setup()

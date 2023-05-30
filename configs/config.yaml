@@ -15,7 +15,7 @@ model:
   max_length: 512
   num_labels: None
 aes:
-  prompt_id: 1
+  prompt_id: pt1
   friendly_score: True
 callbacks:
   patience: 2

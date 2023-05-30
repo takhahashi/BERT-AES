@@ -48,7 +48,7 @@ def main(cfg: DictConfig):
         collate_fn = simple_collate_fn
     else:
         collate_fn = None
-    tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
+    tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
     data_module = TrainDataModule(cfg.model.reg_or_class, 
                                   cfg.path.traindata_file_name,
                                   cfg.path.valdata_file_name,
@@ -63,7 +63,7 @@ def main(cfg: DictConfig):
     call_backs = make_callbacks(
         cfg.callbacks.patience_min_delta, cfg.callbacks.patience, checkpoint_path
     )
-    model = create_module(cfg.model.reg_or_class, cfg.training.learning_rate, num_labels=cfg.model.num_labels)
+    model = create_module(cfg.model.model_name_or_path, cfg.model.reg_or_class, cfg.training.learning_rate, num_labels=cfg.model.num_labels)
     trainer = pl.Trainer(
         max_epochs=cfg.training.n_epochs,
         callbacks=call_backs, 

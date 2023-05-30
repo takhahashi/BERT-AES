@@ -13,6 +13,7 @@ training:
   learning_rate: 0.00001
   collate_fn: True
 model:
+  model_name_or_path: 'bert-base-uncased'
   reg_or_class: 'reg'
   max_length: 512
   num_labels: None

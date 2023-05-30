@@ -3,7 +3,7 @@ wandb:
   project_name: 'AES'
   tags: [bert]
 training:
-  fold: fold0
+  fold: 0, 1, 2, 3, 4
   test_size: 0.3
   n_epochs: 30
   batch_size: 8
@@ -15,7 +15,7 @@ model:
   max_length: 512
   num_labels: None
 aes:
-  prompt_id: pt1
+  prompt_id: 1, 2, 3, 4, 5, 6, 7, 8
   friendly_score: True
 callbacks:
   patience: 2

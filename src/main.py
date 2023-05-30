@@ -51,7 +51,7 @@ def main(cfg: DictConfig):
     tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
     data_module = TrainDataModule(cfg.model.reg_or_class, 
                                   cfg.path.traindata_file_name,
-                                  cfg.paht.valdata_file_name,
+                                  cfg.path.valdata_file_name,
                                   tokenizer,
                                   cfg.training.batch_size,
                                   cfg.model.max_lengh,

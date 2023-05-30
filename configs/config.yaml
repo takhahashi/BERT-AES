@@ -2,10 +2,6 @@ wandb:
   project: AEStest_exp
   project_name: 'AES'
   tags: [bert]
-path:
-  traindata_file_name: "/content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_0/train.tsv"
-  valdata_file_name: "/content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_0/dev.tsv"
-  checkpoint_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/GithubTestAES/pt${aes.prompt_id}/fold_${training.fold}
 training:
   fold: 0
   test_size: 0.3
@@ -24,3 +20,7 @@ aes:
 callbacks:
   patience: 2
   patience_min_delta: 0
+path:
+  traindata_file_name: "/content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_0/train.tsv"
+  valdata_file_name: "/content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_0/dev.tsv"
+  checkpoint_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/GithubTestAES/pt${aes.prompt_id}/fold_${training.fold}

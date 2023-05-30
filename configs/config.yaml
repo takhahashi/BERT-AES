@@ -3,7 +3,7 @@ wandb:
   project_name: 'AES'
   tags: [bert]
 training:
-  fold: 0
+  fold: fold0
   test_size: 0.3
   n_epochs: 30
   batch_size: 8

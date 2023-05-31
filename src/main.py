@@ -24,6 +24,7 @@ def make_callbacks(min_delta, patience, checkpoint_path):
         verbose=True,
         monitor="val_loss",
         mode="min",
+        save_weights_only=True,
     )
 
     early_stop_callback = EarlyStopping(

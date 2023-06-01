@@ -15,11 +15,11 @@ from utils.utils_data import TrainDataModule
 from utils.functions import simple_collate_fn
 from utils.utils_models import create_module
 
-def make_callbacks(min_delta, patience, checkpoint_path):
+def make_callbacks(min_delta, patience, checkpoint_path, filename):
 
     checkpoint_callback = ModelCheckpoint(
         dirpath=checkpoint_path,
-        filename="{epoch}",
+        filename=filename,
         save_top_k=1,
         verbose=True,
         monitor="val_loss",
@@ -62,7 +62,7 @@ def main(cfg: DictConfig):
     data_module.setup()
 
     call_backs = make_callbacks(
-        cfg.callbacks.patience_min_delta, cfg.callbacks.patience, checkpoint_path
+        cfg.callbacks.patience_min_delta, cfg.callbacks.patience, checkpoint_path, cfg.path.save_filename,
     )
     model = create_module(cfg.model.model_name_or_path, cfg.model.reg_or_class, cfg.training.learning_rate, num_labels=cfg.model.num_labels)
     trainer = pl.Trainer(

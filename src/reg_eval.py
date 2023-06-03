@@ -59,20 +59,22 @@ def main(cfg: DictConfig):
                           save_path=cfg.path.model_save_path)
     
     eval_results = {}
-    for t_data in test_dataloader:
-        batch = {k: v.cuda() for k, v in t_data.items()}
-        y_true = {'labels': batch['labels'].to('cpu').detach().numpy().copy()}
-        x = {'input_ids':batch['input_ids'],
-                    'attention_mask':batch['attention_mask'],
-                    'token_type_ids':batch['token_type_ids']}
-        outputs = {k: v.to('cpu').detach().numpy().copy() for k, v in model(x).items()}
-        if len(eval_results) == 0:
-            eval_results = y_true.update(outputs)
-        else:
-            add_dic = y_true.update(outputs)
-            eval_results = {{k1: np.concatenate([v1, v2]) for (k1, v1), (k2, v2) in zip(eval_results.items(), add_dic.items())}}
-
-    ue
+    if cfg.ue.detar
+        for t_data in test_dataloader:
+            batch = {k: v.cuda() for k, v in t_data.items()}
+            y_true = {'labels': batch['labels'].to('cpu').detach().numpy().copy()}
+            x = {'input_ids':batch['input_ids'],
+                        'attention_mask':batch['attention_mask'],
+                        'token_type_ids':batch['token_type_ids']}
+            outputs = {k: v.to('cpu').detach().numpy().copy() for k, v in model(x).items()}
+            if len(eval_results) == 0:
+                eval_results.update(y_true)
+                eval_results.update({k: v.flatten() for k, v in outputs.items()})
+            else:
+                y_true.update(outputs)
+                eval_results = {k1: np.concatenate([v1, v2.flatten()]) for (k1, v1), (k2, v2) in zip(eval_results.items(), y_true.items())}
+    
+    dropout, maha, trustscore, 
 
 
     cwd = hydra.utils.get_original_cwd()

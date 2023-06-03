@@ -60,6 +60,18 @@ class BertReg(pl.LightningModule):
         loss = self.criterion(y, y_hat, logvar)
         self.log("val_loss", loss)
         return {"loss": loss, "batch_preds": y_hat, "logvar": logvar, "batch_labels": y}
+    
+    def test_step(self, batch, batch_idx):
+        x = {'input_ids':batch['input_ids'],
+             'attention_mask':batch['attention_mask'],
+             'token_type_ids':batch['token_type_ids']}
+        y = batch['labels']
+        outputs = {k: v for k, v in self.forward(x).items()}
+        y_hat = outputs['score']
+        logvar = outputs['logvar']
+        loss = self.criterion(y, y_hat, logvar)
+        self.log("val_loss", loss)
+        return {"loss": loss, "batch_preds": y_hat, "logvar": logvar, "batch_labels": y}
 
     def configure_optimizers(self):
         return optim.AdamW(self.parameters(), lr=self.lr)
@@ -106,4 +118,3 @@ class BertClass(pl.LightningModule):
 
     def configure_optimizers(self):
         return optim.AdamW(self.parameters(), lr=self.lr)
-    

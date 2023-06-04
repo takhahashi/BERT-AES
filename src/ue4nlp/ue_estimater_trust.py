@@ -2,10 +2,6 @@ from models.functions import return_predresults, extract_clsvec_labels
 from ue4nlp.functions import sep_features_by_class, diffclass_euclid_dist, sameclass_euclid_dist
 from utils.cfunctions import score_f2int
 import numpy as np
-import time
-import logging
-
-log = logging.getLogger()
 
 class UeEstimatorTrustscore:
     def __init__(self, model, train_dataloader, prompt_id):
@@ -38,8 +34,6 @@ class UeEstimatorTrustscore:
     def _predict_with_fitted_cov(self, X_features, labels):
         trust_score_values = []
         
-        log.info("****************Compute MD with fitted covariance and centroids **************")
-        start = time.time()
         for x_feature, label in zip(X_features, labels):
             diffclass_dist = diffclass_euclid_dist(x_feature, label, self.class_features)
             sameclass_dist= sameclass_euclid_dist(x_feature, label, self.class_features)
@@ -48,8 +42,5 @@ class UeEstimatorTrustscore:
             else:
                 trust_score = diffclass_dist / (diffclass_dist + sameclass_dist)
                 trust_score_values = np.append(trust_score_values, trust_score)
-        end = time.time()
         eval_results = {'trust_score': trust_score_values}
-        log.info("**************Done.**********************")
-        print('inf_time: ', end - start)
         return eval_results

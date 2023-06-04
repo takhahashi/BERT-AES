@@ -77,6 +77,7 @@ def main(cfg: DictConfig):
     maha_estimater.fit()
     if cfg.model.reg_or_class == 'reg':
         eval_results.update(trust_score(train_dataloader))
+    """
         eval_results.update(mahalanobis())
         eval_results.update(dropout())
         eval_results.update(ensemble())
@@ -85,6 +86,7 @@ def main(cfg: DictConfig):
         eval_results.update(mahalanobis())
         eval_results.update(dropout())
         eval_results.update(ensemble())
+    """
 
 if __name__ == "__main__":
     main()

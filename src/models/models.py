@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.optim as optim
 import pytorch_lightning as pl
 from transformers import AutoModel
-from utils.functions import regvarloss
+from utils.cfunctions import regvarloss
 
 class Bert(nn.Module):
     def __init__(self, model_name_or_path):

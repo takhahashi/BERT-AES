@@ -1,5 +1,5 @@
 import torch.nn as nn
-from functions import regvarloss
+from cfunctions import regvarloss
 
 def load_criterion(criterion_type):
     if criterion_type == 'regvarloss':

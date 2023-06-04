@@ -1,6 +1,6 @@
 from models.functions import return_predresults, extract_clsvec_labels
 from ue4nlp.functions import sep_features_by_class, diffclass_euclid_dist, sameclass_euclid_dist
-from utils.functions import score_f2int
+from utils.cfunctions import score_f2int
 import numpy as np
 import time
 import logging

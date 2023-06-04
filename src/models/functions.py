@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 def return_predresults(model, test_dataloader, rt_clsvec):
     bert = model.bert
@@ -28,4 +29,23 @@ def return_predresults(model, test_dataloader, rt_clsvec):
         eval_results['logvar'] = eval_results['logvar'].flatten()
     except:
         print()
+    return eval_results
+
+def extract_clsvec_labels(model, dataloader):
+    bert = model.bert
+    for t_data in dataloader:
+        batch = {k: v.cuda() for k, v in t_data.items()}
+        y_true = {'labels': batch['labels'].to('cpu').detach().numpy().copy()}
+        x = {'input_ids':batch['input_ids'],
+                    'attention_mask':batch['attention_mask'],
+                    'token_type_ids':batch['token_type_ids']}
+
+        cls_outputs = {k: v.to('cpu').detach().numpy().copy() for k, v in bert(x).items()}
+
+        if len(eval_results) == 0:
+            eval_results.update(cls_outputs)
+            eval_results.update(y_true)
+        else:
+            cls_outputs.update(y_true)
+            eval_results = {k1: np.concatenate([v1, v2]) for (k1, v1), (k2, v2) in zip(eval_results.items(), cls_outputs.items())}
     return eval_results

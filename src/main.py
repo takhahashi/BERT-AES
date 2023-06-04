@@ -12,6 +12,7 @@ from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from transformers import AutoTokenizer
 from utils.utils_data import TrainDataModule
+from utils.dataset import get_score_range
 from utils.functions import simple_collate_fn
 from utils.utils_models import create_module
 
@@ -64,7 +65,17 @@ def main(cfg: DictConfig):
     call_backs = make_callbacks(
         cfg.callbacks.patience_min_delta, cfg.callbacks.patience, checkpoint_path, cfg.path.save_filename,
     )
-    model = create_module(cfg.model.model_name_or_path, cfg.model.reg_or_class, cfg.training.learning_rate, num_labels=cfg.model.num_labels)
+    if cfg.model.reg_or_class == 'class':
+        low, high = get_score_range(cfg.aes.prompt_id)
+        num_labels = high - low
+    else:
+        num_labels = None    
+    model = create_module(
+        cfg.model.model_name_or_path,
+        cfg.model.reg_or_class,
+        cfg.training.learning_rate,
+        num_labels=num_labels
+        )
     trainer = pl.Trainer(
         max_epochs=cfg.training.n_epochs,
         callbacks=call_backs, 

@@ -1,4 +1,6 @@
 import torch
+import numpy as np
+from utils.dataset import get_score_range
 
 def regvarloss(y_true, y_pre_ave, y_pre_var):
     loss = torch.exp(-torch.flatten(y_pre_var))*torch.pow(y_true - torch.flatten(y_pre_ave), 2)/2 + torch.flatten(y_pre_var)/2
@@ -22,3 +24,7 @@ def simple_collate_fn(list_of_data):
   batched_tensor['attention_mask'] = torch.stack(atten_mask)
   batched_tensor['labels'] = torch.tensor(labels)
   return batched_tensor
+
+def score_f2int(score, prompt_id):
+  low, high = get_score_range(prompt_id)
+  return np.round(score * (high - low) + low).asytpe('int32')

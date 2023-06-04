@@ -1,62 +1,55 @@
+from models.functions import return_predresults, extract_clsvec_labels
+from ue4nlp.functions import sep_features_by_class, diffclass_euclid_dist, sameclass_euclid_dist
+from utils.functions import score_f2int
+import numpy as np
+import time
+import logging
+
+log = logging.getLogger()
+
 class UeEstimatorTrustscore:
-    def __init__(self, model, train_dataset):
+    def __init__(self, model, train_dataloader, prompt_id):
         self.model = model
-        self.train_dataset = train_dataset
+        self.train_dataloader = train_dataloader
+        self.prompt_id = prompt_id
         
-    def __call__(self, X, y):
-        return self._predict_with_fitted_cov(X, y)
+    def __call__(self, dataloader=None, X_features=None, scores=None):
+        if X_features is not None and scores is not None:
+            return self._predict_with_fitted_clsvec(X_features, scores)
+        else:
+            X_features, scores = self._exctract_features_and_labels(dataloader)
+            int_scores = score_f2int(scores, self.prompt_id)
+            return self._predict_with_fitted_clsvec(X_features, int_scores)
     
-    def fit_ue(self, train_dataset):
-            
-        self._replace_model_head()
-        X_features, y = self._exctract_features_and_labels(train_dataset)
-            
-        self.class_features = self._fit_classfeatures(X_features)
+    def fit_ue(self):
+        X_features, y = self._exctract_features_and_labels(self.train_dataloader)
+        int_labels = score_f2int(y, self.prompt_id)
+        self.class_features = self._fit_classfeatures(X_features, int_labels)
         
-    def _fit_classfeatures(self, X_features, y):
-        return compute_classfeatures(X_features, y)
+    def _fit_classfeatures(self, X_features, scores):
+        return sep_features_by_class(X_features, scores)
     
-    
-    def _exctract_features(self, dataset):
+    def _exctract_features_and_labels(self, data_loader):
         model = self.model
-        
-            
-        X_features = cls.predict(X, apply_softmax=False, return_preds=False)[0]
-        return X_features
+        results = extract_clsvec_labels(model, data_loader)
+        return results['hidden_state'], results['labels']
 
         
-    def _predict_with_fitted_cov(self, X, y):
-        cls = self.cls
-        model = self.cls._auto_model
+    def _predict_with_fitted_cov(self, X_features, labels):
+        trust_score_values = []
         
         log.info("****************Compute MD with fitted covariance and centroids **************")
-
         start = time.time()
-        if y is None:
-            y = self._exctract_labels(X)
-        X_features = self._exctract_features(X)
+        for x_feature, label in zip(X_features, labels):
+            diffclass_dist = diffclass_euclid_dist(x_feature, label, self.class_features)
+            sameclass_dist= sameclass_euclid_dist(x_feature, label, self.class_features)
+            if sameclass_dist is None:
+                trust_score_values = np.append(trust_score_values, 0.)
+            else:
+                trust_score = diffclass_dist / (diffclass_dist + sameclass_dist)
+                trust_score_values = np.append(trust_score_values, trust_score)
         end = time.time()
-        
-        eval_results = {}
-        
-        md, inf_time = mahalanobis_distance(None, None, X_features, 
-                                            self.class_cond_centroids, self.class_cond_covariance)
-        
-        sum_inf_time = inf_time + (end - start)
-        eval_results["mahalanobis_distance"] = md.tolist()
-        eval_results["ue_time"] = sum_inf_time
-        log.info(f"UE time: {sum_inf_time}")
-
-        if self.fit_all_md_versions:
-            md_relative = mahalanobis_distance_relative(None, None, X_features,
-                                                        self.train_centroid, self.train_covariance)
-
-            md_marginal = mahalanobis_distance_marginal(None, None, X_features,
-                                                        self.class_cond_centroids, self.class_cond_covariance,
-                                                        self.train_centroid, self.train_covariance)
-
-            eval_results["mahalanobis_distance_relative"] = md_relative.tolist()
-            eval_results["mahalanobis_distance_marginal"] = md_marginal.tolist()
-    
+        eval_results = {'trust_score': trust_score_values}
         log.info("**************Done.**********************")
+        print('inf_time: ', end - start)
         return eval_results

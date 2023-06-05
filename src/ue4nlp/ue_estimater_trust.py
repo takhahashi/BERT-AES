@@ -31,7 +31,7 @@ class UeEstimatorTrustscore:
         return results['hidden_state'], results['labels']
 
         
-    def _predict_with_fitted_cov(self, X_features, labels):
+    def _predict_with_fitted_clsvec(self, X_features, labels):
         trust_score_values = []
         
         for x_feature, label in zip(X_features, labels):

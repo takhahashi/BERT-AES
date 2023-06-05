@@ -13,7 +13,7 @@ class UeEstimatorTrustscore:
         if X_features is not None and scores is not None:
             if scores.dtype != np.int32:
                 int_scores = score_f2int(scores, self.prompt_id)
-            return self._predict_with_fitted_clsvec(X_features, scores)
+            return self._predict_with_fitted_clsvec(X_features, int_scores)
         else:
             X_features, scores = self._extract_features_and_predlabels(dataloader)
             int_scores = score_f2int(scores, self.prompt_id)

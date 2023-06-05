@@ -27,4 +27,4 @@ def simple_collate_fn(list_of_data):
 
 def score_f2int(score, prompt_id):
   low, high = get_score_range(prompt_id)
-  return np.round(score * (high - low) + low).asytpe('int32')
+  return np.round(score * (high - low) + low).astype('int32')

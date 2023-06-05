@@ -1,4 +1,4 @@
-from models.functions import return_predresults, extract_clsvec_labels
+from models.functions import extract_clsvec_predlabels, extract_clsvec_truelabels
 from ue4nlp.functions import sep_features_by_class, diffclass_euclid_dist, sameclass_euclid_dist
 from utils.cfunctions import score_f2int
 import numpy as np
@@ -11,23 +11,31 @@ class UeEstimatorTrustscore:
         
     def __call__(self, dataloader=None, X_features=None, scores=None):
         if X_features is not None and scores is not None:
+            if scores.dtype != np.int32:
+                int_scores = score_f2int(scores, self.prompt_id)
             return self._predict_with_fitted_clsvec(X_features, scores)
         else:
-            X_features, scores = self._exctract_features_and_labels(dataloader)
+            X_features, scores = self._extract_features_and_predlabels(dataloader)
             int_scores = score_f2int(scores, self.prompt_id)
             return self._predict_with_fitted_clsvec(X_features, int_scores)
     
     def fit_ue(self):
-        X_features, y = self._exctract_features_and_labels(self.train_dataloader)
+        X_features, y = self._extract_features_and_truelabels(self.train_dataloader)
         int_labels = score_f2int(y, self.prompt_id)
         self.class_features = self._fit_classfeatures(X_features, int_labels)
         
     def _fit_classfeatures(self, X_features, scores):
         return sep_features_by_class(X_features, scores)
     
-    def _exctract_features_and_labels(self, data_loader):
+    def _extract_features_and_predlabels(self, data_loader):
         model = self.model
-        results = extract_clsvec_labels(model, data_loader)
+        X_features, predlabels = extract_clsvec_predlabels(model, data_loader)
+        return X_features, predlabels
+
+    
+    def _extract_features_and_truelabels(self, data_loader):
+        model = self.model
+        results = extract_clsvec_truelabels(model, data_loader)
         return results['hidden_state'], results['labels']
 
         

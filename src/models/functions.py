@@ -67,6 +67,7 @@ def extract_clsvec_predlabels(model, dataloader):
     bert = bert.cuda()
     eval_results = {}
     for t_data in dataloader:
+        print(eval_results)
         batch = {k: v.cuda() for k, v in t_data.items()}
         y_true = {'labels': batch['labels'].to('cpu').detach().numpy().copy()}
         x = {'input_ids':batch['input_ids'],
@@ -84,7 +85,6 @@ def extract_clsvec_predlabels(model, dataloader):
             y_true.update(cls_outputs)
             eval_results = {k1: np.concatenate([v1, v2]) for (k1, v1), (k2, v2) in zip(eval_results.items(), y_true.items())}
 
-    print(type(eval_results))
 
     """"
     for k, v in eval_results.items():

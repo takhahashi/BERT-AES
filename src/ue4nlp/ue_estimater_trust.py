@@ -35,8 +35,8 @@ class UeEstimatorTrustscore:
     
     def _extract_features_and_truelabels(self, data_loader):
         model = self.model
-        results = extract_clsvec_truelabels(model, data_loader)
-        return results['hidden_state'], results['labels']
+        X_features, truelabels = extract_clsvec_truelabels(model, data_loader)
+        return X_features, truelabels
 
         
     def _predict_with_fitted_clsvec(self, X_features, labels):

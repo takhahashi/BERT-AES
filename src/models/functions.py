@@ -85,10 +85,13 @@ def extract_clsvec_predlabels(model, dataloader):
             eval_results = {k1: np.concatenate([v1, v2]) for (k1, v1), (k2, v2) in zip(eval_results.items(), y_true.items())}
 
     print(type(eval_results))
+
+    """"
     for k, v in eval_results.items():
         if k == 'score':
             eval_results['score'] = v.flatten()
         if k == 'logits':
             eval_results['score'] = np.argmax(v, axis=-1)
+    """
 
     return eval_results['hidden_state'], eval_results['score']

@@ -4,6 +4,7 @@ import torch
 def return_predresults(model, test_dataloader, rt_clsvec):
     model.eval()
     model = model.cuda()
+    eval_results = {}
     if rt_clsvec == True:
         bert = model.bert
         bert.eval()
@@ -64,6 +65,7 @@ def extract_clsvec_predlabels(model, dataloader):
     bert = model.bert
     bert.eval()
     bert = bert.cuda()
+    eval_results = {}
     for t_data in dataloader:
         batch = {k: v.cuda() for k, v in t_data.items()}
         y_true = {'labels': batch['labels'].to('cpu').detach().numpy().copy()}

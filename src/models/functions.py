@@ -1,14 +1,22 @@
 import numpy as np
 import torch
 
-def return_predresults(model, test_dataloader, rt_clsvec):
-    model.eval()
+def return_predresults(model, test_dataloader, rt_clsvec, dropout = False):
     model = model.cuda()
+    if dropout == False:
+        model.eval()
+        if rt_clsvec == True:
+            bert = model.bert
+            bert.eval()
+            bert = bert.cuda()
+    else:
+        model.train()
+        if rt_clsvec == True:
+            bert = model.bert
+            bert.train()
+            bert = bert.cuda()
+
     eval_results = {}
-    if rt_clsvec == True:
-        bert = model.bert
-        bert.eval()
-        bert = bert.cuda()
     for t_data in test_dataloader:
         batch = {k: v.cuda() for k, v in t_data.items()}
         y_true = {'labels': batch['labels'].to('cpu').detach().numpy().copy()}

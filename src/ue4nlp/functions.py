@@ -1,4 +1,5 @@
 import numpy as np
+import torch
 
 def sep_features_by_class(X_features, scores):
     sep_features = {}
@@ -25,3 +26,29 @@ def sameclass_euclid_dist(target_feature, target_label, train_features_labels):
                 if(min_dist is None or dist < min_dist):
                     min_dist = dist
     return min_dist
+
+def compute_mulscore_mulvar(score, logvar, mulnum):
+    vars = [np.exp(i) for i in logvar]
+    sumvar = np.sum(vars, axis=0)
+    sumscore = np.sum(score, axis=0)
+    powerscore = np.power(score, 2)
+    sumpower = np.sum(powerscore, axis=0)
+
+    mulscore = np.divide(sumscore, mulnum)
+    mulvar = np.divide(sumvar + sumpower, mulnum) - np.power(mulscore, 2)
+    return mulscore, mulvar
+
+def compute_mulprob_muluncertain(numpy_logits, mulnum):
+    soft_fn = torch.nn.Softmax(dim=2)
+    logits = torch.from_numpy(numpy_logits)
+    pred_probs = soft_fn(logits)
+    assert pred_probs.shape[0] == mulnum
+
+    mean_probs = torch.mean(pred_probs, dim=0)
+    mean_entro = -torch.sum(torch.log2(mean_probs) * mean_probs, dim=-1)
+    all_entro = -sum(sum(torch.log2(pred_probs) * pred_probs, dim=0), dim=-1)
+
+    torch_scores = torch.argmax(mean_probs, dim=-1)
+    torch_uncertainty = mean_entro - all_entro / mulnum
+
+    return torch_scores.numpy(), torch_uncertainty.numpy()

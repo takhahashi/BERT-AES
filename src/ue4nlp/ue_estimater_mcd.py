@@ -22,7 +22,8 @@ class UeEstimatorDp:
             if len(mul_results) == 0:
                 mul_results = {k: [v] for k, v in pred_results.items()}
             else:
-                mul_results = {k1: v1.append(v2) for (k1, v1), (k2, v2) in zip(mul_results.items(), pred_results.items())} 
+                for (k1, v1), (k2, v2) in zip(mul_results.items(), pred_results.items()):
+                  v1.append(v2)
         return mul_results
         
     def _calc_var(self, mul_results):

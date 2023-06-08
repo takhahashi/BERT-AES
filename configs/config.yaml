@@ -11,7 +11,7 @@ training:
   collate_fn: True
 model:
   model_name_or_path: 'bert-base-uncased'
-  reg_or_class: 'class'
+  reg_or_class: 'reg'
   max_length: 512
   id: 0
 aes:
@@ -23,5 +23,5 @@ callbacks:
 path:
   traindata_file_name: "/content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_0/train.tsv"
   valdata_file_name: "/content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_0/dev.tsv"
-  checkpoint_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/GithubTestAES/class/pt${aes.prompt_id}/fold_${training.fold}
+  checkpoint_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/GithubTestAES/reg/pt${aes.prompt_id}/fold_${training.fold}
   save_filename: id${model.id}

@@ -43,6 +43,11 @@ def main(cfg: DictConfig):
                                cfg.aes.prompt_id, 
                                AutoTokenizer.from_pretrained(cfg.model.model_name_or_path),
                                )
+    train_dataset = get_Dataset(cfg.model.reg_or_class, 
+                               cfg.path.traindata_file_name, 
+                               cfg.aes.prompt_id, 
+                               AutoTokenizer.from_pretrained(cfg.model.model_name_or_path),
+                               )
     if cfg.eval.collate_fn == True:
         collate_fn = simple_collate_fn
     else:
@@ -52,6 +57,12 @@ def main(cfg: DictConfig):
                                                   shuffle=False,
                                                   collate_fn=collate_fn,
                                                   )
+    train_dataloader = torch.utils.data.DataLoader(train_dataset,
+                                                  batch_size=cfg.eval.batch_size,
+                                                  shuffle=False,
+                                                  collate_fn=collate_fn,
+                                                  )
+    
     
     model = create_module(cfg.model.model_name_or_path, 
                           cfg.model.reg_or_class, 
@@ -59,22 +70,32 @@ def main(cfg: DictConfig):
                           num_labels=cfg.model.num_labels, 
                           save_path=cfg.path.model_save_path)
     
-    eval_results = return_predresults(model, test_dataloader, rt_clsvec=False, dropout = False)
     
-    maha_estimater = mahalanobis()
-    maha_estimater.fit()
-    if cfg.model.reg_or_class == 'reg':
-        eval_results.update(trust_score(train_dataloader))
-    """
-        eval_results.update(mahalanobis())
-        eval_results.update(dropout())
-        eval_results.update(ensemble())
-    elif cfg.model.reg_or_class == 'class':
-        eval_results.update(trust_score())
-        eval_results.update(mahalanobis())
-        eval_results.update(dropout())
-        eval_results.update(ensemble())
-    """
+    eval_results = return_predresults(model, test_dataloader, rt_clsvec=False, dropout = False)
+
+    trust_estimater = UeEstimatorTrustscore(model, 
+                                            train_dataloader, 
+                                            cfg.aes.prompt_id,
+                                            )
+    trust_estimater.fit_ue()
+    trust_results = trust_estimater(test_dataloader)
+    eval_results.update(trust_results)
+
+    mcdp_estimater = UeEstimatorDp(model, 
+                                   cfg.ue.num_dropout, 
+                                   cfg.aes.prompt_id, 
+                                   cfg.model.reg_or_class,
+                                   )
+    mcdp_results = mcdp_estimater(test_dataloader)
+    eval_results.update(mcdp_results)
+
+    ensemble_estimater = UeEstimatorEnsemble(cfg.ue.ensemble_model_paths,
+                                             cfg.aes.prompt_id,
+                                             cfg.model.reg_or_class,
+                                             )
+    ensemble_results = ensemble_estimater(test_dataloader)
+    eval_results.update(ensemble_results)
+    
 
 if __name__ == "__main__":
     main()

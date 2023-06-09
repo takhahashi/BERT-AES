@@ -31,6 +31,7 @@ class UeEstimatorEnsemble:
                   v1.append(v2)
         return mul_results
 
+
     def _predict_with_multimodel(self, dataloader):
         mul_pred_results = self._multi_pred(dataloader)
         mul_num = len(self.model_paths)

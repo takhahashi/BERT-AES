@@ -1,5 +1,6 @@
 import os
 
+import json
 import hydra
 import numpy as np
 import pandas as pd
@@ -101,6 +102,10 @@ def main(cfg: DictConfig):
                                              )
     ensemble_results = ensemble_estimater(test_dataloader)
     eval_results.update(ensemble_results)
+
+    
+    with open(cfg.path.results_save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(eval_results, f, ensure_ascii=False)
     
 
 if __name__ == "__main__":

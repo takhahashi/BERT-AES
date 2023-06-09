@@ -51,6 +51,9 @@ def main(cfg: DictConfig):
                                cfg.aes.prompt_id, 
                                AutoTokenizer.from_pretrained(cfg.model.model_name_or_path),
                                )
+    print('---------------')
+    print(cfg.ue.ensemble_model_paths)
+    print('-------------------')
     if cfg.eval.collate_fn == True:
         collate_fn = simple_collate_fn
     else:

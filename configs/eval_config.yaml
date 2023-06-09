@@ -1,7 +1,3 @@
-wandb:
-  project: Regression_Train_Pt${aes.prompt_id}
-  project_name: fold${training.fold}_id${model.id}
-  tags: [bert]
 eval:
   fold: 0
   batch_size: 8
@@ -24,6 +20,6 @@ ue:
     - savepath4
     - savepath5
 path:
-  traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${/train.tsv
-  testdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_0/train.tsv
+  traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/train.tsv
+  testdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/test.tsv
   model_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Reg-torchlightning/pt${aes.prompt_id}/fold_${training.fold}/id${model.id}.ckpt

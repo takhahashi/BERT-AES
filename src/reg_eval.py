@@ -12,7 +12,7 @@ from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from transformers import AutoTokenizer
 from utils.utils_data import TrainDataModule
-from utils.functions import simple_collate_fn
+from utils.cfunctions import simple_collate_fn
 from utils.utils_models import create_module
 from utils.dataset import get_Dataset
 

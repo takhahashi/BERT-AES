@@ -4,8 +4,7 @@ from utils.utils_models import create_module
     
 
 class UeEstimatorEnsemble:
-    def __init__(self, base_model, model_paths, prompt_id, reg_or_class):
-        self.base_model = base_model
+    def __init__(self, model_paths, prompt_id, reg_or_class):
         self.model_paths = model_paths
         self.prompt_id = prompt_id
         self.reg_or_class = reg_or_class
@@ -32,7 +31,6 @@ class UeEstimatorEnsemble:
                   v1.append(v2)
         return mul_results
 
-        
     def _predict_with_multimodel(self, dataloader):
         mul_pred_results = self._multi_pred(dataloader)
         mul_num = len(self.model_paths)

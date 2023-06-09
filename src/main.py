@@ -13,7 +13,7 @@ from pytorch_lightning.loggers import WandbLogger
 from transformers import AutoTokenizer
 from utils.utils_data import TrainDataModule
 from utils.dataset import get_score_range
-from utils.functions import simple_collate_fn
+from utils.cfunctions import simple_collate_fn
 from utils.utils_models import create_module
 
 def make_callbacks(min_delta, patience, checkpoint_path, filename):

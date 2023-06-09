@@ -16,6 +16,9 @@ from utils.cfunctions import simple_collate_fn
 from utils.utils_models import create_module
 from utils.dataset import get_Dataset
 from models.functions import return_predresults
+from ue4nlp.ue_estimater_ensemble import UeEstimatorEnsemble
+from ue4nlp.ue_estimater_trust import UeEstimatorTrustscore
+from ue4nlp.ue_estimater_mcd import UeEstimatorDp
 
 def make_callbacks(min_delta, patience, checkpoint_path, filename):
 

@@ -1,6 +1,6 @@
 wandb:
-  project: AEStest_exp
-  project_name: 'AES'
+  project: Regression_Train_Pt${aes.prompt_id}
+  project_name: fold${training.fold}_id${model.id}
   tags: [bert]
 training:
   fold: 0
@@ -23,5 +23,5 @@ callbacks:
 path:
   traindata_file_name: "/content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_0/train.tsv"
   valdata_file_name: "/content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_0/dev.tsv"
-  checkpoint_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/GithubTestAES/reg/pt${aes.prompt_id}/fold_${training.fold}
+  checkpoint_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Reg-torchlightning/pt${aes.prompt_id}/fold_${training.fold}
   save_filename: id${model.id}

@@ -1,5 +1,5 @@
 import os
-
+import wandb
 import hydra
 import numpy as np
 import pandas as pd
@@ -39,6 +39,7 @@ def make_callbacks(min_delta, patience, checkpoint_path, filename):
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
     print(cfg.wandb.project_name)
+    wandb.finish()
     wandb_logger = WandbLogger(
         name=cfg.wandb.project_name,
         project=cfg.wandb.project,

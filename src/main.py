@@ -38,6 +38,9 @@ def make_callbacks(min_delta, patience, checkpoint_path, filename):
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/test1/configs", config_name="config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
+    print('==========================')
+    print(cwd)
+    print('==========================')
     wandb.finish()
     wandb_logger = WandbLogger(
         name=cfg.wandb.project_name,

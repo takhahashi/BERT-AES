@@ -42,6 +42,7 @@ def main(cfg: DictConfig):
     wandb_logger = WandbLogger(
         name=cfg.wandb.project_name,
         project=cfg.wandb.project,
+        reinit=False,
     )
     checkpoint_path = cfg.path.checkpoint_path
     wandb_logger.log_hyperparams(cfg)

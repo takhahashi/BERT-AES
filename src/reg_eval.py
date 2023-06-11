@@ -105,9 +105,10 @@ def main(cfg: DictConfig):
     ensemble_results = ensemble_estimater(test_dataloader)
     eval_results.update(ensemble_results)
 
+    list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}
     
     with open(cfg.path.results_save_path, mode="wt", encoding="utf-8") as f:
-        json.dump(eval_results, f, ensure_ascii=False)
+        json.dump(list_results, f, ensure_ascii=False)
     
 
 if __name__ == "__main__":

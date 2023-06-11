@@ -53,6 +53,8 @@ def main(cfg: DictConfig):
                                AutoTokenizer.from_pretrained(cfg.model.model_name_or_path),
                                )
     print('---------------')
+    modelpaths = cfg.uc.ensemble_model_paths
+    print(type(modelpaths))
     print(cfg.ue.ensemble_model_paths)
     print('-------------------')
     if cfg.eval.collate_fn == True:

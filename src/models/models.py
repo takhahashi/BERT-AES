@@ -48,6 +48,7 @@ class BertReg(pl.LightningModule):
         y_hat = outputs['score']
         logvar = outputs['logvar']
         loss = self.criterion(y, y_hat, logvar)
+        self.log("train_loss", loss)
         wandb.log({"train_loss":loss})
         return {"loss": loss, "batch_preds": y_hat, "logvar": logvar, "batch_labels": y}
 
@@ -60,6 +61,7 @@ class BertReg(pl.LightningModule):
         y_hat = outputs['score']
         logvar = outputs['logvar']
         loss = self.criterion(y, y_hat, logvar)
+        self.log("val_loss", loss)
         wandb.log({"val_loss":loss})
         return {"loss": loss, "batch_preds": y_hat, "logvar": logvar, "batch_labels": y}
     

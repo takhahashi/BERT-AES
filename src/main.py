@@ -38,10 +38,10 @@ def make_callbacks(min_delta, patience, checkpoint_path, filename):
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/test1/configs", config_name="config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
-
     wandb.init(name=cfg.wandb.project_name,
                project=cfg.wandb.project,
-               reinit=True,)
+               reinit=True,
+               )
     checkpoint_path = cfg.path.checkpoint_path
     if cfg.training.collate_fn:
         collate_fn = simple_collate_fn
@@ -58,7 +58,6 @@ def main(cfg: DictConfig):
                                   collate_fn=collate_fn)
 
     data_module.setup()
-
     call_backs = make_callbacks(
         cfg.callbacks.patience_min_delta, cfg.callbacks.patience, checkpoint_path, cfg.path.save_filename,
     )
@@ -81,6 +80,7 @@ def main(cfg: DictConfig):
         precision=16,
     )
     trainer.fit(model, data_module)
+    wandb.finish()
 """
 @hydra.main(config_path=".", config_name="config")
 def main(cfg: DictConfig):

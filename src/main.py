@@ -38,16 +38,11 @@ def make_callbacks(min_delta, patience, checkpoint_path, filename):
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/test1/configs", config_name="config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
-    if wandb.run is not None:
-        wandb.finish()
-    else:
-        wandb_logger = WandbLogger(
-            name=cfg.wandb.project_name,
-            project=cfg.wandb.project,
-            reinit=True,
-        )
+
+    wandb.init(name=cfg.wandb.project_name,
+               project=cfg.wandb.project,
+               reinit=True,)
     checkpoint_path = cfg.path.checkpoint_path
-    wandb_logger.log_hyperparams(cfg)
     if cfg.training.collate_fn:
         collate_fn = simple_collate_fn
     else:
@@ -81,7 +76,6 @@ def main(cfg: DictConfig):
     trainer = pl.Trainer(
         max_epochs=cfg.training.n_epochs,
         callbacks=call_backs, 
-        logger=wandb_logger,
         accelerator="gpu", 
         devices=1,
         precision=16,

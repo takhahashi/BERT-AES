@@ -5,6 +5,8 @@ import pytorch_lightning as pl
 from transformers import AutoModel
 from utils.cfunctions import regvarloss
 
+import wandb
+
 class Bert(nn.Module):
     def __init__(self, model_name_or_path):
         super(Bert, self).__init__()
@@ -46,7 +48,7 @@ class BertReg(pl.LightningModule):
         y_hat = outputs['score']
         logvar = outputs['logvar']
         loss = self.criterion(y, y_hat, logvar)
-        self.log("train_loss", loss)
+        wandb.log({"train_loss":loss})
         return {"loss": loss, "batch_preds": y_hat, "logvar": logvar, "batch_labels": y}
 
     def validation_step(self, batch, batch_idx):
@@ -58,7 +60,7 @@ class BertReg(pl.LightningModule):
         y_hat = outputs['score']
         logvar = outputs['logvar']
         loss = self.criterion(y, y_hat, logvar)
-        self.log("val_loss", loss)
+        wandb.log({"val_loss":loss})
         return {"loss": loss, "batch_preds": y_hat, "logvar": logvar, "batch_labels": y}
     
     def test_step(self, batch, batch_idx):
@@ -70,7 +72,6 @@ class BertReg(pl.LightningModule):
         y_hat = outputs['score']
         logvar = outputs['logvar']
         loss = self.criterion(y, y_hat, logvar)
-        self.log("val_loss", loss)
         return {"loss": loss, "batch_preds": y_hat, "logvar": logvar, "batch_labels": y}
 
     def configure_optimizers(self):

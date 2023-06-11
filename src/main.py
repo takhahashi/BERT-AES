@@ -44,7 +44,7 @@ def main(cfg: DictConfig):
         project=cfg.wandb.project,
     )
     checkpoint_path = cfg.path.checkpoint_path
-    #wandb_logger.log_hyperparams(cfg)
+    wandb_logger.log_hyperparams(cfg)
     if cfg.training.collate_fn:
         collate_fn = simple_collate_fn
     else:

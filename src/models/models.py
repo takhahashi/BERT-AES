@@ -40,6 +40,8 @@ class BertReg(pl.LightningModule):
         return {'score': score, 'logvar': logvar}
 
     def training_step(self, batch, batch_idx):
+        if batch_idx == 0:
+            wandb.log({"epoch":self.current_epoch})
         x = {'input_ids':batch['input_ids'],
              'attention_mask':batch['attention_mask'],
              'token_type_ids':batch['token_type_ids']}

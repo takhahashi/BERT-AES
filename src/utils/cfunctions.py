@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 from utils.dataset import get_score_range
+from sklearn.metrics import cohen_kappa_score, mean_squared_error, accuracy_score, roc_auc_score
 
 def regvarloss(y_true, y_pre_ave, y_pre_var):
     loss = torch.exp(-torch.flatten(y_pre_var))*torch.pow(y_true - torch.flatten(y_pre_ave), 2)/2 + torch.flatten(y_pre_var)/2

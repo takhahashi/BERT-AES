@@ -62,7 +62,6 @@ class EarlyStopping:
         torch.save(model.state_dict(), self.path)  #ベストモデルを指定したpathに保存
         self.val_loss_min = val_loss  #その時のlossを記録する
 
-
 class Scaler(torch.nn.Module):
     def __init__(self, init_S=1.0):
         super().__init__()
@@ -147,18 +146,16 @@ def main(cfg: DictConfig):
         for idx, d_batch in enumerate(dev_dataloader):
             batch = {k: v.cuda() for k, v in d_batch.items()}
             dev_step_outputs = model.validation_step(batch, idx)
-            loss_all += dev_step_outputs['loss'].to('cpu').detach().numpy().copy()
+            dev_mu = dev_step_outputs['score']
+            dev_std = dev_step_outputs['logvar'].exp().sqrt()
+            dev_labels = dev_step_outputs['labels']
+            loss_all += regvarloss(y_true=dev_labels, y_pre_ave=dev_mu, y_pre_var=sigma_scaler(dev_std).pow(2).log()).to('cpu').detach().numpy().copy()
 
         earlystopping(loss_all, model)
         if earlystopping.early_stop == True:
             break
     wandb.finish()
-"""
-@hydra.main(config_path=".", config_name="config")
-def main(cfg: DictConfig):
-    cwd = hydra.utils.get_original_cwd()
-    print(cwd)
-    print(os.getcwd())
-"""
+
+
 if __name__ == "__main__":
     main()

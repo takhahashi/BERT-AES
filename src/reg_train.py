@@ -128,9 +128,9 @@ def main(cfg: DictConfig):
         model.eval()
         with torch.no_grad():
             dev_results = return_predresults(model, dev_dataloader, rt_clsvec=False, dropout=False)
-        dev_mu = dev_results['score']
-        dev_std = dev_results['logvar'].exp().sqrt()
-        dev_labels = dev_results['labels']
+        dev_mu = torch.tensor(dev_results['score'])
+        dev_std = torch.tensor(dev_results['logvar'].exp().sqrt())
+        dev_labels = torch.tensor(dev_results['labels'])
         
         # find optimal S
         s_opt = torch.optim.LBFGS([sigma_scaler.S], lr=3e-2, max_iter=2000)

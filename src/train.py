@@ -12,45 +12,64 @@ from pytorch_lightning.callbacks import EarlyStopping, ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 from transformers import AutoTokenizer
 from utils.utils_data import TrainDataModule
-from utils.dataset import get_score_range
+from utils.dataset import get_score_range, get_Dataset
 from utils.cfunctions import simple_collate_fn
 from utils.utils_models import create_module
+from models.functions import return_predresults
+from utils.cfunctions import regvarloss
 
-def make_callbacks(min_delta, patience, checkpoint_path, filename):
+class EarlyStopping:
+    """earlystoppingクラス"""
 
-    checkpoint_callback = ModelCheckpoint(
-        dirpath=checkpoint_path,
-        filename=filename,
-        save_top_k=1,
-        verbose=True,
-        monitor="val_loss",
-        mode="min",
-        save_weights_only=True,
-    )
+    def __init__(self, patience=5, verbose=False, path='checkpoint_model.pth'):
+        """引数：最小値の非更新数カウンタ、表示設定、モデル格納path"""
 
-    early_stop_callback = EarlyStopping(
-        monitor="val_loss", min_delta=min_delta, patience=patience, mode="min"
-    )
+        self.patience = patience    #設定ストップカウンタ
+        self.verbose = verbose      #表示の有無
+        self.counter = 0            #現在のカウンタ値
+        self.best_score = None      #ベストスコア
+        self.early_stop = False     #ストップフラグ
+        self.val_loss_min = np.Inf   #前回のベストスコア記憶用
+        self.path = path             #ベストモデル格納path
+    def __call__(self, val_loss, model):
+        """
+        特殊(call)メソッド
+        実際に学習ループ内で最小lossを更新したか否かを計算させる部分
 
-    return [early_stop_callback, checkpoint_callback]
+        """
+        score = -val_loss
 
-    def training_step(self, batch, batch_idx):
-        if batch_idx == 0:
-            wandb.log({"epoch":self.current_epoch})
-        else:
-            wandb.log({"epoch":self.current_epoch+0.001})
-        x = {'input_ids':batch['input_ids'],
-             'attention_mask':batch['attention_mask'],
-             'token_type_ids':batch['token_type_ids']}
-        y = batch['labels']
-        outputs = {k: v for k, v in self.forward(x).items()}
-        y_hat = outputs['score']
-        logvar = outputs['logvar']
-        loss = self.criterion(y, y_hat, logvar)
-        self.log("train_loss", loss)
-        wandb.log({"train_loss":loss})
-        return {"loss": loss, "batch_preds": y_hat, "logvar": logvar, "batch_labels": y}
+        if self.best_score is None:  #1Epoch目の処理
+            self.best_score = score   #1Epoch目はそのままベストスコアとして記録する
+            self.val_loss_min = -score
+            print(f'first_score: {-self.best_score}')
+            #self.checkpoint(val_loss, model)  #記録後にモデルを保存してスコア表示する
+        elif score <= self.best_score:  # ベストスコアを更新できなかった場合
+            self.counter += 1   #ストップカウンタを+1
+            if self.verbose:  #表示を有効にした場合は経過を表示
+                print(f'EarlyStopping counter: {self.counter} out of {self.patience}')  #現在のカウンタを表示する 
+            if self.counter >= self.patience:  #設定カウントを上回ったらストップフラグをTrueに変更
+                self.early_stop = True
+        else:  #ベストスコアを更新した場合
+            self.best_score = score  #ベストスコアを上書き
+            self.checkpoint(val_loss, model)  #モデルを保存してスコア表示
+            self.counter = 0  #ストップカウンタリセット
 
+    def checkpoint(self, val_loss, model):
+        '''ベストスコア更新時に実行されるチェックポイント関数'''
+        if self.verbose:  #表示を有効にした場合は、前回のベストスコアからどれだけ更新したか？を表示
+            print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
+        torch.save(model.state_dict(), self.path)  #ベストモデルを指定したpathに保存
+        self.val_loss_min = val_loss  #その時のlossを記録する
+
+
+class Scaler(torch.nn.Module):
+    def __init__(self, init_S=1.0):
+        super().__init__()
+        self.S = torch.nn.Parameter(torch.tensor([init_S]))
+
+    def forward(self, x):
+        return self.S.mul(x)
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/test1/configs", config_name="config")
 def main(cfg: DictConfig):
@@ -59,26 +78,84 @@ def main(cfg: DictConfig):
                project=cfg.wandb.project,
                reinit=True,
                )
-    train_dataloader = get_dataloader()
-    dev_dataloader = get_dataloader()
+    
+    tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
+    train_dataset = get_Dataset(cfg.model.reg_or_class,
+                                cfg.path.traindata_file_name,
+                                cfg.aes.prompt_id,
+                                tokenizer,
+                                )
+    dev_dataset = get_Dataset(cfg.model.reg_or_class,
+                            cfg.path.valdata_file_name,
+                            cfg.aes.prompt_id,
+                            tokenizer,
+                            )
+    
+    train_dataloader = torch.utils.data.DataLoader(train_dataset,
+                                                   batch_size=cfg.training.batch_size,
+                                                   shuffle=True,
+                                                   collate_fn=simple_collate_fn,
+                                                   )
+    dev_dataloader = torch.utils.data.DataLoader(dev_dataset,
+                                                   batch_size=cfg.training.batch_size,
+                                                   shuffle=True,
+                                                   collate_fn=simple_collate_fn,
+                                                   )
 
-    model = get_model()
-    optimizer = 
+    model = create_module(
+        cfg.model.model_name_or_path,
+        cfg.model.reg_or_class,
+        cfg.training.learning_rate,
+        num_labels=num_labels
+        )
+    optimizer = optim.AdamW(model.parameters(), lr=1e-5)
 
     model.train()
     model = model.cuda()
+    earlystopping = EarlyStopping(patience=cfg.training.patience, verbose=True, path=cfg.path.save_path)
 
     scaler = torch.cuda.amp.GradScaler()
-    for idx, batch in enumerate(train_dataloader):
-        with torch.cuda.amp.autocast():
-            training_step_outputs = model.training_step(batch, idx)
-        training_step_outputs['loss'].backward()
-        scaler.step(optimizer)
-        scaler.update()
+    sigma_scaler = Scaler(init_S=1.0).cuda()
+    for epoch in cfg.training.n_epochs:
+        for idx, t_batch in enumerate(train_dataloader):
+            batch = {k: v.cuda() for k, v in t_batch.items()}
+            with torch.cuda.amp.autocast():
+                training_step_outputs = model.training_step(batch, idx)
+            training_step_outputs['loss'].backward()
+            scaler.step(optimizer)
+            scaler.update()
 
-    ###calibrate_step###
-    if cfg.trai
+        ###calibrate_step###
+        model.eval()
+        with torch.no_grad():
+            dev_results = return_predresults(model, dev_dataloader, rt_clsvec=False, dropout = False)
+        dev_mu = dev_results['score']
+        dev_std = dev_results['logvar'].exp().sqrt()
+        dev_labels = dev_results['labels']
         
+        # find optimal S
+        s_opt = torch.optim.LBFGS([sigma_scaler.S], lr=3e-2, max_iter=2000)
+
+        def closure():
+            s_opt.zero_grad()
+            loss = regvarloss(y_true=dev_labels, y_pre_ave=dev_mu, y_pre_var=sigma_scaler(dev_std).pow(2).log())
+            loss.backward()
+            return loss
+        s_opt.step(closure)
+
+        loss_all = 0
+        for idx, d_batch in enumerate(dev_dataloader):
+            batch = {k: v.cuda() for k, v in d_batch.items()}
+            dev_step_outputs = model.validation_step(batch, idx)
+            loss_all += dev_step_outputs['loss'].to('cpu').detach().numpy().copy()
+
+        earlystopping(loss_all, model)
+        if earlystopping.early_stop == True:
+            break
+        
+
+        
+    
 
     checkpoint_path = cfg.path.checkpoint_path
     if cfg.training.collate_fn:

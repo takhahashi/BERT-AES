@@ -100,7 +100,6 @@ def main(cfg: DictConfig):
                                                    shuffle=True,
                                                    collate_fn=simple_collate_fn,
                                                    )
-    
 
     model = create_module(
         cfg.model.model_name_or_path,

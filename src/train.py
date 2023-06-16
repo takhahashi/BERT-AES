@@ -106,7 +106,7 @@ def main(cfg: DictConfig):
         cfg.model.model_name_or_path,
         cfg.model.reg_or_class,
         cfg.training.learning_rate,
-        num_labels=num_labels
+        num_labels=cfg.model.num_labels
         )
     optimizer = optim.AdamW(model.parameters(), lr=1e-5)
 
@@ -128,7 +128,7 @@ def main(cfg: DictConfig):
         ###calibrate_step###
         model.eval()
         with torch.no_grad():
-            dev_results = return_predresults(model, dev_dataloader, rt_clsvec=False, dropout = False)
+            dev_results = return_predresults(model, dev_dataloader, rt_clsvec=False, dropout=False)
         dev_mu = dev_results['score']
         dev_std = dev_results['logvar'].exp().sqrt()
         dev_labels = dev_results['labels']
@@ -152,49 +152,6 @@ def main(cfg: DictConfig):
         earlystopping(loss_all, model)
         if earlystopping.early_stop == True:
             break
-        
-
-        
-    
-
-    checkpoint_path = cfg.path.checkpoint_path
-    if cfg.training.collate_fn:
-        collate_fn = simple_collate_fn
-    else:
-        collate_fn = None
-    tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
-    data_module = TrainDataModule(cfg.model.reg_or_class, 
-                                  cfg.path.traindata_file_name,
-                                  cfg.path.valdata_file_name,
-                                  tokenizer,
-                                  cfg.training.batch_size,
-                                  cfg.model.max_length,
-                                  cfg.aes.prompt_id,
-                                  collate_fn=collate_fn)
-
-    data_module.setup()
-    call_backs = make_callbacks(
-        cfg.callbacks.patience_min_delta, cfg.callbacks.patience, checkpoint_path, cfg.path.save_filename,
-    )
-    if cfg.model.reg_or_class == 'class':
-        low, high = get_score_range(cfg.aes.prompt_id)
-        num_labels = high - low
-    else:
-        num_labels = None    
-    model = create_module(
-        cfg.model.model_name_or_path,
-        cfg.model.reg_or_class,
-        cfg.training.learning_rate,
-        num_labels=num_labels
-        )
-    trainer = pl.Trainer(
-        max_epochs=cfg.training.n_epochs,
-        callbacks=call_backs, 
-        accelerator="gpu", 
-        devices=1,
-        precision=16,
-    )
-    trainer.fit(model, data_module)
     wandb.finish()
 """
 @hydra.main(config_path=".", config_name="config")

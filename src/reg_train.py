@@ -71,7 +71,7 @@ class Scaler(torch.nn.Module):
     def forward(self, x):
         return self.S.mul(x)
 
-@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/test1/configs", config_name="config")
+@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
     wandb.init(name=cfg.wandb.project_name,

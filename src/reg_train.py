@@ -115,7 +115,7 @@ def main(cfg: DictConfig):
 
     scaler = torch.cuda.amp.GradScaler()
     sigma_scaler = Scaler(init_S=1.0).cuda()
-    for epoch in cfg.training.n_epochs:
+    for epoch in range(cfg.training.n_epochs):
         for idx, t_batch in enumerate(train_dataloader):
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():

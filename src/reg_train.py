@@ -122,6 +122,7 @@ def main(cfg: DictConfig):
             training_step_outputs['loss'].backward()
             scaler.step(optimizer)
             scaler.update()
+            model.zero_grad()
 
         ###calibrate_step###
         model.eval()

@@ -119,7 +119,7 @@ def main(cfg: DictConfig):
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():
                 training_step_outputs = model.training_step(batch, idx)
-            training_step_outputs['loss'].backward()
+            scaler.scale(training_step_outputs['loss']).backward()
             scaler.step(optimizer)
             scaler.update()
             model.zero_grad()

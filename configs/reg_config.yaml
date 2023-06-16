@@ -11,6 +11,7 @@ model:
   reg_or_class: 'reg'
   max_length: 512
   id: 0
+  num_labels: None
 aes:
   prompt_id: 1
   friendly_score: True

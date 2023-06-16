@@ -100,12 +100,12 @@ def main(cfg: DictConfig):
                                                    shuffle=True,
                                                    collate_fn=simple_collate_fn,
                                                    )
+    
 
     model = create_module(
         cfg.model.model_name_or_path,
         cfg.model.reg_or_class,
         cfg.training.learning_rate,
-        num_labels=cfg.model.num_labels
         )
     optimizer = optim.AdamW(model.parameters(), lr=1e-5)
 

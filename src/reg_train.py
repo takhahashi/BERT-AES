@@ -152,7 +152,7 @@ def main(cfg: DictConfig):
         loss_all = 0
         for idx, d_batch in enumerate(dev_dataloader):
             if idx == 0:
-                print('trainig_batch', t_batch)
+                print('tdev_batch', t_batch)
             batch = {k: v.cuda() for k, v in d_batch.items()}
             dev_step_outputs = model.validation_step(batch, idx)
             dev_mu = dev_step_outputs['batch_preds']

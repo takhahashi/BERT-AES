@@ -118,7 +118,7 @@ def main(cfg: DictConfig):
         print('============================')
         print('epoch', cfg.training.n_epochs, type(cfg.training.n_epochs), epoch)
         print('============================')
-        model.current_epoch = epoch
+        #model.current_epoch = epoch
         for idx, t_batch in enumerate(train_dataloader):
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():

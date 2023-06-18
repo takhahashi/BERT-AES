@@ -54,7 +54,7 @@ class BertReg(pl.LightningModule):
         loss = self.criterion(y, y_hat, logvar)
         self.log("train_loss", loss)
         wandb.log({"train_loss":loss})
-        return {"loss": loss, "batch_preds": y_hat, "logvar": logvar, "batch_labels": y}
+        return {"loss": loss, "score": y_hat, "logvar": logvar, "labels": y}
 
     def validation_step(self, batch, batch_idx):
         x = {'input_ids':batch['input_ids'],
@@ -67,7 +67,7 @@ class BertReg(pl.LightningModule):
         loss = self.criterion(y, y_hat, logvar)
         self.log("val_loss", loss)
         wandb.log({"val_loss":loss})
-        return {"loss": loss, "batch_preds": y_hat, "logvar": logvar, "batch_labels": y}
+        return {"loss": loss, "score": y_hat, "logvar": logvar, "labels": y}
     
     def test_step(self, batch, batch_idx):
         x = {'input_ids':batch['input_ids'],
@@ -78,7 +78,7 @@ class BertReg(pl.LightningModule):
         y_hat = outputs['score']
         logvar = outputs['logvar']
         loss = self.criterion(y, y_hat, logvar)
-        return {"loss": loss, "batch_preds": y_hat, "logvar": logvar, "batch_labels": y}
+        return {"loss": loss, "score": y_hat, "logvar": logvar, "labels": y}
 
     def configure_optimizers(self):
         return optim.AdamW(self.parameters(), lr=self.lr)

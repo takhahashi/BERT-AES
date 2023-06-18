@@ -118,8 +118,10 @@ def main(cfg: DictConfig):
         print('============================')
         print('epoch', cfg.training.n_epochs, type(cfg.training.n_epochs), epoch)
         print('============================')
-        #model.current_epoch = epoch
+        model.current_epoch = epoch
         for idx, t_batch in enumerate(train_dataloader):
+            if idx == 0:
+                print('trainig_batch', t_batch)
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():
                 training_step_outputs = model.training_step(batch, idx)
@@ -135,6 +137,7 @@ def main(cfg: DictConfig):
         dev_mu = torch.tensor(dev_results['score']).cuda()
         dev_std = torch.tensor(dev_results['logvar']).exp().sqrt().cuda()
         dev_labels = torch.tensor(dev_results['labels']).cuda()
+        print('calib_foward_finish')
 
         # find optimal S
         s_opt = torch.optim.LBFGS([sigma_scaler.S], lr=3e-2, max_iter=2000)
@@ -148,6 +151,8 @@ def main(cfg: DictConfig):
 
         loss_all = 0
         for idx, d_batch in enumerate(dev_dataloader):
+            if idx == 0:
+                print('trainig_batch', t_batch)
             batch = {k: v.cuda() for k, v in d_batch.items()}
             dev_step_outputs = model.validation_step(batch, idx)
             dev_mu = dev_step_outputs['batch_preds']

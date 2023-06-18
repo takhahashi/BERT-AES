@@ -116,7 +116,7 @@ def main(cfg: DictConfig):
     sigma_scaler = Scaler(init_S=1.0).cuda()
     for epoch in range(cfg.training.n_epochs):
         print('============================')
-        print('epoch1234')
+        print('epoch', cfg.training.n_epochs)
         print('============================')
         model.current_epoch = epoch
         for idx, t_batch in enumerate(train_dataloader):

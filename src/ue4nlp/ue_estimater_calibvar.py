@@ -22,7 +22,7 @@ class UeEstimatorCalibvar:
 
         def closure():
             s_opt.zero_grad()
-            loss = regvarloss(y_true=self.dev_labels, y_pre_ave=self.dev_score, y_pre_var=self.sigma_scaler(dev_std).pow(2).log())
+            loss = regvarloss(y_true=self.dev_labels.cuda(), y_pre_ave=self.dev_score.cuda(), y_pre_var=self.sigma_scaler(dev_std).pow(2).log().cuda())
             loss.backward()
             return loss
         s_opt.step(closure)

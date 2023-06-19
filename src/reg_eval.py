@@ -122,14 +122,13 @@ def main(cfg: DictConfig):
     #####calib ense var ##########
     dev_ense_results = ensemble_estimater(dev_dataloader)
     calib_ense_var_estimater = UeEstimatorCalibvar(dev_labels=torch.tensor(dev_results['labels']),
-                                                   dev_score=torch.tensor(dev_ense_results['mcdp_score']),
-                                                   dev_logvar=torch.tensor(dev_ense_results['mcdp_var']).log(),
-                                                   )
+                                                    dev_score=torch.tensor(dev_ense_results['ense_score']),
+                                                    dev_logvar=torch.tensor(dev_ense_results['ense_var']).log(),
+                                                    )
     calib_ense_var_estimater.fit_ue()
-    calib_ense_var = calib_ense_var_estimater(logvar = torch.tensor(mcdp_results['mcdp_var']).log())
+    calib_ense_var = calib_ense_var_estimater(logvar = torch.tensor(ensemble_results['ense_var']).log())
     eval_results.update({'calib_ense_var': calib_ense_var})
-
-
+    
 
     list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}
     

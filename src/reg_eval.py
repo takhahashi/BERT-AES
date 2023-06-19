@@ -91,13 +91,15 @@ def main(cfg: DictConfig):
     eval_results = return_predresults(model, test_dataloader, rt_clsvec=False, dropout=False)
 
 
-    calib_var_estimater = UeEstimatorCalibvar(model,
-                                              dev_dataloader,
+    #####calib step#####
+    calib_var_estimater = UeEstimatorCalibvar(dev_labels=torch.tensor(dev_results['labels']),
+                                              dev_score=torch.tensor(dev_results['score']),
+                                              dev_logvar=torch.tensor(dev_results['logvar']),
                                               )
     calib_var_estimater.fit_ue()
     caliblated_var = calib_var_estimater(logvar = torch.tensor(eval_results['logvar']))
     eval_results.update({'calib_var': caliblated_var})
-
+    ####end calib step##
 
     trust_estimater = UeEstimatorTrustscore(model, 
                                             train_dataloader, 
@@ -106,7 +108,6 @@ def main(cfg: DictConfig):
     trust_estimater.fit_ue()
     trust_results = trust_estimater(test_dataloader)
     eval_results.update(trust_results)
-
 
 
 

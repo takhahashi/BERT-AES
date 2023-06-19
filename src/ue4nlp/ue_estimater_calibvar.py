@@ -18,7 +18,7 @@ class UeEstimatorCalibvar:
     def fit_ue(self):
         self.sigma_scaler = Scaler(init_S=1.0).cuda()
         s_opt = torch.optim.LBFGS([self.sigma_scaler.S], lr=3e-2, max_iter=2000)
-        dev_std = self.dev_logvar.exp().sqrt()
+        dev_std = self.dev_logvar.exp().sqrt().cuda()
 
         def closure():
             s_opt.zero_grad()

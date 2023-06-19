@@ -43,7 +43,6 @@ def make_callbacks(min_delta, patience, checkpoint_path, filename):
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/test1/configs", config_name="eval_config")
 def main(cfg: DictConfig):
-
     train_dataset = get_Dataset(cfg.model.reg_or_class, 
                                cfg.path.traindata_file_name, 
                                cfg.aes.prompt_id, 
@@ -64,7 +63,6 @@ def main(cfg: DictConfig):
         collate_fn = simple_collate_fn
     else:
         collate_fn = None
-
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset,
                                                   batch_size=cfg.eval.batch_size,
@@ -111,6 +109,7 @@ def main(cfg: DictConfig):
 
 
 
+
     mcdp_estimater = UeEstimatorDp(model, 
                                    cfg.ue.num_dropout, 
                                    cfg.aes.prompt_id, 
@@ -125,8 +124,8 @@ def main(cfg: DictConfig):
                                                    dev_logvar=torch.tensor(dev_mcdp_results['mcdp_var']).log(),
                                                    )
     calib_mcdp_var_estimater.fit_ue()
-    calib_mcdp_var_estimater(logvar = torch.tensor(mcdp_results['mcdp_var']))
-
+    calib_mcdp_var = calib_mcdp_var_estimater(logvar = torch.tensor(mcdp_results['mcdp_var']).log())
+    eval_results.update({'calib_mcdp_var': calib_mcdp_var})
 
 
 
@@ -137,6 +136,15 @@ def main(cfg: DictConfig):
                                              )
     ensemble_results = ensemble_estimater(test_dataloader)
     eval_results.update(ensemble_results)
+    #####calib ense var ##########
+    dev_ense_results = ensemble_estimater(dev_dataloader)
+    calib_ense_var_estimater = UeEstimatorCalibvar(dev_labels=torch.tensor(dev_results['labels']),
+                                                   dev_score=torch.tensor(dev_ense_results['mcdp_score']),
+                                                   dev_logvar=torch.tensor(dev_ense_results['mcdp_var']).log(),
+                                                   )
+    calib_ense_var_estimater.fit_ue()
+    calib_ense_var = calib_ense_var_estimater(logvar = torch.tensor(mcdp_results['mcdp_var']).log())
+    eval_results.update({'calib_ense_var': calib_ense_var})
 
 
 

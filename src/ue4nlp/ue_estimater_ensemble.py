@@ -18,7 +18,6 @@ class UeEstimatorEnsemble:
         calib_var_results = self._calib_var(logvar)
         return ense_results.update({'calib_ense_var': calib_var_results})
     
-    
     def _multi_pred(self, dataloader):
         mul_results = {}
         for model_path in self.model_paths:

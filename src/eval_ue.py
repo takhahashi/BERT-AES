@@ -25,8 +25,6 @@ from ue4nlp.ue_estimater_mcd import UeEstimatorDp
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/test1/configs", config_name="eval_config")
 def main(cfg: DictConfig):
-    simplevar, trust, dropout, ense
-    simplevar
     five_fold_results = []
     for fold in range(5):
         with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Reg-torchlightning/pt{}/fold_{}/pred_results'.format(cfg.aes.prompt_id, fold)) as f:
@@ -129,7 +127,7 @@ def main(cfg: DictConfig):
     trust_estimater.fit_ue()
     trust_results = trust_estimater(test_dataloader)
     eval_results.update(trust_results)
-    
+
 
     mcdp_estimater = UeEstimatorDp(model, 
                                    cfg.ue.num_dropout, 

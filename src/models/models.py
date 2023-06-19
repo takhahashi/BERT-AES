@@ -121,3 +121,11 @@ class BertClass(pl.LightningModule):
 
     def configure_optimizers(self):
         return optim.AdamW(self.parameters(), lr=self.lr)
+
+class Scaler(torch.nn.Module):
+    def __init__(self, init_S=1.0):
+        super().__init__()
+        self.S = torch.nn.Parameter(torch.tensor([init_S]))
+
+    def forward(self, x):
+        return self.S.mul(x)

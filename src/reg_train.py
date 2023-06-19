@@ -17,6 +17,7 @@ from utils.cfunctions import simple_collate_fn
 from utils.utils_models import create_module
 from models.functions import return_predresults
 from utils.cfunctions import regvarloss
+from models.models import Scaler
 
 class EarlyStopping:
     """earlystoppingクラス"""
@@ -61,14 +62,6 @@ class EarlyStopping:
             print(f'Validation loss decreased ({self.val_loss_min:.6f} --> {val_loss:.6f}).  Saving model ...')
         torch.save(model.state_dict(), self.path)  #ベストモデルを指定したpathに保存
         self.val_loss_min = val_loss  #その時のlossを記録する
-
-class Scaler(torch.nn.Module):
-    def __init__(self, init_S=1.0):
-        super().__init__()
-        self.S = torch.nn.Parameter(torch.tensor([init_S]))
-
-    def forward(self, x):
-        return self.S.mul(x)
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_config")
 def main(cfg: DictConfig):

@@ -73,8 +73,8 @@ class Scaler(torch.nn.Module):
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
-    wandb.init(name=cfg['wandb']['project_name'],
-            project=cfg['wandb']['project'],
+    wandb.init(name=cfg.wandb.project_name,
+            project=cfg.wandb.project,
             reinit=True,
             )
 
@@ -115,13 +115,7 @@ def main(cfg: DictConfig):
     scaler = torch.cuda.amp.GradScaler()
     sigma_scaler = Scaler(init_S=1.0).cuda()
     for epoch in range(cfg.training.n_epochs):
-        print('============================')
-        print('epoch', cfg.training.n_epochs, type(cfg.training.n_epochs), epoch)
-        print('============================')
-        model.current_epoch = epoch
         for idx, t_batch in enumerate(train_dataloader):
-            if idx == 0:
-                print('trainig_batch', t_batch)
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():
                 training_step_outputs = model.training_step(batch, idx)
@@ -129,6 +123,10 @@ def main(cfg: DictConfig):
             scaler.step(optimizer)
             scaler.update()
             model.zero_grad()
+            if idx == 0:
+                wandb.log({"epoch":epoch})
+            else:
+                wandb.log({"epoch":epoch+0.001})
 
         ###calibrate_step###
         model.eval()
@@ -137,7 +135,6 @@ def main(cfg: DictConfig):
         dev_mu = torch.tensor(dev_results['score']).cuda()
         dev_std = torch.tensor(dev_results['logvar']).exp().sqrt().cuda()
         dev_labels = torch.tensor(dev_results['labels']).cuda()
-        print('calib_foward_finish')
 
         # find optimal S
         s_opt = torch.optim.LBFGS([sigma_scaler.S], lr=3e-2, max_iter=2000)
@@ -151,14 +148,12 @@ def main(cfg: DictConfig):
 
         loss_all = 0
         for idx, d_batch in enumerate(dev_dataloader):
-            if idx == 0:
-                print('tdev_batch', t_batch)
             batch = {k: v.cuda() for k, v in d_batch.items()}
             dev_step_outputs = model.validation_step(batch, idx)
-            dev_mu = dev_step_outputs['batch_preds']
+            dev_mu = dev_step_outputs['score']
             dev_std = dev_step_outputs['logvar'].exp().sqrt()
-            dev_labels = dev_step_outputs['batch_labels']
-            loss_all += regvarloss(y_true=dev_labels, y_pre_ave=dev_mu, y_pre_var=sigma_scaler(dev_std).pow(2).log()).to('cpu').detach().numpy().copy()
+            dev_labels = dev_step_outputs['labels']
+            loss_all += regvarloss(y_true=dev_labels, y_pre_ave=dev_mu, y_pre_var=sigma_scaler(dev_std.cuda()).pow(2).log()).to('cpu').detach().numpy().copy()
 
         earlystopping(loss_all, model)
         if earlystopping.early_stop == True:

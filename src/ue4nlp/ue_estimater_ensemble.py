@@ -14,9 +14,7 @@ class UeEstimatorEnsemble:
         
     def __call__(self, dataloader):
         ense_results = self._predict_with_multimodel(dataloader)
-        logvar = torch.tensor(ense_results['ense_var']).log()
-        calib_var_results = self._calib_var(logvar)
-        return ense_results.update({'calib_ense_var': calib_var_results})
+        return ense_results
     
     def _multi_pred(self, dataloader):
         mul_results = {}
@@ -25,8 +23,8 @@ class UeEstimatorEnsemble:
                 'bert-base-uncased',
                 self.reg_or_class,
                 0.00005,
-                save_path = model_path,
                 )
+            model.load_state_dict(torch.load(model_path))
             pred_result = return_predresults(model, dataloader, rt_clsvec=False, dropout=False)
             del pred_result['labels']
             if len(mul_results) == 0:
@@ -50,11 +48,3 @@ class UeEstimatorEnsemble:
             ense_result['ense_score'] = mulscore
             ense_result['ense_var'] = muluncertainty
         return ense_result
-    
-    def _calib_var(self, logvar: torch.Tensor):
-        calib_var_estimater = UeEstimatorCalibvar(self.model,
-                                                self.dev_dataloader,
-                                                )
-        calib_var_estimater.fit_ue()
-        calib_var_results = calib_var_estimater(logvar)
-        return calib_var_results

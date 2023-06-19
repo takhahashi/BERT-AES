@@ -88,7 +88,8 @@ def main(cfg: DictConfig):
                           num_labels=cfg.model.num_labels, 
                           )
     model.load_state_dict(torch.load(cfg.path.model_save_path))
-    
+
+    dev_results = return_predresults(model, dev_dataloader, rt_clsvec=False, dropout=False)
     eval_results = return_predresults(model, test_dataloader, rt_clsvec=False, dropout=False)
 
 
@@ -96,9 +97,8 @@ def main(cfg: DictConfig):
                                               dev_dataloader,
                                               )
     calib_var_estimater.fit_ue()
-    calib_var_results = calib_var_estimater(test_dataloader)
-    eval_results.update(calib_var_results)
-
+    caliblated_var = calib_var_estimater(logvar = torch.tensor(eval_results['logvar']))
+    eval_results.update({'calib_var': caliblated_var})
 
 
     trust_estimater = UeEstimatorTrustscore(model, 
@@ -118,6 +118,15 @@ def main(cfg: DictConfig):
                                    )
     mcdp_results = mcdp_estimater(test_dataloader)
     eval_results.update(mcdp_results)
+    ######calib mcdp var ########
+    dev_mcdp_results = mcdp_estimater(dev_dataloader)
+    calib_mcdp_var_estimater = UeEstimatorCalibvar(dev_labels=torch.tensor(dev_results['labels']),
+                                                   dev_score=torch.tensor(dev_mcdp_results['mcdp_score']),
+                                                   dev_logvar=torch.tensor(dev_mcdp_results['mcdp_var']).log(),
+                                                   )
+    calib_mcdp_var_estimater.fit_ue()
+    calib_mcdp_var_estimater(logvar = torch.tensor(mcdp_results['mcdp_var']))
+
 
 
 
@@ -129,7 +138,7 @@ def main(cfg: DictConfig):
     ensemble_results = ensemble_estimater(test_dataloader)
     eval_results.update(ensemble_results)
 
-    
+
 
     list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}
     

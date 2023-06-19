@@ -1,6 +1,9 @@
 from models.functions import return_predresults
 from ue4nlp.functions import compute_mulscore_mulvar, compute_mulprob_muluncertain
 from utils.utils_models import create_module
+from ue4nlp.ue_estimater_calibvar import UeEstimatorCalibvar
+
+import torch
     
 
 class UeEstimatorEnsemble:
@@ -11,7 +14,10 @@ class UeEstimatorEnsemble:
         
     def __call__(self, dataloader):
         ense_results = self._predict_with_multimodel(dataloader)
-        return ense_results
+        logvar = torch.tensor(ense_results['ense_var']).log()
+        calib_var_results = self._calib_var(logvar)
+        return ense_results.update({'calib_ense_var': calib_var_results})
+    
     
     def _multi_pred(self, dataloader):
         mul_results = {}
@@ -39,9 +45,17 @@ class UeEstimatorEnsemble:
         if self.reg_or_class == 'reg':
             mulscore, mulvar = compute_mulscore_mulvar(mul_pred_results['score'], mul_pred_results['logvar'], mul_num)
             ense_result['ense_score'] = mulscore
-            ense_result['ense_uncertainty'] = mulvar
+            ense_result['ense_var'] = mulvar
         else:
             mulscore, muluncertainty = compute_mulprob_muluncertain(mul_pred_results['logits'], mul_num)
             ense_result['ense_score'] = mulscore
-            ense_result['ense_uncertainty'] = muluncertainty
+            ense_result['ense_var'] = muluncertainty
         return ense_result
+    
+    def _calib_var(self, logvar: torch.Tensor):
+        calib_var_estimater = UeEstimatorCalibvar(self.model,
+                                                self.dev_dataloader,
+                                                )
+        calib_var_estimater.fit_ue()
+        calib_var_results = calib_var_estimater(logvar)
+        return calib_var_results

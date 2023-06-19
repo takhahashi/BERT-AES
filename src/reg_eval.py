@@ -23,7 +23,7 @@ from ue4nlp.ue_estimater_mcd import UeEstimatorDp
 from ue4nlp.ue_estimater_calibvar import UeEstimatorCalibvar
 
 
-@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/test1/configs", config_name="eval_config")
+@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_config")
 def main(cfg: DictConfig):
     train_dataset = get_Dataset(cfg.model.reg_or_class, 
                                cfg.path.traindata_file_name, 
@@ -128,7 +128,7 @@ def main(cfg: DictConfig):
     calib_ense_var_estimater.fit_ue()
     calib_ense_var = calib_ense_var_estimater(logvar = torch.tensor(ensemble_results['ense_var']).log())
     eval_results.update({'calib_ense_var': calib_ense_var})
-    
+
 
     list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}
     

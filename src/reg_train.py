@@ -114,7 +114,11 @@ def main(cfg: DictConfig):
 
     scaler = torch.cuda.amp.GradScaler()
     sigma_scaler = Scaler(init_S=1.0).cuda()
+
+    num_train_batch = len(train_dataloader)
+    num_dev_batch = len(dev_dataloader)
     for epoch in range(cfg.training.n_epochs):
+        train_loss_all = dev_loss_all = 0
         for idx, t_batch in enumerate(train_dataloader):
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():
@@ -123,6 +127,8 @@ def main(cfg: DictConfig):
             scaler.step(optimizer)
             scaler.update()
             model.zero_grad()
+
+            train_loss_all = training_step_outputs['loss'].to('cpu').detach().numpy().copy()
             if idx == 0:
                 wandb.log({"epoch":epoch})
             else:
@@ -146,16 +152,16 @@ def main(cfg: DictConfig):
             return loss
         s_opt.step(closure)
 
-        loss_all = 0
         for idx, d_batch in enumerate(dev_dataloader):
             batch = {k: v.cuda() for k, v in d_batch.items()}
             dev_step_outputs = model.validation_step(batch, idx)
             dev_mu = dev_step_outputs['score']
             dev_std = dev_step_outputs['logvar'].exp().sqrt()
             dev_labels = dev_step_outputs['labels']
-            loss_all += regvarloss(y_true=dev_labels, y_pre_ave=dev_mu, y_pre_var=sigma_scaler(dev_std.cuda()).pow(2).log()).to('cpu').detach().numpy().copy()
+            dev_loss_all += regvarloss(y_true=dev_labels, y_pre_ave=dev_mu, y_pre_var=sigma_scaler(dev_std.cuda()).pow(2).log()).to('cpu').detach().numpy().copy()
 
-        earlystopping(loss_all, model)
+        print(f'Epoch:{epoch}, train_loss:{train_loss_all/num_train_batch}, dev_loss:{dev_loss_all/num_dev_batch}')
+        earlystopping(dev_loss_all, model)
         if earlystopping.early_stop == True:
             break
     wandb.finish()

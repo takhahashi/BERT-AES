@@ -22,24 +22,6 @@ from ue4nlp.ue_estimater_trust import UeEstimatorTrustscore
 from ue4nlp.ue_estimater_mcd import UeEstimatorDp
 from ue4nlp.ue_estimater_calibvar import UeEstimatorCalibvar
 
-def make_callbacks(min_delta, patience, checkpoint_path, filename):
-
-    checkpoint_callback = ModelCheckpoint(
-        dirpath=checkpoint_path,
-        filename=filename,
-        save_top_k=1,
-        verbose=True,
-        monitor="val_loss",
-        mode="min",
-        save_weights_only=True,
-    )
-
-    early_stop_callback = EarlyStopping(
-        monitor="val_loss", min_delta=min_delta, patience=patience, mode="min"
-    )
-
-    return [early_stop_callback, checkpoint_callback]
-
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/test1/configs", config_name="eval_config")
 def main(cfg: DictConfig):

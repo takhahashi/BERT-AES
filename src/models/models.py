@@ -5,7 +5,6 @@ import pytorch_lightning as pl
 from transformers import AutoModel
 from utils.cfunctions import regvarloss
 
-import wandb
 
 class Bert(nn.Module):
     def __init__(self, model_name_or_path):
@@ -49,7 +48,6 @@ class BertReg(pl.LightningModule):
         logvar = outputs['logvar']
         loss = self.criterion(y, y_hat, logvar)
         self.log("train_loss", loss)
-        wandb.log({"train_loss":loss})
         return {"loss": loss, "score": y_hat, "logvar": logvar, "labels": y}
 
     def validation_step(self, batch, batch_idx):
@@ -62,7 +60,6 @@ class BertReg(pl.LightningModule):
         logvar = outputs['logvar']
         loss = self.criterion(y, y_hat, logvar)
         self.log("val_loss", loss)
-        wandb.log({"val_loss":loss})
         return {"loss": loss, "score": y_hat, "logvar": logvar, "labels": y}
     
     def test_step(self, batch, batch_idx):

@@ -1,5 +1,4 @@
 import os
-import wandb
 import hydra
 import numpy as np
 import pandas as pd
@@ -66,10 +65,6 @@ class EarlyStopping:
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
-    wandb.init(name=cfg.wandb.project_name,
-            project=cfg.wandb.project,
-            reinit=True,
-            )
 
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
     train_dataset = get_Dataset(cfg.model.reg_or_class,
@@ -122,10 +117,7 @@ def main(cfg: DictConfig):
             model.zero_grad()
 
             train_loss_all = training_step_outputs['loss'].to('cpu').detach().numpy().copy()
-            if idx == 0:
-                wandb.log({"epoch":epoch})
-            else:
-                wandb.log({"epoch":epoch+0.001})
+
 
         ###calibrate_step###calibrate_step###
         model.eval()
@@ -157,7 +149,6 @@ def main(cfg: DictConfig):
         earlystopping(dev_loss_all, model)
         if earlystopping.early_stop == True:
             break
-    wandb.finish()
 
 
 if __name__ == "__main__":

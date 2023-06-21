@@ -29,10 +29,10 @@ def main(cfg: DictConfig):
                                 tokenizer,
                                 )
     dev_dataset = get_Dataset(cfg.model.reg_or_class,
-                            cfg.path.valdata_file_name,
-                            cfg.aes.prompt_id,
-                            tokenizer,
-                            )
+                              cfg.path.valdata_file_name,
+                              cfg.aes.prompt_id,
+                              tokenizer,
+                              )
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset,
                                                     batch_size=cfg.training.batch_size,

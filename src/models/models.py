@@ -100,9 +100,9 @@ class BertClass(pl.LightningModule):
              'token_type_ids':batch['token_type_ids']}
         y = batch['labels']
         logits = self.forward(x)
-        loss = self.criterion(logits, y)
+        loss = self.criterion(logits['logits'], y)
         self.log("train_loss", loss)
-        y_hat = torch.argmax(logits, dim=-1)
+        y_hat = torch.argmax(logits['logits'], dim=-1)
         return {"loss": loss, "batch_preds": y_hat, "batch_labels": y}
 
     def validation_step(self, batch, batch_idx):
@@ -111,9 +111,9 @@ class BertClass(pl.LightningModule):
              'token_type_ids':batch['token_type_ids']}
         y = batch['labels']
         logits = self.forward(x)
-        loss = self.criterion(logits, y)
+        loss = self.criterion(logits['logits'], y)
         self.log("val_loss", loss)
-        y_hat = torch.argmax(logits, dim=-1)
+        y_hat = torch.argmax(logits['logits'], dim=-1)
         return {"loss": loss, "batch_preds": y_hat, "batch_labels": y}
 
     def configure_optimizers(self):

@@ -43,7 +43,7 @@ def calc_risk(pred, true, prompt_id, binary=False):
       int_scores = score_f2int(pred, prompt_id)
     else:
       int_scores = pred
-    if true.dype != np.int32:
+    if true.dtype != np.int32:
       int_true = score_f2int(true, prompt_id)
     else:
       int_true = true

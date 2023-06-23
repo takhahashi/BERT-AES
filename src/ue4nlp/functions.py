@@ -40,13 +40,13 @@ def compute_mulscore_mulvar(score, logvar, mulnum):
 
 def compute_mulprob_muluncertain(numpy_logits, mulnum):
     soft_fn = torch.nn.Softmax(dim=2)
-    logits = torch.from_numpy(numpy_logits)
+    logits = torch.tensor(numpy_logits)
     pred_probs = soft_fn(logits)
     assert pred_probs.shape[0] == mulnum
 
     mean_probs = torch.mean(pred_probs, dim=0)
     mean_entro = -torch.sum(torch.log2(mean_probs) * mean_probs, dim=-1)
-    all_entro = -sum(sum(torch.log2(pred_probs) * pred_probs, dim=0), dim=-1)
+    all_entro = -torch.sum(torch.sum(torch.log2(pred_probs) * pred_probs, dim=0), dim=-1)
 
     torch_scores = torch.argmax(mean_probs, dim=-1)
     torch_uncertainty = mean_entro - all_entro / mulnum

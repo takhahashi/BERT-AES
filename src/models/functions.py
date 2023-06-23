@@ -54,8 +54,8 @@ def extract_clsvec_truelabels(model, dataloader):
         batch = {k: v.cuda() for k, v in t_data.items()}
         y_true = {'labels': batch['labels'].to('cpu').detach().numpy().copy()}
         x = {'input_ids':batch['input_ids'],
-                    'attention_mask':batch['attention_mask'],
-                    'token_type_ids':batch['token_type_ids']}
+                'attention_mask':batch['attention_mask'],
+                'token_type_ids':batch['token_type_ids']}
 
         cls_outputs = {k: v.to('cpu').detach().numpy().copy() for k, v in bert(x).items()}
 
@@ -94,8 +94,8 @@ def extract_clsvec_predlabels(model, dataloader):
 
     for k, v in eval_results.items():
         if k == 'score':
-            eval_results['score'] = v.flatten()
+            score = v.flatten()
         if k == 'logits':
-            eval_results['score'] = np.argmax(v, axis=-1)
+            score = np.argmax(v, axis=-1)
 
-    return eval_results['hidden_state'], eval_results['score']
+    return eval_results['hidden_state'], score

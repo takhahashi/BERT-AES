@@ -17,7 +17,7 @@ from models.functions import return_predresults
 from utils.cfunctions import regvarloss
 from models.models import Scaler
 
-@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_class_config")
+@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="class_config")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
 

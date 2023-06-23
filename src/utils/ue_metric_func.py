@@ -33,8 +33,12 @@ def calc_rpp(conf, risk):
 def calc_roc_auc(pred, true, conf, prompt_id):
   if pred.dtype != np.int32:
     int_scores = score_f2int(pred, prompt_id)
+  else:
+    int_scores = pred
   if true.dtype != np.int32:
     int_true = score_f2int(true, prompt_id)
+  else:
+    int_true = true
   return roc_auc_score(int_scores == int_true, conf)
 
 def calc_risk(pred, true, prompt_id, binary=False):

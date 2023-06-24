@@ -77,7 +77,7 @@ def main(cfg: DictConfig):
     trust_results = trust_estimater(test_dataloader)
     eval_results.update(trust_results)
 
-    """
+    
 
     mcdp_estimater = UeEstimatorDp(model,
                                    cfg.ue.num_dropout,
@@ -85,7 +85,7 @@ def main(cfg: DictConfig):
                                    )
     mcdp_results = mcdp_estimater(test_dataloader)
     eval_results.update(mcdp_results)
-    """
+    
 
 
     ensemble_estimater = UeEstimatorEnsemble(model, 

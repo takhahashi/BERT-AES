@@ -64,8 +64,7 @@ def main(cfg: DictConfig):
 
     softmax = nn.Softmax(dim=1)
     probs = softmax(torch.tensor(eval_results['logits']))
-    max_prob = probs[torch.arange(len(probs)), torch.argmax()]
-    max_prob = torch.argmax(probs, dim=-1).numpy()
+    max_prob = probs[torch.arange(len(probs)), torch.argmax(probs)]
     eval_results.update({'MP': max_prob})
 
 

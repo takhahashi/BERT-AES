@@ -31,6 +31,24 @@ def main(cfg: DictConfig):
             fold_results = json.load(f)
         five_fold_results.append({k: np.array(v) for k, v in fold_results.items()})
 
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##simple var####
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = foldr['score']
+        uncertainty = foldr['calib_var']
+        risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=True)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='reg', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': np.mean(np.array(five_fold_rcc_y))}
     
     results_dic = {}
     for ue_type in ['logvar', 'trust_score', 'mcdp_uncertainty', 'ense_uncertainty']: 
@@ -64,7 +82,7 @@ def main(cfg: DictConfig):
                                       'roc': np.mean(five_fold_roc).tolist(),
                                       'rcc_y': np.mean(np.array(five_fold_rcc_y), axis=0).tolist()}})
         
-        
+
     with open(cfg.path.results_save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
     

@@ -30,14 +30,12 @@ def calc_rpp(conf, risk):
         cnt += 1
   return cnt / (n**2)
 
-def calc_roc_auc(pred, true, conf, prompt_id):
-  if pred.dtype != np.int32:
+def calc_roc_auc(pred, true, conf, reg_or_class, prompt_id):
+  if reg_or_class == 'reg':
     int_scores = score_f2int(pred, prompt_id)
-  else:
-    int_scores = pred
-  if true.dtype != np.int32:
     int_true = score_f2int(true, prompt_id)
   else:
+    int_scores = pred
     int_true = true
   return roc_auc_score(int_scores == int_true, conf)
 

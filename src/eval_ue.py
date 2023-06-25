@@ -23,7 +23,7 @@ from ue4nlp.ue_estimater_trust import UeEstimatorTrustscore
 from ue4nlp.ue_estimater_mcd import UeEstimatorDp
 
 
-@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/test1/configs", config_name="eval_ue_config")
+@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_ue_config")
 def main(cfg: DictConfig):
     ##reg###
     five_fold_results = []

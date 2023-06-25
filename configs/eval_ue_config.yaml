@@ -2,3 +2,5 @@ ue:
   binary_risk: True
 aes:
   prompt_id: 1
+path:
+  save_dir_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt${aes.prompt_id}

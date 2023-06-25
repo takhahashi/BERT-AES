@@ -52,7 +52,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': np.array(fresults_rcc_y)}
-    save_path = save_dir_path + 'simplevar'
+    save_path = save_dir_path + '/simplevar'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
     
@@ -73,7 +73,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': np.array(fresults_rcc_y)}
-    save_path = save_dir_path + 'reg_trust_score'
+    save_path = save_dir_path + '/reg_trust_score'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -95,7 +95,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': np.array(fresults_rcc_y)}
-    save_path = save_dir_path + 'reg_dp'
+    save_path = save_dir_path + '/reg_dp'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -116,7 +116,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': np.array(fresults_rcc_y)}
-    save_path = save_dir_path + 'reg_mul'
+    save_path = save_dir_path + '/reg_mul'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -148,7 +148,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': np.array(fresults_rcc_y)}
-    save_path = save_dir_path + 'MP'
+    save_path = save_dir_path + '/MP'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -171,7 +171,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': np.array(fresults_rcc_y)}
-    save_path = save_dir_path + 'class_trust_score'
+    save_path = save_dir_path + '/class_trust_score'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -193,7 +193,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': np.array(fresults_rcc_y)}
-    save_path = save_dir_path + 'class_dp'
+    save_path = save_dir_path + '/class_dp'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -214,7 +214,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': np.array(fresults_rcc_y)}
-    save_path = save_dir_path + 'class_mul'
+    save_path = save_dir_path + '/class_mul'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 

@@ -65,7 +65,7 @@ def main(cfg: DictConfig):
     softmax = nn.Softmax(dim=1)
     probs = softmax(torch.tensor(eval_results['logits']))
     max_prob = probs[torch.arange(len(probs)), torch.argmax(probs, dim=-1)]
-    eval_results.update({'MP': max_prob})
+    eval_results.update({'MP': max_prob.numpy().copy()})
 
 
     trust_estimater = UeEstimatorTrustscore(model, 
@@ -96,7 +96,7 @@ def main(cfg: DictConfig):
     eval_results.update(ensemble_results)
 
     list_results = {}
-    for k, v in eval_results:
+    for k, v in eval_results.items():
         if type(v) == type(np.array([1, 2.])):
             list_results.update({k: v.tolist()})
         else:

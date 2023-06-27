@@ -47,7 +47,7 @@ def calc_risk(pred, true, reg_or_class, prompt_id, binary=False):
     else:
       int_scores = pred.astype('int32')
       int_true = true.astype('int32')
-    return int_scores != int_true
+    return (int_scores != int_true).astype('int32')
   else:
     return (pred - true) ** 2
     

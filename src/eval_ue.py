@@ -55,7 +55,9 @@ def main(cfg: DictConfig):
     save_path = save_dir_path + '/simplevar'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
-    
+
+
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], [] 
     ##reg_trust_score####
     for foldr in five_fold_results:
         true = foldr['labels']
@@ -77,7 +79,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##reg_dp###
     for foldr in five_fold_results:
         true = foldr['labels']
@@ -99,6 +101,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##reg_ense###
     for foldr in five_fold_results:
         true = foldr['labels']
@@ -120,7 +123,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##class###
     five_fold_results = []
     for fold in range(5):
@@ -153,7 +156,7 @@ def main(cfg: DictConfig):
         json.dump(results_dic, f, ensure_ascii=False)
 
 
-
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##class trust####
     for foldr in five_fold_results:
         true = foldr['labels']
@@ -175,7 +178,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##class dp####
     for foldr in five_fold_results:
         true = foldr['labels']
@@ -197,6 +200,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##class mul####
     for foldr in five_fold_results:
         true = foldr['labels']

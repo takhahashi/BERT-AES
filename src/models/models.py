@@ -126,3 +126,34 @@ class Scaler(torch.nn.Module):
 
     def forward(self, x):
         return self.S.mul(x)
+    
+class Bertratermean(nn.Module):
+    def __init__(self):
+        super(Bertratermean, self).__init__()
+        self.bert = AutoModel.from_pretrained("bert-base-uncased")
+        self.linear1 = nn.Linear(768, 1)
+        self.linear2 = nn.Linear(768, 1)
+
+        self.sigmoid = nn.Sigmoid()
+
+        nn.init.normal_(self.linear1.weight, std=0.02)  # 重みの初期化
+        nn.init.normal_(self.linear1.bias, 0)  # バイアスの初期化
+        nn.init.normal_(self.linear2.weight, std=0.02)
+        nn.init.normal_(self.linear2.bias, 0)  # バイアスの初期化
+
+    def forward(self, dataset):
+        outputs = self.bert(dataset['input_ids'], token_type_ids=dataset['token_type_ids'], attention_mask=dataset['attention_mask'])
+        sequence_output = outputs['last_hidden_state'][:, 0, :]
+        score = self.sigmoid(self.linear1(sequence_output))
+        logvar = self.linear2(sequence_output)
+        return {'score': score, 'logvar': logvar}
+
+    def get_word_vec(self, dataset):        
+        outputs = self.bert(dataset['input_ids'], token_type_ids=dataset['token_type_ids'], attention_mask=dataset['attention_mask'])
+        sequence_output = outputs['last_hidden_state'][:, 0, :] 
+        return {'word_vec': sequence_output}
+
+    def lossfunction(self, y_true, y_pre_ave, y_pre_var):
+      loss = torch.exp(-torch.flatten(y_pre_var))*torch.pow(y_true - torch.flatten(y_pre_ave), 2)/2 + torch.flatten(y_pre_var)/2
+      loss = torch.sum(loss)
+      return loss

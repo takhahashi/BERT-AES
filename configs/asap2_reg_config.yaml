@@ -17,7 +17,7 @@ aes:
   friendly_score: True
 path:
   traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP 2/data/fold_${training.fold}/train.tsv
-  valdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP 2/data/fold_${training.fold}/train.tsv
+  valdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP 2/data/fold_${training.fold}/dev.tsv
   save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP 2/testmodel
 wandb:
   project: Regression_Train_Pt${aes.prompt_id}

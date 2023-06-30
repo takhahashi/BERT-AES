@@ -107,7 +107,7 @@ def main(cfg: DictConfig):
         pred = np.argmax(foldr['logits'], axis=-1).astype('int32')
 
         corr_arr = np.append(corr_arr, np.corrcoef(true, pred)[0][1])
-        qwk_arr = np.append(qwk_arr, calc_qwk(true, pred, prompt_id, 'class'), weights='quadratic')
+        qwk_arr = np.append(qwk_arr, calc_qwk(true, pred, prompt_id, 'class'))
         rmse_arr = np.append(rmse_arr, np.sqrt((true - pred) ** 2).mean())
     results_dic = {'qwk': np.mean(qwk_arr), 
                     'corr': np.mean(corr_arr), 

@@ -18,7 +18,7 @@ from models.models import Bertratermean
 from utils.cfunctions import regvarloss, EarlyStopping
 from models.models import Scaler
 
-@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP 2/BERT-AES/configs", config_name="asap2_reg_config")
+@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP 2/BERT-AES/configs", config_name="reg_class_mix")
 def main(cfg: DictConfig):
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
     train_dataset = get_Dataset('reg',

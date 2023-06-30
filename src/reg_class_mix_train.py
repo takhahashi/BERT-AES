@@ -55,7 +55,7 @@ def main(cfg: DictConfig):
 
     model.train()
     crossentropy = nn.CrossEntropyLoss()
-    mse = nn.MSELoos()
+    mseloss = nn.MSELoos()
 
     trainloss_list, devloss_list = [], []
     scaler = torch.cuda.amp.GradScaler()
@@ -65,29 +65,34 @@ def main(cfg: DictConfig):
         model.train()
         for data in train_dataloader:
             data = {k: v.cuda() for k, v in data.items()}
+            int_score = torch.round(data['labels'] * (high - low) + low).to(torch.int32).type(torch.LongTensor)
             with torch.cuda.amp.autocast():
                 outputs = model(data)
-                loss = simplevar_ratersd_loss(data['score'], rater_logvar, outputs['score'], outputs['logvar'])
-            lossall += loss.to('cpu').detach().numpy().copy()
+                crossentropy_el = crossentropy(outputs['logits'], int_score)
+                mseloss_el = mseloss(outputs['score'], data['labels'])
+                loss = crossentropy_el + mseloss_el
+            
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
             model.zero_grad()
+            lossall += loss.to('cpu').detach().numpy().copy()
 
-        trainloss_list = np.append(trainloss_list, lossall/train_batchnum)
+        trainloss_list = np.append(trainloss_list, lossall/num_train_batch)
         # dev QWKの計算
         
         model.eval()
         for dev_data in dev_dataloader:
             d_data = {k: v.cuda() for k, v in dev_data.items()}
-            rater_logvar = d_data['sd'].pow(2).log().to('cpu').detach()
+            int_score = torch.round(d_data['labels'] * (high - low) + low).to(torch.int32).type(torch.LongTensor)
             dev_outputs = {k: v.to('cpu').detach() for k, v in model(d_data).items()}
-            dev_loss = simplevar_ratersd_loss(d_data['score'].to('cpu').detach(), rater_logvar, dev_outputs['score'], dev_outputs['logvar'])
-            devlossall += dev_loss
-        devloss_list = np.append(devloss_list, devlossall/dev_batchnum)
+            crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
+            mseloss_el = mseloss(dev_outputs['score'], d_data['labels'])
+            devlossall += crossentropy_el + mseloss_el
+        devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
 
-        print(f'Epoch:{epoch}, train_Loss:{lossall/train_batchnum:.4f}, dev_loss:{devlossall/dev_batchnum:.4f}')
-        earlystopping(devlossall/dev_batchnum, model)
+        print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
+        earlystopping(devlossall/num_dev_batch, model)
         if(earlystopping.early_stop == True): break
 
 

@@ -176,7 +176,7 @@ class Reg_class_mixmodel(nn.Module):
         outputs = self.bert(dataset['input_ids'], token_type_ids=dataset['token_type_ids'], attention_mask=dataset['attention_mask'])
         sequence_output = outputs['last_hidden_state'][:, 0, :]
         score = self.sigmoid(self.linear1(sequence_output))
-        logits = self.linear2(self.linear2(sequence_output))
+        logits = self.linear2(sequence_output)
         return {'score': score, 'logits': logits}
 
     def get_word_vec(self, dataset):        

@@ -95,7 +95,7 @@ def main(cfg: DictConfig):
     ##class###
     five_fold_results = []
     for fold in range(5):
-        with open('/content/drive/MyDrive/GoogleColab//SA/ShortAnswer/Y15/{}_results/Class_{}/fold{}'.format(cfg.sas.question_id, cfg.sas.score_id, fold)) as f:
+        with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Class-torchlightning/pt{}/fold_{}/pred_results'.format(cfg.aes.prompt_id, fold)) as f:
             fold_results = json.load(f)
         five_fold_results.append({k: np.array(v) for k, v in fold_results.items()})
 

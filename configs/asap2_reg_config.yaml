@@ -1,0 +1,24 @@
+training:
+  fold: 0
+  test_size: 0.3
+  n_epochs: 30
+  batch_size: 8
+  learning_rate: 0.00001
+  collate_fn: True
+  patience: 3
+model:
+  model_name_or_path: 'bert-base-uncased'
+  reg_or_class: 'reg'
+  max_length: 512
+  id: 0
+  num_labels: None
+aes:
+  prompt_id: 1
+  friendly_score: True
+path:
+  traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP 2/data/fold_${training.fold}/train.tsv
+  valdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP 2/data/fold_${training.fold}/dev.tsv
+  save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP 2/testmodel
+wandb:
+  project: Regression_Train_Pt${aes.prompt_id}
+  project_name: fold${training.fold}_id${model.id}

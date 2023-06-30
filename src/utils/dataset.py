@@ -65,3 +65,79 @@ def get_Dataset(reg_or_class, datapath, prompt_id, tokenizer):
 		return DataSet(encoding, labels.type(torch.LongTensor))
 	else:
 		raise ValueError("{} is not a valid value for reg_or_class".format(reg_or_class))
+
+
+def get_theta(scores_array):
+	norm_scores = (scores_array + 3) / 6
+	norm_scores[norm_scores > 1.0] = 1.
+	norm_scores[norm_scores < 0] = 0.
+	return norm_scores
+
+def get_ratermean(scores_array):
+  scores_mean = np.mean(scores_array, where = scores_array!=-1, axis=-1)
+  return np.round(scores_mean) / 4.
+
+def get_classratermean(scores_array):
+  scores_mean = np.round(np.mean(scores_array, where = scores_array!=-1, axis=-1))
+  return scores_mean.astype('int32')
+
+class ThetaDataSet:
+  def __init__(self, X, Y):
+    self.input_ids = X['input_ids']
+    self.token_type_ids = X['token_type_ids']
+    self.attention_mask = X['attention_mask']
+    self.score = Y['score']
+    self.sd = Y['sd']
+
+  def __len__(self):
+    return len(self.score)
+
+  def __getitem__(self, index):
+    return {'input_ids': self.input_ids[index], 
+		    'token_type_ids': self.token_type_ids[index],
+            'attention_mask': self.attention_mask[index], 
+            'score': self.score[index],
+			'sd': self.sd[index]}
+
+class RaterDataSet:
+  def __init__(self, X, Y):
+    self.input_ids = X['input_ids']
+    self.token_type_ids = X['token_type_ids']
+    self.attention_mask = X['attention_mask']
+    self.score = Y
+
+  def __len__(self):
+    return len(self.score)
+
+  def __getitem__(self, index):
+    return {'input_ids': self.input_ids[index], 
+		    'token_type_ids': self.token_type_ids[index],
+            'attention_mask': self.attention_mask[index], 
+            'score': self.score[index]}
+ 
+def get_asap2_dataset(dataf, scoretype, tokenizer):
+  x = dataf["essay"].tolist()
+  encoding = tokenizer(x, max_length=max_length, padding='max_length', truncation=True, return_tensors='pt')
+  if scoretype == 'irttheta':
+    theta = get_theta(np.array(dataf["theta"])).tolist()
+    sd = np.array(dataf["sd"]).tolist()
+    labels = {'theta':torch.tensor(theta, dtype=torch.float32), 'sd':torch.tensor(sd, dtype=torch.float32)}
+    return ThetaDataSet(encoding, labels)
+  elif scoretype == 'ratermean_irtsd':
+    ratermean = get_ratermean(np.array(dataf.iloc[:, 4:42])).tolist()
+    sd = np.array(dataf["sd"]).tolist()
+    labels = {'score':torch.tensor(ratermean, dtype=torch.float32), 'sd':torch.tensor(sd, dtype=torch.float32)}
+    return ThetaDataSet(encoding, labels)
+  elif scoretype == 'ratermean_ratersd':
+    ratermean = get_ratermean(np.array(dataf.iloc[:, 4:42])).tolist()
+    sd = np.array([np.var(scorearray[scorearray != -1]) for scorearray in np.array(dataf.iloc[:, 4:42])])
+    labels = {'score':torch.tensor(ratermean, dtype=torch.float32), 'sd':torch.tensor(np.sqrt(sd), dtype=torch.float32)}
+    return ThetaDataSet(encoding, labels)
+  elif scoretype == 'regratermean':
+    score = get_ratermean(np.array(dataf.iloc[:, 4:42])).tolist()
+    return RaterDataSet(encoding, score)
+  elif scoretype == 'classratermean':
+    score = get_classratermean(np.array(dataf.iloc[:, 4:42])).tolist()
+    return RaterDataSet(encoding, score)
+  else:
+    raise ValueError("{} is not a valid value for scoretype".format(scoretype))

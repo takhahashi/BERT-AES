@@ -159,9 +159,9 @@ class Bertratermean(nn.Module):
       return loss
     
 class Reg_class_mixmodel(nn.Module):
-    def __init__(self, num_classes):
+    def __init__(self, bert, num_classes):
         super(Reg_class_mixmodel, self).__init__()
-        self.bert = AutoModel.from_pretrained("bert-base-uncased")
+        self.bert = bert
         self.linear1 = nn.Linear(768, 1)
         self.linear2 = nn.Linear(768, num_classes)
 
@@ -173,10 +173,9 @@ class Reg_class_mixmodel(nn.Module):
         nn.init.normal_(self.linear2.bias, 0)  # バイアスの初期化
 
     def forward(self, dataset):
-        outputs = self.bert(dataset['input_ids'], token_type_ids=dataset['token_type_ids'], attention_mask=dataset['attention_mask'])
-        sequence_output = outputs['last_hidden_state'][:, 0, :]
-        score = self.sigmoid(self.linear1(sequence_output))
-        logits = self.linear2(sequence_output)
+        hidden_state = self.bert(dataset)['hidden_state']
+        score = self.sigmoid(self.linear1(hidden_state))
+        logits = self.linear2(hidden_state)
         return {'score': score, 'logits': logits}
 
     def get_word_vec(self, dataset):        

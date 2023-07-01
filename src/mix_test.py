@@ -24,7 +24,7 @@ from ue4nlp.ue_estimater_calibvar import UeEstimatorCalibvar
 from models.models import Reg_class_mixmodel, Bert
 
 
-@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_config")
+@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_mix")
 def main(cfg: DictConfig):
     train_dataset = get_Dataset(cfg.model.reg_or_class, 
                                cfg.path.traindata_file_name, 

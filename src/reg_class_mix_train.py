@@ -59,7 +59,7 @@ def main(cfg: DictConfig):
 
     trainloss_list, devloss_list = [], []
     scaler = torch.cuda.amp.GradScaler()
-    for epoch in range(0, 10):
+    for epoch in range(cfg.training.n_epochs):
         lossall = 0
         devlossall = 0
         model.train()

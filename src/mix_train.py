@@ -14,7 +14,7 @@ from utils.dataset import get_score_range, get_Dataset, get_asap2_dataset
 from utils.cfunctions import simple_collate_fn, theta_collate_fn, simplevar_ratersd_loss
 from utils.utils_models import create_module
 from models.functions import return_predresults
-from models.models import Reg_class_mixmodel
+from models.models import Reg_class_mixmodel, Bert
 from utils.cfunctions import regvarloss, EarlyStopping
 from models.models import Scaler
 
@@ -44,7 +44,8 @@ def main(cfg: DictConfig):
                                                     )
 
     low, high = get_score_range(cfg.aes.prompt_id)
-    model = Reg_class_mixmodel(high-low+1)
+    bert = Bert(cfg.model.model_name_or_path)
+    model = Reg_class_mixmodel(bert, high-low+1)
     model.train()
     model = model.cuda()
     optimizer = optim.AdamW(model.parameters(), lr=1e-5)

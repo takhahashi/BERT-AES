@@ -67,6 +67,7 @@ def extract_clsvec_truelabels(model, dataloader):
             eval_results = {k1: np.concatenate([v1, v2]) for (k1, v1), (k2, v2) in zip(eval_results.items(), cls_outputs.items())}
     return eval_results['hidden_state'], eval_results['labels']
 
+
 def extract_clsvec_predlabels(model, dataloader):
     model.eval()
     model = model.cuda()
@@ -95,7 +96,7 @@ def extract_clsvec_predlabels(model, dataloader):
     for k, v in eval_results.items():
         if k == 'score':
             score = v.flatten()
-        if k == 'logits':
+            return eval_results['hidden_state'], score
+        else:
             score = np.argmax(v, axis=-1)
-
-    return eval_results['hidden_state'], score
+            return eval_results['hidden_state'], score

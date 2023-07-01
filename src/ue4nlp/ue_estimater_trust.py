@@ -27,7 +27,6 @@ class UeEstimatorTrustscore:
         X_features, y = self._extract_features_and_truelabels(self.train_dataloader)
         if self.reg_or_class == 'reg':
             int_labels = score_f2int(y, self.prompt_id)
-            print(X_features, int_labels)
             self.class_features = self._fit_classfeatures(X_features, int_labels)
         else:
             self.class_features = self._fit_classfeatures(X_features, y.astype('int32'))

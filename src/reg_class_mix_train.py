@@ -14,7 +14,7 @@ from utils.dataset import get_score_range, get_Dataset, get_asap2_dataset
 from utils.cfunctions import simple_collate_fn, theta_collate_fn, simplevar_ratersd_loss
 from utils.utils_models import create_module
 from models.functions import return_predresults
-from models.models import Bertratermean
+from models.models import Reg_class_mixmodel
 from utils.cfunctions import regvarloss, EarlyStopping
 from models.models import Scaler
 
@@ -42,36 +42,35 @@ def main(cfg: DictConfig):
                                                     shuffle=True,
                                                     collate_fn=simple_collate_fn,
                                                     )
-    
+
     low, high = get_score_range(cfg.aes.prompt_id)
-    model = Bertratermean(high-low+1)
+    model = Reg_class_mixmodel(high-low+1)
     model.train()
     model = model.cuda()
     optimizer = optim.AdamW(model.parameters(), lr=1e-5)
 
     num_train_batch = len(train_dataloader)
     num_dev_batch = len(dev_dataloader)
-    earlystopping = EarlyStopping(patience=3, path = cfg.path.save_path, verbose = True)
+    earlystopping = EarlyStopping(patience=cfg.training.patience, path = cfg.path.save_path, verbose = True)
 
     model.train()
     crossentropy = nn.CrossEntropyLoss()
-    mseloss = nn.MSELoos()
+    mseloss = nn.MSELoss()
 
     trainloss_list, devloss_list = [], []
     scaler = torch.cuda.amp.GradScaler()
-    for epoch in range(0, 15):
+    for epoch in range(0, 10):
         lossall = 0
         devlossall = 0
         model.train()
         for data in train_dataloader:
             data = {k: v.cuda() for k, v in data.items()}
-            int_score = torch.round(data['labels'] * (high - low) + low).to(torch.int32).type(torch.LongTensor)
+            int_score = torch.round(data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor).cuda()
             with torch.cuda.amp.autocast():
                 outputs = model(data)
                 crossentropy_el = crossentropy(outputs['logits'], int_score)
-                mseloss_el = mseloss(outputs['score'], data['labels'])
+                mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 loss = crossentropy_el + mseloss_el
-            
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
@@ -84,10 +83,10 @@ def main(cfg: DictConfig):
         model.eval()
         for dev_data in dev_dataloader:
             d_data = {k: v.cuda() for k, v in dev_data.items()}
-            int_score = torch.round(d_data['labels'] * (high - low) + low).to(torch.int32).type(torch.LongTensor)
+            int_score = torch.round(d_data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor)
             dev_outputs = {k: v.to('cpu').detach() for k, v in model(d_data).items()}
             crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
-            mseloss_el = mseloss(dev_outputs['score'], d_data['labels'])
+            mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
             devlossall += crossentropy_el + mseloss_el
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
 

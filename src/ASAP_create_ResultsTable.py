@@ -93,11 +93,11 @@ def main():
 
     ##qwk###
     qwk_dic = {}
-    table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class']
+    table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix']
     for utype in table_idx_name:
         qwk_dic[utype] = []
     for prompt_id in range(1, 9):
-        for idx, utype in enumerate(['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc']):
+        for idx, utype in enumerate(['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc', 'mix_acc']):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -110,11 +110,11 @@ def main():
 
     ##corr###
     corr_dic = {}
-    table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class']
+    table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix']
     for utype in table_idx_name:
         corr_dic[utype] = []
     for prompt_id in range(1, 9):
-        for idx, utype in enumerate(['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc']):
+        for idx, utype in enumerate(['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc', 'mix_acc']):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -127,11 +127,11 @@ def main():
 
     ##rmse###
     rmse_dic = {}
-    table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class']
+    table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix']
     for utype in table_idx_name:
         rmse_dic[utype] = []
     for prompt_id in range(1, 9):
-        for idx, utype in enumerate(['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc']):
+        for idx, utype in enumerate(['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc', 'mix_acc']):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -141,6 +141,6 @@ def main():
         rmse_dic[k] = n_v
     rmse_table = pd.DataFrame.from_dict(rmse_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
     rmse_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rmse_talbe.tsv', sep='\t', index=True)
-
+    
 if __name__ == "__main__":
     main()

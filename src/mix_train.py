@@ -17,6 +17,7 @@ from models.functions import return_predresults
 from models.models import Reg_class_mixmodel, Bert
 from utils.cfunctions import regvarloss, EarlyStopping
 from models.models import Scaler
+import matplotlib.pyplot as plt
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_class_mix")
 def main(cfg: DictConfig):
@@ -94,6 +95,23 @@ def main(cfg: DictConfig):
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
         earlystopping(devlossall/num_dev_batch, model)
         if(earlystopping.early_stop == True): break
+
+    # Plot trainloss_list in blue
+    plt.plot(trainloss_list, color='blue', label='Train Loss')
+
+    # Plot devloss_list in red
+    plt.plot(devloss_list, color='red', label='Dev Loss')
+
+    # Set labels and title
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Training and Development Loss')
+
+    # Display legend
+    plt.legend()
+
+    # Show the plot
+    plt.show()
 
 
 if __name__ == "__main__":

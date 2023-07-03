@@ -53,13 +53,13 @@ def main(cfg: DictConfig):
 
     num_train_batch = len(train_dataloader)
     num_dev_batch = len(dev_dataloader)
-    earlystopping = EarlyStopping(patience=cfg.training.patience, path = cfg.path.save_path, verbose = True)
+    #earlystopping = EarlyStopping(patience=cfg.training.patience, path = cfg.path.save_path, verbose = True)
 
     model.train()
     crossentropy = nn.CrossEntropyLoss()
     mseloss = nn.MSELoss()
 
-    trainloss_list, devloss_list = [], []
+    trainloss_list, devloss_list, dev_mse_list, dev_cross_list = [], [], [], []
     scaler = torch.cuda.amp.GradScaler()
     for epoch in range(cfg.training.n_epochs):
         lossall = 0
@@ -91,10 +91,12 @@ def main(cfg: DictConfig):
             mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
             devlossall += crossentropy_el + mseloss_el
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
+        dev_mse_list = np.append(dev_mse_list, mseloss_el)
+        dev_cross_list = np.append(dev_cross_list, crossentropy_el)
 
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
-        earlystopping(devlossall/num_dev_batch, model)
-        if(earlystopping.early_stop == True): break
+        #earlystopping(devlossall/num_dev_batch, model)
+        #if(earlystopping.early_stop == True): break
 
     # Plot trainloss_list in blue
     plt.plot(trainloss_list, color='blue', label='Train Loss')
@@ -113,6 +115,23 @@ def main(cfg: DictConfig):
     # Show the plot
     plt.show()
 
+    fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True)
+
+    # Plot loss1_list in the first subplot
+    ax1.plot(dev_mse_list, color='blue')
+    ax1.set_xlabel('Epoch')
+    ax1.set_ylabel('mse_loss')
+
+    # Plot loss2_list in the second subplot
+    ax2.plot(dev_cross_list, color='red')
+    ax2.set_xlabel('Epoch')
+    ax2.set_ylabel('cross_entro')
+
+    # Adjust spacing between subplots
+    plt.tight_layout()
+
+    # Show the plot
+    plt.show()
 
 if __name__ == "__main__":
     main()

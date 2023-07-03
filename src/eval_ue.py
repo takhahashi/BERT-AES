@@ -25,7 +25,7 @@ from ue4nlp.ue_estimater_mcd import UeEstimatorDp
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_ue_config")
 def main(cfg: DictConfig):
-    """
+    
     ##reg###
     five_fold_results = []
     for fold in range(5):
@@ -223,7 +223,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-    """
+    
     five_fold_results = []
     for fold in range(5):
         with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt{}/fold_{}/pred_results'.format(cfg.aes.prompt_id, fold)) as f:

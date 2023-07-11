@@ -29,7 +29,7 @@ from sklearn.metrics import cohen_kappa_score
 def main(cfg: DictConfig):
     save_dir_path = cfg.path.save_dir_path
     prompt_id = cfg.aes.prompt_id
-    """
+    
     five_fold_results = []
     for fold in range(5):
         with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Reg-torchlightning/pt{}/fold_{}/pred_results'.format(cfg.aes.prompt_id, fold)) as f:
@@ -153,7 +153,6 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-    """
 
 
     five_fold_results = []

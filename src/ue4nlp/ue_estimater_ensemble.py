@@ -1,5 +1,5 @@
 from models.functions import return_predresults
-from ue4nlp.functions import compute_mulscore_mulvar, compute_mulprob_muluncertain
+from ue4nlp.functions import compute_mulscore_mulvar, compute_mulMP, compute_mulEntropy, compute_mulprob_epiuncertain
 from utils.utils_models import create_module
 from ue4nlp.ue_estimater_calibvar import UeEstimatorCalibvar
 
@@ -40,7 +40,11 @@ class UeEstimatorEnsemble:
             ense_result['ense_score'] = mulscore
             ense_result['ense_var'] = mulvar
         else:
-            mulscore, muluncertainty = compute_mulprob_muluncertain(mul_pred_results['logits'], mul_num)
+            mulscore, mulMP = compute_mulMP(mul_pred_results['logits'], mul_num)
+            _, mul_entropy = compute_mulEntropy(mul_pred_results['logits'], mul_num)
+            _, epi_uncertainty = compute_mulprob_epiuncertain(mul_pred_results['logits'], mul_num)
             ense_result['ense_score'] = mulscore
-            ense_result['ense_uncertainty'] = muluncertainty
+            ense_result['ense_MP'] = mulMP
+            ense_result['ense_entropy'] = mul_entropy
+            ense_result['ense_epi_uncertainty'] = epi_uncertainty
         return ense_result

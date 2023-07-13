@@ -38,7 +38,7 @@ def compute_mulscore_mulvar(score, logvar, mulnum):
     mulvar = np.divide(sumvar + sumpower, mulnum) - np.power(mulscore, 2)
     return mulscore, mulvar
 
-def compute_mulprob_muluncertain(numpy_logits, mulnum):
+def compute_mulprob_epiuncertain(numpy_logits, mulnum):
     soft_fn = torch.nn.Softmax(dim=2)
     logits = torch.tensor(numpy_logits)
     pred_probs = soft_fn(logits)
@@ -52,3 +52,28 @@ def compute_mulprob_muluncertain(numpy_logits, mulnum):
     torch_uncertainty = mean_entro - all_entro / mulnum
 
     return torch_scores.numpy(), torch_uncertainty.numpy()
+
+def compute_mulMP(numpy_logits, mulnum):
+    soft_fn = torch.nn.Softmax(dim=2)
+    logits = torch.tensor(numpy_logits)
+    pred_probs = soft_fn(logits)
+    assert pred_probs.shape[0] == mulnum
+
+    mean_probs = torch.mean(pred_probs, dim=0)
+    mulMP = mean_probs[torch.arange(len(mean_probs)), torch.argmax(mean_probs, dim=-1)]
+    torch_scores = torch.argmax(mean_probs, dim=-1)
+
+    return torch_scores.numpy(), mulMP.numpy()
+
+
+def compute_mulEntropy(numpy_logits, mulnum):
+    soft_fn = torch.nn.Softmax(dim=2)
+    logits = torch.tensor(numpy_logits)
+    pred_probs = soft_fn(logits)
+    assert pred_probs.shape[0] == mulnum
+
+    mean_probs = torch.mean(pred_probs, dim=0)
+    mean_entro = -torch.sum(torch.log2(mean_probs) * mean_probs, dim=-1)
+    torch_scores = torch.argmax(mean_probs, dim=-1)
+    
+    return torch_scores.numpy(), mean_entro.numpy()

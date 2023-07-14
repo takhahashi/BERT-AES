@@ -53,7 +53,7 @@ def main(cfg: DictConfig):
 
     num_train_batch = len(train_dataloader)
     num_dev_batch = len(dev_dataloader)
-    #earlystopping = EarlyStopping(patience=cfg.training.patience, path = cfg.path.save_path, verbose = True)
+    earlystopping = EarlyStopping(patience=cfg.training.patience, path = cfg.path.save_path, verbose = True)
 
     model.train()
     crossentropy = nn.CrossEntropyLoss()
@@ -95,9 +95,9 @@ def main(cfg: DictConfig):
         dev_cross_list = np.append(dev_cross_list, crossentropy_el)
 
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
-        #earlystopping(devlossall/num_dev_batch, model)
-        #if(earlystopping.early_stop == True): break
-
+        earlystopping(devlossall/num_dev_batch, model)
+        if(earlystopping.early_stop == True): break
+    """
     # Plot trainloss_list in blue
     plt.plot(trainloss_list, color='blue', label='Train Loss')
 
@@ -132,6 +132,7 @@ def main(cfg: DictConfig):
 
     # Show the plot
     plt.show()
+    """
 
 if __name__ == "__main__":
     main()

@@ -92,3 +92,35 @@ def compute_MixMulMP(score, numpy_logits, mulnum, prompt_id):
     pred_int_score = torch.tensor(np.round(mulscore * (high - low)), dtype=torch.int32)
     MixMulMP = mean_probs[torch.arange(len(mean_probs)), pred_int_score]
     return mulscore, MixMulMP.numpy()
+
+def compute_centroids(train_features, train_labels):
+    centroids = []
+    for label in np.sort(np.unique(train_labels)):
+        centroids.append(train_features[train_labels == label].mean(axis=0))
+    return np.asarray(centroids)
+    
+
+def compute_covariance(centroids, train_features, train_labels):
+    cov = np.zeros((train_features.shape[1], train_features.shape[1]))
+    for c, mu_c in enumerate(centroids):
+        for x in train_features[train_labels == c]:
+            d = (x - mu_c)[:, None]
+            cov += d @ d.T
+    cov /= train_features.shape[0]
+    
+    try:
+        sigma_inv = np.linalg.inv(cov)
+    except:
+        sigma_inv = np.linalg.pinv(cov)
+    return sigma_inv
+
+def mahalanobis_distance(train_features, train_labels, eval_features, centroids=None, covariance=None):
+    if centroids is None:
+        centroids = compute_centroids(train_features, train_labels)
+    if covariance is None:
+        covariance = compute_covariance(centroids, train_features, train_labels)
+    diff = eval_features[:, None, :] - centroids[None, :, :]
+    dists = np.matmul(np.matmul(diff, covariance), diff.transpose(0, 2, 1))
+    dists = np.asarray([np.diag(dist) for dist in dists])
+
+    return np.min(dists, axis=1)

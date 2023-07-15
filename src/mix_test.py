@@ -68,7 +68,7 @@ def main(cfg: DictConfig):
     mcdp_estimater = UeEstimatorDp(model,
                                    cfg.ue.num_dropout,
                                    cfg.model.reg_or_class,
-                                   cfg.aes.pormpt_id,
+                                   cfg.aes.prompt_id,
                                    )
     mcdp_results = mcdp_estimater(test_dataloader)
     eval_results.update(mcdp_results)

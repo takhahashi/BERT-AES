@@ -1,5 +1,6 @@
 import numpy as np
 import torch
+from utils.dataset import get_Dataset, get_score_range
 
 def sep_features_by_class(X_features, scores):
     sep_features = {}
@@ -77,3 +78,17 @@ def compute_mulEntropy(numpy_logits, mulnum):
     torch_scores = torch.argmax(mean_probs, dim=-1)
     
     return torch_scores.numpy(), mean_entro.numpy()
+
+def compute_MixMulMP(score, numpy_logits, mulnum, prompt_id):
+    low, high = get_score_range(prompt_id)
+    sumscore = np.sum(score, axis=0)
+    mulscore = np.divide(sumscore, mulnum)
+
+    soft_fn = torch.nn.Softmax(dim=2)
+    logits = torch.tensor(numpy_logits)
+    pred_probs = soft_fn(logits)
+    mean_probs = torch.mean(pred_probs, dim=0)
+
+    pred_int_score = torch.tensor(np.round(mulscore * (high - low)), dtype=torch.int32)
+    MixMulMP = mean_probs[torch.arange(len(mean_probs)), pred_int_score]
+    return mulscore, MixMulMP

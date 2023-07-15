@@ -26,12 +26,12 @@ from models.models import Reg_class_mixmodel, Bert
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_mix")
 def main(cfg: DictConfig):
-    train_dataset = get_Dataset(cfg.model.reg_or_class, 
+    train_dataset = get_Dataset('reg', 
                                 cfg.path.traindata_file_name, 
                                 cfg.aes.prompt_id, 
                                 AutoTokenizer.from_pretrained(cfg.model.model_name_or_path),
                                 )
-    test_dataset = get_Dataset(cfg.model.reg_or_class, 
+    test_dataset = get_Dataset('reg', 
                                 cfg.path.testdata_file_name, 
                                 cfg.aes.prompt_id, 
                                 AutoTokenizer.from_pretrained(cfg.model.model_name_or_path),
@@ -65,6 +65,24 @@ def main(cfg: DictConfig):
     mix_trust = pred_probs[torch.arange(len(pred_probs)), pred_int_score]
     eval_results.update({'mix_conf': mix_trust.numpy().copy()})
 
+    mcdp_estimater = UeEstimatorDp(model,
+                                   cfg.ue.num_dropout,
+                                   cfg.model.reg_or_class,
+                                   cfg.aes.pormpt_id,
+                                   )
+    mcdp_results = mcdp_estimater(test_dataloader)
+    eval_results.update(mcdp_results)
+
+
+    ensemble_estimater = UeEstimatorEnsemble(model, 
+                                             cfg.ue.ensemble_model_paths,
+                                             cfg.model.reg_or_class,
+                                             cfg.aes.prompt_id,
+                                             )
+    ensemble_results = ensemble_estimater(test_dataloader)
+    eval_results.update(ensemble_results)
+
+    """
     max_prob = pred_probs[torch.arange(len(pred_probs)), torch.argmax(pred_probs, dim=-1)]
     eval_results.update({'MP': max_prob.numpy().copy()})
 
@@ -76,6 +94,8 @@ def main(cfg: DictConfig):
     trust_estimater.fit_ue()
     trust_results = trust_estimater(test_dataloader)
     eval_results.update(trust_results)
+    """
+
 
 
     list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}

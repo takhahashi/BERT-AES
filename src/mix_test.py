@@ -96,8 +96,6 @@ def main(cfg: DictConfig):
     eval_results.update(trust_results)
     """
 
-
-
     list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}
     
     with open(cfg.path.results_save_path, mode="wt", encoding="utf-8") as f:

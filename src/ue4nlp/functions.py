@@ -91,4 +91,4 @@ def compute_MixMulMP(score, numpy_logits, mulnum, prompt_id):
 
     pred_int_score = torch.tensor(np.round(mulscore * (high - low)), dtype=torch.int32)
     MixMulMP = mean_probs[torch.arange(len(mean_probs)), pred_int_score]
-    return mulscore, MixMulMP
+    return mulscore, MixMulMP.numpy()

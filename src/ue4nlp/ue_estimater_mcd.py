@@ -38,6 +38,7 @@ class UeEstimatorDp:
             _, mul_entropy = compute_mulEntropy(mul_results['logits'], self.dropout_num)
             mcdp_result['mcdp_score'] = mulscore
             mcdp_result['mcdp_MP'] = mulMP
+            mcdp_result['mcdp_entropy'] = mul_entropy
         else:
             mulscore, mulMP = compute_mulMP(mul_results['logits'], self.dropout_num)
             _, mul_entropy = compute_mulEntropy(mul_results['logits'], self.dropout_num)

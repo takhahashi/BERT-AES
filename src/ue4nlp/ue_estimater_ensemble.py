@@ -45,6 +45,7 @@ class UeEstimatorEnsemble:
             _, mul_entropy = compute_mulEntropy(mul_pred_results['logits'], mul_num)
             ense_result['ense_score'] = mulscore
             ense_result['ense_MP'] = mulMP
+            ense_result['ense_entropy'] = mul_entropy
         else:
             mulscore, mulMP = compute_mulMP(mul_pred_results['logits'], mul_num)
             _, mul_entropy = compute_mulEntropy(mul_pred_results['logits'], mul_num)

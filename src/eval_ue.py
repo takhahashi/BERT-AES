@@ -349,7 +349,7 @@ def main(cfg: DictConfig):
     for foldr in five_fold_results:
         true = foldr['labels']
         pred = foldr['mcdp_score']
-        uncertainty = -foldr['mdcp_MP']
+        uncertainty = -foldr['mcdp_MP']
         risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=True)
         rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
         rpp = calc_rpp(conf=-uncertainty, risk=risk)

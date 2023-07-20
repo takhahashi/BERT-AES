@@ -69,6 +69,7 @@ def main(cfg: DictConfig):
                           num_labels=cfg.model.num_labels, 
                           )
     model.load_state_dict(torch.load(cfg.path.model_save_path))
+    """
 
     dev_results = return_predresults(model, dev_dataloader, rt_clsvec=False, dropout=False)
     eval_results = return_predresults(model, test_dataloader, rt_clsvec=False, dropout=False)
@@ -147,6 +148,7 @@ def main(cfg: DictConfig):
     
     with open(cfg.path.results_save_path, mode="wt", encoding="utf-8") as f:
         json.dump(list_results, f, ensure_ascii=False)
+    """
     
 
 if __name__ == "__main__":

@@ -7,11 +7,12 @@ import torch
     
 
 class UeEstimatorEnsemble:
-    def __init__(self, model, model_paths, reg_or_class, prompt_id):
+    def __init__(self, model, model_paths, reg_or_class, prompt_id, calib_estimater=None):
         self.model = model
         self.model_paths = model_paths
         self.reg_or_class = reg_or_class
         self.prompt_id = prompt_id
+        self.calib_estimater = calib_estimater
         
     def __call__(self, dataloader):
         ense_results = self._predict_with_multimodel(dataloader)
@@ -39,15 +40,8 @@ class UeEstimatorEnsemble:
         ense_result = {}
         if self.reg_or_class == 'reg':
             ##begin-caliblation###
-            for idx, dev_dataloader, model_path, logvar in enumerate(zip(self.dev_dataloaders, self.model_paths, mul_pred_results['logvar'])):
-                model.load_state_dict(torch.load(model_path))
-                dev_results = return_predresults(model, dev_dataloader)
-                calib_var_estimater = UeEstimatorCalibvar(dev_labels=torch.tensor(dev_results['labels']),
-                                                        dev_score=torch.tensor(dev_results['score']),
-                                                        dev_logvar=torch.tensor(dev_results['logvar']),
-                                                        )
-                calib_var_estimater.fit_ue()
-                caliblated_var = calib_var_estimater(logvar = torch.tensor(logvar))
+            for idx, logvar in enumerate(mul_pred_results['logvar']):
+                caliblated_var = self.calib_estimater(logvar=torch.tensor(logvar))
                 mul_pred_results['logvar'][idx] = caliblated_var
             ##end-caliblation###
             mulscore, mulvar = compute_mulscore_mulvar(mul_pred_results['score'], mul_pred_results['logvar'], mul_num)

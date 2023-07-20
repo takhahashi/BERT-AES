@@ -35,8 +35,21 @@ class UeEstimatorEnsemble:
     def _predict_with_multimodel(self, dataloader):
         mul_pred_results = self._multi_pred(dataloader)
         mul_num = len(self.model_paths)
+        model = self.model
         ense_result = {}
         if self.reg_or_class == 'reg':
+            ##begin-caliblation###
+            for idx, dev_dataloader, model_path, logvar in enumerate(zip(self.dev_dataloaders, self.model_paths, mul_pred_results['logvar'])):
+                model.load_state_dict(torch.load(model_path))
+                dev_results = return_predresults(model, dev_dataloader)
+                calib_var_estimater = UeEstimatorCalibvar(dev_labels=torch.tensor(dev_results['labels']),
+                                                        dev_score=torch.tensor(dev_results['score']),
+                                                        dev_logvar=torch.tensor(dev_results['logvar']),
+                                                        )
+                calib_var_estimater.fit_ue()
+                caliblated_var = calib_var_estimater(logvar = torch.tensor(logvar))
+                mul_pred_results['logvar'][idx] = caliblated_var
+            ##end-caliblation###
             mulscore, mulvar = compute_mulscore_mulvar(mul_pred_results['score'], mul_pred_results['logvar'], mul_num)
             ense_result['ense_score'] = mulscore
             ense_result['ense_var'] = mulvar

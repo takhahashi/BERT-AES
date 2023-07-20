@@ -62,7 +62,9 @@ def main(cfg: DictConfig):
     num_train_batch = len(train_dataloader)
     num_dev_batch = len(dev_dataloader)
     for epoch in range(cfg.training.n_epochs):
-        train_loss_all = dev_loss_all = 0
+        train_loss_all = 0
+        dev_loss_all = 0
+        model.train()
         for idx, t_batch in enumerate(train_dataloader):
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():
@@ -72,7 +74,7 @@ def main(cfg: DictConfig):
             scaler.update()
             model.zero_grad()
 
-            train_loss_all = training_step_outputs['loss'].to('cpu').detach().numpy().copy()
+            train_loss_all += training_step_outputs['loss'].to('cpu').detach().numpy().copy()
 
 
         ###calibrate_step###calibrate_step###

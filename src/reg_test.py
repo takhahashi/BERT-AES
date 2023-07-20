@@ -69,6 +69,7 @@ def main(cfg: DictConfig):
                           num_labels=cfg.model.num_labels, 
                           )
     model.load_state_dict(torch.load(cfg.path.model_save_path))
+    print(model.state_dict().keys())
     """
 
     dev_results = return_predresults(model, dev_dataloader, rt_clsvec=False, dropout=False)
@@ -133,6 +134,7 @@ def main(cfg: DictConfig):
     ensemble_results = ensemble_estimater(test_dataloader)
     eval_results.update(ensemble_results)
     """
+    """
     #####calib ense var ##########
     dev_ense_results = ensemble_estimater(dev_dataloader)
     calib_ense_var_estimater = UeEstimatorCalibvar(dev_labels=torch.tensor(dev_results['labels']),
@@ -142,6 +144,7 @@ def main(cfg: DictConfig):
     calib_ense_var_estimater.fit_ue()
     calib_ense_var = calib_ense_var_estimater(logvar = torch.tensor(ensemble_results['ense_var']).log())
     eval_results.update({'calib_ense_var': calib_ense_var})
+    """
     """
 
     list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}

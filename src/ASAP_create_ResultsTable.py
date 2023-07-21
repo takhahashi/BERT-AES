@@ -16,12 +16,13 @@ def down_sample(data, samples=300):
 
 
 def main():
+    utypes = ['simplevar', 'reg_mul', 'MP', 'class_mul_MP', 'class_trust_score', 'mix', 'mix_mul']
     ###roc_auc###
     roc_dic = {}
-    for utype in ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']:
+    for utype in utypes:
         roc_dic[utype] = []
     for prompt_id in range(1, 9):
-        for utype in ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']:
+        for utype in utypes:
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -34,10 +35,10 @@ def main():
 
     ##rpp##
     rpp_dic = {}
-    for utype in ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']:
+    for utype in utypes:
         rpp_dic[utype] = []
     for prompt_id in range(1, 9):
-        for utype in ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']:
+        for utype in utypes:
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -50,10 +51,10 @@ def main():
 
     ##rcc###
     rcc_dic = {}
-    for utype in ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']:
+    for utype in utypes:
         rcc_dic[utype] = []
     for prompt_id in range(1, 9):
-        for utype in ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']:
+        for utype in utypes:
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -91,12 +92,16 @@ def main():
         plt.savefig('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}.png'.format(prompt_id)) 
         plt.show()
 
+    #table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix', 'dp_mix', 'mul_mix']
+    #utype_path_name = ['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc', 'mix_acc', 'dp_mix_acc', 'ense_mix_acc']
+    table_idx_name = ['simple_reg', 'mul_reg', 'simple_class', 'mul_class', 'mix', 'mul_mix']
+    utype_path_name = ['simple_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'ense_class_acc', 'mix_acc', 'ense_mix_acc']
+
     qwk_dic = {}
-    table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix', 'dp_mix', 'mul_mix']
     for utype in table_idx_name:
         qwk_dic[utype] = []
     for prompt_id in range(1, 9):
-        for idx, utype in enumerate(['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc', 'mix_acc', 'dp_mix_acc', 'ense_mix_acc']):
+        for idx, utype in enumerate(utype_path_name):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -108,11 +113,10 @@ def main():
     qwk_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/qwk_talbe.tsv', sep='\t', index=True)
 
     corr_dic = {}
-    table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix', 'dp_mix', 'mul_mix']
     for utype in table_idx_name:
         corr_dic[utype] = []
     for prompt_id in range(1, 9):
-        for idx, utype in enumerate(['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc', 'mix_acc', 'dp_mix_acc', 'ense_mix_acc']):
+        for idx, utype in enumerate(utype_path_name):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -124,11 +128,10 @@ def main():
     corr_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/corr_talbe.tsv', sep='\t', index=True)
 
     rmse_dic = {}
-    table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix', 'dp_mix', 'mul_mix']
     for utype in table_idx_name:
         rmse_dic[utype] = []
     for prompt_id in range(1, 9):
-        for idx, utype in enumerate(['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc', 'mix_acc', 'dp_mix_acc', 'ense_mix_acc']):
+        for idx, utype in enumerate(utype_path_name):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -138,6 +141,6 @@ def main():
         rmse_dic[k] = n_v
     rmse_table = pd.DataFrame.from_dict(rmse_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
     rmse_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rmse_talbe.tsv', sep='\t', index=True)
-    
+
 if __name__ == "__main__":
     main()

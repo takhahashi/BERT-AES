@@ -16,6 +16,7 @@ def down_sample(data, samples=300):
 
 
 def main():
+    #utypes = ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']
     utypes = ['simplevar', 'reg_mul', 'MP', 'class_mul_MP', 'class_trust_score', 'mix', 'mix_mul']
     ###roc_auc###
     roc_dic = {}

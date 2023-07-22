@@ -22,7 +22,6 @@ from ue4nlp.ue_estimater_ensemble import UeEstimatorEnsemble
 from ue4nlp.ue_estimater_trust import UeEstimatorTrustscore
 from ue4nlp.ue_estimater_mcd import UeEstimatorDp
 
-
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_ue_config")
 def main(cfg: DictConfig):
     

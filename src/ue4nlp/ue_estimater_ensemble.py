@@ -36,7 +36,6 @@ class UeEstimatorEnsemble:
     def _predict_with_multimodel(self, dataloader):
         mul_pred_results = self._multi_pred(dataloader)
         mul_num = len(self.model_paths)
-        model = self.model
         ense_result = {}
         if self.reg_or_class == 'reg':
             ##begin-caliblation###

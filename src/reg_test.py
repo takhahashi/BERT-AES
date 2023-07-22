@@ -69,8 +69,7 @@ def main(cfg: DictConfig):
                           num_labels=cfg.model.num_labels, 
                           )
     model.load_state_dict(torch.load(cfg.path.model_save_path))
-    print(model.state_dict().keys())
-    """
+
 
     dev_results = return_predresults(model, dev_dataloader, rt_clsvec=False, dropout=False)
     eval_results = return_predresults(model, test_dataloader, rt_clsvec=False, dropout=False)
@@ -86,6 +85,7 @@ def main(cfg: DictConfig):
     eval_results.update({'calib_var': caliblated_var})
     ####end calib step##
 
+    """
     trust_estimater = UeEstimatorTrustscore(model, 
                                             train_dataloader, 
                                             cfg.aes.prompt_id,
@@ -94,7 +94,6 @@ def main(cfg: DictConfig):
     trust_results = trust_estimater(test_dataloader)
     eval_results.update(trust_results)
 
-    
     maha_estimater = UeEstimatorMahalanobis(model,
                                              train_dataloader,
                                              cfg.aes.prompt_id,
@@ -103,7 +102,6 @@ def main(cfg: DictConfig):
     maha_estimater.fit_ue()
     maha_results = maha_estimater(test_dataloader)
     eval_results.update(maha_results)
-
 
     mcdp_estimater = UeEstimatorDp(model, 
                                    cfg.ue.num_dropout, 
@@ -121,9 +119,7 @@ def main(cfg: DictConfig):
     calib_mcdp_var_estimater.fit_ue()
     calib_mcdp_var = calib_mcdp_var_estimater(logvar = torch.tensor(mcdp_results['mcdp_var']).log())
     eval_results.update({'calib_mcdp_var': calib_mcdp_var})
-
-
-
+    """
 
     ensemble_estimater = UeEstimatorEnsemble(cfg.ue.ensemble_model_paths,
                                              cfg.aes.prompt_id,
@@ -133,7 +129,7 @@ def main(cfg: DictConfig):
                                              )
     ensemble_results = ensemble_estimater(test_dataloader)
     eval_results.update(ensemble_results)
-    """
+
     """
     #####calib ense var ##########
     dev_ense_results = ensemble_estimater(dev_dataloader)
@@ -145,13 +141,12 @@ def main(cfg: DictConfig):
     calib_ense_var = calib_ense_var_estimater(logvar = torch.tensor(ensemble_results['ense_var']).log())
     eval_results.update({'calib_ense_var': calib_ense_var})
     """
-    """
+
 
     list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}
     
     with open(cfg.path.results_save_path, mode="wt", encoding="utf-8") as f:
         json.dump(list_results, f, ensure_ascii=False)
-    """
     
 
 if __name__ == "__main__":

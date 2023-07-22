@@ -123,7 +123,6 @@ def main(cfg: DictConfig):
 
     ensemble_estimater = UeEstimatorEnsemble(model,
                                             cfg.ue.ensemble_model_paths,
-                                            cfg.aes.prompt_id,
                                             cfg.model.reg_or_class,
                                             cfg.aes.prompt_id,
                                             calib_var_estimater

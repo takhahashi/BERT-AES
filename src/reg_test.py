@@ -121,12 +121,13 @@ def main(cfg: DictConfig):
     eval_results.update({'calib_mcdp_var': calib_mcdp_var})
     """
 
-    ensemble_estimater = UeEstimatorEnsemble(cfg.ue.ensemble_model_paths,
-                                             cfg.aes.prompt_id,
-                                             cfg.model.reg_or_class,
-                                             cfg.aes.prompt_id,
-                                             calib_var_estimater
-                                             )
+    ensemble_estimater = UeEstimatorEnsemble(model,
+                                            cfg.ue.ensemble_model_paths,
+                                            cfg.aes.prompt_id,
+                                            cfg.model.reg_or_class,
+                                            cfg.aes.prompt_id,
+                                            calib_var_estimater
+                                            )
     ensemble_results = ensemble_estimater(test_dataloader)
     eval_results.update(ensemble_results)
 

@@ -13,6 +13,7 @@ class DynamicWeightAverage:
 
   def __call__(self, *args):
     weights = self._calc_weights()
+    all_loss = 0
     for idx, loss in enumerate(args):
       self.loss_log[idx].append(loss.to('cpu').detach().numpy().copy())
     for w, l in zip(weights, args):

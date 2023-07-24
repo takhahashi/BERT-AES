@@ -3,6 +3,32 @@ import numpy as np
 from utils.dataset import get_score_range
 from sklearn.metrics import cohen_kappa_score, mean_squared_error, accuracy_score, roc_auc_score
 
+class DynamicWeightAverage:
+  def __init__(self, num_tasks, temp):
+    self.num_tasks = num_tasks
+    self.temp = temp
+    self.loss_log = []
+    for _ in range(self.num_tasks):
+       self.loss_log.append([])
+
+  def __call__(self, *args):
+    weights = self._calc_weights()
+    for idx, loss in enumerate(args):
+      self.loss_log[idx].append(loss.to('cpu').detach().numpy().copy())
+    for w, l in zip(weights, args):
+       all_loss += w * l
+    return all_loss, weights.to('cpu').tolist()
+  
+  def _calc_weights(self):
+    if len(self.loss_log[0]) < 2:
+      w_lis = np.ones(self.num_tasks)
+    else:
+      w_lis = np.array([l[-1]/l[-2] for l in self.loss_log])
+    exp_w = np.exp(w_lis/self.temp)
+    return torch.tensor(self.num_tasks*exp_w/np.sum(exp_w)).cuda()
+     
+
+
 def regvarloss(y_true, y_pre_ave, y_pre_var):
     loss = torch.exp(-torch.flatten(y_pre_var))*torch.pow(y_true - torch.flatten(y_pre_ave), 2)/2 + torch.flatten(y_pre_var)/2
     loss = torch.sum(loss)

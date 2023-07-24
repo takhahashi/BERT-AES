@@ -15,7 +15,7 @@ from utils.cfunctions import simple_collate_fn, theta_collate_fn, simplevar_rate
 from utils.utils_models import create_module
 from models.functions import return_predresults
 from models.models import Reg_class_mixmodel, Bert
-from utils.cfunctions import regvarloss, EarlyStopping
+from utils.cfunctions import regvarloss, EarlyStopping, DynamicWeightAverage
 from models.models import Scaler
 import matplotlib.pyplot as plt
 
@@ -58,6 +58,7 @@ def main(cfg: DictConfig):
     model.train()
     crossentropy = nn.CrossEntropyLoss()
     mseloss = nn.MSELoss()
+    weight_d = DynamicWeightAverage(tasks=2, temp=2)
 
     trainloss_list, devloss_list, dev_mse_list, dev_cross_list = [], [], [], []
     scaler = torch.cuda.amp.GradScaler()
@@ -72,7 +73,7 @@ def main(cfg: DictConfig):
                 outputs = model(data)
                 crossentropy_el = crossentropy(outputs['logits'], int_score)
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
-                loss = crossentropy_el + mseloss_el
+                loss, w1, w2 = weight_d(crossentropy_el, mseloss_el)
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
@@ -94,7 +95,7 @@ def main(cfg: DictConfig):
         dev_mse_list = np.append(dev_mse_list, mseloss_el)
         dev_cross_list = np.append(dev_cross_list, crossentropy_el)
 
-        print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
+        print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}, w1:{w1:.4f}, w2:{w2:.4f}')
         earlystopping(devlossall/num_dev_batch, model)
         if(earlystopping.early_stop == True): break
     """

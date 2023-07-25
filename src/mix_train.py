@@ -18,9 +18,12 @@ from models.models import Reg_class_mixmodel, Bert
 from utils.cfunctions import regvarloss, EarlyStopping, DynamicWeightAverage
 from models.models import Scaler
 import matplotlib.pyplot as plt
+import wandb
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_class_mix")
 def main(cfg: DictConfig):
+    wandb.init(project=cfg.wandb.project, project_name=cfg.wandb.project_name)
+    
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
     train_dataset = get_Dataset('reg',
                                 cfg.path.traindata_file_name,
@@ -74,7 +77,8 @@ def main(cfg: DictConfig):
                 crossentropy_el = crossentropy(outputs['logits'], int_score)
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 loss, w_list = weight_d(crossentropy_el, mseloss_el)
-                print(f'w1:{w_list[0]:.4f}, w2:{w_list[1]:.4f}')
+                wandb.log({"loss":loss, "mse_weight": w_list[1], "cross_weight": w_list[0]})
+                #print(f'w1:{w_list[0]:.4f}, w2:{w_list[1]:.4f}')
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
@@ -99,6 +103,7 @@ def main(cfg: DictConfig):
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
         earlystopping(devlossall/num_dev_batch, model)
         if(earlystopping.early_stop == True): break
+    wandb.finish()
     """
     # Plot trainloss_list in blue
     plt.plot(trainloss_list, color='blue', label='Train Loss')

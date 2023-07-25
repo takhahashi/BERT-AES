@@ -22,7 +22,9 @@ import wandb
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_class_mix")
 def main(cfg: DictConfig):
-    wandb.init(project=cfg.wandb.project, name=cfg.wandb.project_name)
+    wandb.init(project=cfg.wandb.project, 
+               name=cfg.wandb.project_name, 
+               settings=wandb.Settings(start_method="thread"))
     
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
     train_dataset = get_Dataset('reg',

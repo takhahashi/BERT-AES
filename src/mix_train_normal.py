@@ -22,9 +22,9 @@ import wandb
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_class_mix_normal")
 def main(cfg: DictConfig):
-    wandb.init(project=cfg.wandb.project, 
-               name=cfg.wandb.project_name, 
-               settings=wandb.Settings(start_method="thread"))
+    #wandb.init(project=cfg.wandb.project, 
+    #           name=cfg.wandb.project_name, 
+    #           settings=wandb.Settings(start_method="thread"))
     
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
     train_dataset = get_Dataset('reg',
@@ -106,7 +106,7 @@ def main(cfg: DictConfig):
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
         earlystopping(devlossall/num_dev_batch, model)
         if(earlystopping.early_stop == True): break
-    wandb.finish()
+    #wandb.finish()
     """
     # Plot trainloss_list in blue
     plt.plot(trainloss_list, color='blue', label='Train Loss')

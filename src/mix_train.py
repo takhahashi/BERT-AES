@@ -63,7 +63,7 @@ def main(cfg: DictConfig):
     model.train()
     crossentropy = nn.CrossEntropyLoss()
     mseloss = nn.MSELoss()
-    #weight_d = DynamicWeightAverage(num_tasks=2, temp=2)
+    weight_d = DynamicWeightAverage(num_tasks=2, temp=2)
 
     trainloss_list, devloss_list, dev_mse_list, dev_cross_list = [], [], [], []
     scaler = torch.cuda.amp.GradScaler()
@@ -78,11 +78,12 @@ def main(cfg: DictConfig):
                 outputs = model(data)
                 crossentropy_el = crossentropy(outputs['logits'], int_score)/torch.tensor(100., device='cpu')
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
-                #loss, w_list = weight_d(crossentropy_el, mseloss_el)
-                loss = crossentropy_el + mseloss_el
+                loss, w_list = weight_d(crossentropy_el, mseloss_el)
+                #loss = crossentropy_el + mseloss_el
                 wandb.log({"epoch": epoch})
                 wandb.log({"loss": loss})
                 wandb.log({"mse_loss":mseloss_el, "cross_loss":crossentropy_el})
+                wandb.log({"mse_wei":w_list[1], "cross_wei":w_list[0]})
                 #print(f'w1:{w_list[0]:.4f}, w2:{w_list[1]:.4f}')
             scaler.scale(loss).backward()
             scaler.step(optimizer)

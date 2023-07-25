@@ -70,6 +70,7 @@ def main(cfg: DictConfig):
     for epoch in range(cfg.training.n_epochs):
         lossall = 0
         devlossall = 0
+        wandb.log({"epoch":epoch})
         model.train()
         for data in train_dataloader:
             data = {k: v.cuda() for k, v in data.items()}
@@ -80,12 +81,14 @@ def main(cfg: DictConfig):
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 loss, w_list = weight_d(crossentropy_el, mseloss_el)
                 wandb.log({"loss":loss, "mse_weight": w_list[1], "cross_weight": w_list[0]})
+                wandb.log({"mse_loss":mseloss_el, "cross_loss":crossentropy_el})
                 #print(f'w1:{w_list[0]:.4f}, w2:{w_list[1]:.4f}')
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
             model.zero_grad()
             lossall += loss.to('cpu').detach().numpy().copy()
+        
 
         trainloss_list = np.append(trainloss_list, lossall/num_train_batch)
         # dev QWKの計算

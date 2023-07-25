@@ -63,24 +63,25 @@ def main(cfg: DictConfig):
     model.train()
     crossentropy = nn.CrossEntropyLoss()
     mseloss = nn.MSELoss()
-    weight_d = DynamicWeightAverage(num_tasks=2, temp=2)
+    #weight_d = DynamicWeightAverage(num_tasks=2, temp=2)
 
     trainloss_list, devloss_list, dev_mse_list, dev_cross_list = [], [], [], []
     scaler = torch.cuda.amp.GradScaler()
     for epoch in range(cfg.training.n_epochs):
         lossall = 0
         devlossall = 0
-        wandb.log({"epoch":epoch})
         model.train()
         for data in train_dataloader:
             data = {k: v.cuda() for k, v in data.items()}
             int_score = torch.round(data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor).cuda()
             with torch.cuda.amp.autocast():
                 outputs = model(data)
-                crossentropy_el = crossentropy(outputs['logits'], int_score)/torch.tensor(100., device='cpu')
+                crossentropy_el = crossentropy(outputs['logits'], int_score)/torch.tensor(100., device='gpu')
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
-                loss, w_list = weight_d(crossentropy_el, mseloss_el)
-                wandb.log({"loss":loss, "mse_weight": w_list[1], "cross_weight": w_list[0]})
+                #loss, w_list = weight_d(crossentropy_el, mseloss_el)
+                loss = crossentropy_el + mseloss_el
+                wandb.log({"epoch": epoch})
+                wandb.log({"loss": loss})
                 wandb.log({"mse_loss":mseloss_el, "cross_loss":crossentropy_el})
                 #print(f'w1:{w_list[0]:.4f}, w2:{w_list[1]:.4f}')
             scaler.scale(loss).backward()

@@ -15,7 +15,7 @@ from utils.cfunctions import simple_collate_fn, theta_collate_fn, simplevar_rate
 from utils.utils_models import create_module
 from models.functions import return_predresults
 from models.models import Reg_class_mixmodel, Bert
-from utils.cfunctions import regvarloss, EarlyStopping, DynamicWeightAverage
+from utils.cfunctions import regvarloss, EarlyStopping, DynamicWeightAverage, ScaleDiffBalance
 from models.models import Scaler
 import matplotlib.pyplot as plt
 import wandb
@@ -63,7 +63,7 @@ def main(cfg: DictConfig):
     model.train()
     crossentropy = nn.CrossEntropyLoss()
     mseloss = nn.MSELoss()
-    weight_d = DynamicWeightAverage(num_tasks=2, temp=2)
+    weight_d = ScaleDiffBalance(num_tasks=2)
 
     trainloss_list, devloss_list, dev_mse_list, dev_cross_list = [], [], [], []
     scaler = torch.cuda.amp.GradScaler()
@@ -78,12 +78,15 @@ def main(cfg: DictConfig):
                 outputs = model(data)
                 crossentropy_el = crossentropy(outputs['logits'], int_score)/torch.tensor(100., device='cpu')
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
-                loss, w_list = weight_d(crossentropy_el, mseloss_el)
+                loss, s_wei, diff_wei, alpha = weight_d(crossentropy_el, mseloss_el)
+                weight_d.update(loss, crossentropy_el, mseloss_el)
                 #loss = crossentropy_el + mseloss_el
                 wandb.log({"epoch": epoch})
                 wandb.log({"loss": loss})
                 wandb.log({"mse_loss":mseloss_el, "cross_loss":crossentropy_el})
-                wandb.log({"mse_wei":w_list[1], "cross_wei":w_list[0]})
+                wandb.log({"mse_scale_wei":s_wei[1], "cross_scale_wei":s_wei[0]})
+                wandb.log({"mse_diff_wei":diff_wei[1], "cross_diff_wei":diff_wei[0]})
+                wandb.log({"alpha": alpha})
                 #print(f'w1:{w_list[0]:.4f}, w2:{w_list[1]:.4f}')
             scaler.scale(loss).backward()
             scaler.step(optimizer)

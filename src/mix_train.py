@@ -78,7 +78,7 @@ def main(cfg: DictConfig):
                 outputs = model(data)
                 crossentropy_el = crossentropy(outputs['logits'], int_score)
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
-                loss, s_wei, diff_wei, alpha = weight_d(crossentropy_el, mseloss_el)
+                loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
                 weight_d.update(loss, crossentropy_el, mseloss_el)
                 #loss = crossentropy_el + mseloss_el
                 #wandb.log({"epoch": epoch})
@@ -88,7 +88,9 @@ def main(cfg: DictConfig):
                            "mse_scale_wei":s_wei[1], 
                            "cross_scale_wei":s_wei[0],
                            "mse_loss_scaled":s_wei[1]*mseloss_el, 
-                           "cross_loss_scaled":s_wei[0]*crossentropy_el})
+                           "cross_loss_scaled":s_wei[0]*crossentropy_el,
+                           "alpha":alpha,
+                           "pre_loss":pre_loss})
                 #wandb.log({"alpha": alpha})
                 #print(f'w1:{w_list[0]:.4f}, w2:{w_list[1]:.4f}')
             scaler.scale(loss).backward()

@@ -53,7 +53,10 @@ class ScaleDiffBalance:
     all_loss = 0
     for w_s, w_d, l in zip(scale_weights, diff_weights, args):
       all_loss += w_s * w_d * l
-    pre_loss = self.all_loss_log[-1]
+    if len(self.all_loss_log) < 1:
+      pre_loss = 0
+    else:
+      pre_loss = self.all_loss_log[-1]
     return alpha * all_loss, scale_weights, diff_weights, alpha, pre_loss
   
   def _calc_scale_weights(self):

@@ -76,7 +76,7 @@ def main(cfg: DictConfig):
             int_score = torch.round(data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor).cuda()
             with torch.cuda.amp.autocast():
                 outputs = model(data)
-                crossentropy_el = crossentropy(outputs['logits'], int_score)/torch.tensor(100., device='cpu')
+                crossentropy_el = crossentropy(outputs['logits'], int_score)
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 loss, s_wei, diff_wei, alpha = weight_d(crossentropy_el, mseloss_el)
                 weight_d.update(loss, crossentropy_el, mseloss_el)

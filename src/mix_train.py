@@ -81,12 +81,15 @@ def main(cfg: DictConfig):
                 loss, s_wei, diff_wei, alpha = weight_d(crossentropy_el, mseloss_el)
                 weight_d.update(loss, crossentropy_el, mseloss_el)
                 #loss = crossentropy_el + mseloss_el
-                wandb.log({"epoch": epoch})
-                wandb.log({"loss": loss})
-                wandb.log({"mse_loss":mseloss_el, "cross_loss":crossentropy_el})
-                wandb.log({"mse_scale_wei":s_wei[1], "cross_scale_wei":s_wei[0]})
-                wandb.log({"mse_loss_scaled":s_wei[1]*mseloss_el, "cross_loss_scaled":s_wei[0]*crossentropy_el})
-                wandb.log({"alpha": alpha})
+                #wandb.log({"epoch": epoch})
+                wandb.log({"loss": loss,
+                           "mse_loss":mseloss_el, 
+                           "cross_loss":crossentropy_el, 
+                           "mse_scale_wei":s_wei[1], 
+                           "cross_scale_wei":s_wei[0],
+                           "mse_loss_scaled":s_wei[1]*mseloss_el, 
+                           "cross_loss_scaled":s_wei[0]*crossentropy_el})
+                #wandb.log({"alpha": alpha})
                 #print(f'w1:{w_list[0]:.4f}, w2:{w_list[1]:.4f}')
             scaler.scale(loss).backward()
             scaler.step(optimizer)

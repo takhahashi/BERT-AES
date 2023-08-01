@@ -80,7 +80,7 @@ def main(cfg: DictConfig):
                 try:
                     mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 except:
-                    print(f'score:{outputs["score"].squeeze()}, labels:{data["labels"].to("cpu").detach()}')
+                    print(f'score:{outputs["score"].squeeze()}, labels:{data["labels"]}')
                     raise ValueError("error!")
                 #mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)

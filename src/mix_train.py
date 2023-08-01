@@ -120,8 +120,8 @@ def main(cfg: DictConfig):
             except:
                 print(f'score:{dev_outputs["score"].squeeze()}, labels:{d_data["labels"].to("cpu").detach()}')
                 raise ValueError("error!")
-            #loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
-            devlossall += mseloss_el
+            loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
+            devlossall += loss
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
         dev_mse_list = np.append(dev_mse_list, mseloss_el)
         dev_cross_list = np.append(dev_cross_list, crossentropy_el)

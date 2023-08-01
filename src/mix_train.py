@@ -77,7 +77,12 @@ def main(cfg: DictConfig):
             with torch.cuda.amp.autocast():
                 outputs = model(data)
                 crossentropy_el = crossentropy(outputs['logits'], int_score)
-                mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
+                try:
+                    mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
+                except:
+                    print(f'score:{outputs["score"].squeeze()}, labels:{data["labels"].to("cpu").detach()}')
+                    raise ValueError("error!")
+                #mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
                 weight_d.update(loss, crossentropy_el, mseloss_el)
                 #loss = crossentropy_el + mseloss_el

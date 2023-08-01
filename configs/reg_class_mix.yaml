@@ -1,7 +1,7 @@
 training:
   fold: 0
   test_size: 0.3
-  n_epochs: 10
+  n_epochs: 20
   batch_size: 8
   learning_rate: 0.00001
   collate_fn: True

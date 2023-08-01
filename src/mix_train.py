@@ -77,12 +77,14 @@ def main(cfg: DictConfig):
             with torch.cuda.amp.autocast():
                 outputs = model(data)
                 crossentropy_el = crossentropy(outputs['logits'], int_score)
+                """
                 try:
                     mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 except:
                     print(f'score:{outputs["score"].squeeze()}, labels:{data["labels"]}')
                     raise ValueError("error!")
-                #mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
+                """
+                mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
                 weight_d.update(loss, crossentropy_el, mseloss_el)
                 #loss = crossentropy_el + mseloss_el
@@ -114,12 +116,7 @@ def main(cfg: DictConfig):
             int_score = torch.round(d_data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor)
             dev_outputs = {k: v.to('cpu').detach() for k, v in model(d_data).items()}
             crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
-            
-            try:
-                mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
-            except:
-                print(f'score:{dev_outputs["score"].squeeze()}, labels:{d_data["labels"].to("cpu").detach()}')
-                raise ValueError("error!")
+            mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
             loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
             devlossall += loss
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)

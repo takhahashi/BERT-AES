@@ -52,10 +52,13 @@ class ScaleDiffBalance:
     alpha = self._calc_alpha(diff_weights)
     all_loss = 0
     for w_s, w_d, l in zip(scale_weights, diff_weights, args):
+      all_loss += w_s * w_d * l
+      """
       try:
         all_loss += w_s * w_d * l
       except:
         raise ValueError("error!")
+      """
     if len(self.all_loss_log) < 1:
       pre_loss = 0
     else:

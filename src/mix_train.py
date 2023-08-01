@@ -83,11 +83,13 @@ def main(cfg: DictConfig):
                 wandb.log({"loss": loss,
                            "mse_loss":mseloss_el, 
                            "cross_loss":crossentropy_el, 
-                           "mse_scale_wei":s_wei[1], 
-                           "cross_scale_wei":s_wei[0],
+                           "Scale_Weight_mse":s_wei[1], 
+                           "Scale_Weight_cross":s_wei[0],
                            "mse_loss_scaled":s_wei[1]*mseloss_el, 
                            "cross_loss_scaled":s_wei[0]*crossentropy_el,
                            "alpha":alpha,
+                           "Diff_Weight_mse":diff_wei[1],
+                           "Diff_Weight_cross":diff_wei[0],
                            "pre_loss":pre_loss})
             scaler.scale(loss).backward()
             scaler.step(optimizer)

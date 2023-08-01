@@ -105,6 +105,7 @@ def main(cfg: DictConfig):
             scaler.update()
             model.zero_grad()
             lossall += loss.to('cpu').detach().numpy().copy()
+            break
         
 
         trainloss_list = np.append(trainloss_list, lossall/num_train_batch)
@@ -118,8 +119,7 @@ def main(cfg: DictConfig):
             crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
             mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
             loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
-            print(loss)
-            devlossall += loss
+            devlossall += loss.to('cpu').detach().numpy().copy()
             break
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
         dev_mse_list = np.append(dev_mse_list, mseloss_el)

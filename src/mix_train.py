@@ -113,12 +113,14 @@ def main(cfg: DictConfig):
         model.eval()
         for dev_data in dev_dataloader:
             d_data = {k: v.cuda() for k, v in dev_data.items()}
-            int_score = torch.round(d_data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor)
+            int_score = torch.round(d_data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor).to('cpu')
             dev_outputs = {k: v.to('cpu').detach() for k, v in model(d_data).items()}
             crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
             mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
             loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
+            print(loss)
             devlossall += loss
+            break
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
         dev_mse_list = np.append(dev_mse_list, mseloss_el)
         dev_cross_list = np.append(dev_cross_list, crossentropy_el)

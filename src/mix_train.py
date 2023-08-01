@@ -109,7 +109,12 @@ def main(cfg: DictConfig):
             int_score = torch.round(d_data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor)
             dev_outputs = {k: v.to('cpu').detach() for k, v in model(d_data).items()}
             crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
-            mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
+            
+            try:
+                mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
+            except:
+                print(f'score:{dev_outputs["score"].squeeze()}, labels:{d_data["labels"].to("cpu").detach()}')
+                raise ValueError("error!")
             loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
             devlossall += loss
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)

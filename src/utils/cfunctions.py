@@ -42,9 +42,9 @@ class ScaleDiffBalance:
     self.beta = beta
   
   def update(self, all_loss, *args):
-    self.all_loss_log = np.append(self.all_loss_log, all_loss.to('cpu').detach().numpy().copy())
+    self.all_loss_log = np.append(self.all_loss_log, all_loss)
     for idx, loss in enumerate(args):
-       self.loss_log[idx] = np.append(self.loss_log[idx], loss.to('cpu').detach().numpy().copy())
+       self.loss_log[idx] = np.append(self.loss_log[idx], loss)
   
   def __call__(self, *args):
     scale_weights = self._calc_scale_weights()

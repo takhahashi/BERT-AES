@@ -105,7 +105,7 @@ def main(cfg: DictConfig):
         dev_mse_list = np.append(dev_mse_list, mseloss_el)
         dev_cross_list = np.append(dev_cross_list, crossentropy_el)
 
-        s_wei = weight_d._calc_scale_weights
+        s_wei = weight_d._calc_scale_weights()
         wandb.log({
             "all_loss":lossall/num_train_batch,
             "Scale_Weight_mse":s_wei[1], 

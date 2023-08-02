@@ -106,12 +106,17 @@ def main(cfg: DictConfig):
         dev_cross_list = np.append(dev_cross_list, crossentropy_el)
 
         s_wei = weight_d._calc_scale_weights()
+        diff_wei = weight_d._calc_diff_weights()
         wandb.log({
             "all_loss":lossall/num_train_batch,
             "Scale_Weight_mse":s_wei[1], 
             "Scale_Weight_cross":s_wei[0],
             "mse_loss":mse_loss/num_train_batch, 
             "cross_loss":cross_loss/num_train_batch,
+            "Scaled_mse_loss":s_wei[1] * mse_loss/num_train_batch,
+            "Scaled_cross_loss":s_wei[0] * cross_loss/num_train_batch,
+            "Diff_Weight_mse":diff_wei[1],
+            "Diff_Weight_cross":diff_wei[0],
         })
         weight_d.update(lossall/num_train_batch, cross_loss/num_train_batch, mse_loss/num_train_batch)
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')

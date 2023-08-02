@@ -64,7 +64,7 @@ def main(cfg: DictConfig):
     pred_probs = softmax(torch.tensor(eval_results['logits']))
     mix_trust = pred_probs[torch.arange(len(pred_probs)), pred_int_score]
     eval_results.update({'mix_conf': mix_trust.numpy().copy()})
-
+    """
     mcdp_estimater = UeEstimatorDp(model,
                                    cfg.ue.num_dropout,
                                    cfg.model.reg_or_class,
@@ -72,6 +72,7 @@ def main(cfg: DictConfig):
                                    )
     mcdp_results = mcdp_estimater(test_dataloader)
     eval_results.update(mcdp_results)
+
 
 
     ensemble_estimater = UeEstimatorEnsemble(model, 
@@ -82,7 +83,6 @@ def main(cfg: DictConfig):
     ensemble_results = ensemble_estimater(test_dataloader)
     eval_results.update(ensemble_results)
 
-    """
     max_prob = pred_probs[torch.arange(len(pred_probs)), torch.argmax(pred_probs, dim=-1)]
     eval_results.update({'MP': max_prob.numpy().copy()})
 

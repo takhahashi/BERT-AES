@@ -103,7 +103,9 @@ def main(cfg: DictConfig):
                     "Scale_Weight_cross":s_wei[0],
                     "mse_loss_scaled":s_wei[1]*mseloss_el, 
                     "cross_loss_scaled":s_wei[0]*crossentropy_el,
-                    "loss": loss
+                    "loss": loss,
+                    "mse_loss":mseloss_el, 
+                    "cross_loss":crossentropy_el, 
                 })
                 mse_loss_list = np.append(mse_loss_list, mseloss_el.to('cpu').detach().numpy().copy())
                 cross_loss_list = np.append(cross_loss_list, crossentropy_el.to('cpu').detach().numpy().copy())

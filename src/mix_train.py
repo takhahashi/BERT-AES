@@ -22,9 +22,11 @@ import wandb
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_class_mix")
 def main(cfg: DictConfig):
+    """
     wandb.init(project=cfg.wandb.project, 
                name=cfg.wandb.project_name, 
                settings=wandb.Settings(start_method="thread"))
+    """
     
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
     train_dataset = get_Dataset('reg',
@@ -73,7 +75,7 @@ def main(cfg: DictConfig):
         model.train()
         mse_loss_list, cross_loss_list = [], []
         for data in train_dataloader:
-            wandb.log({"epoch":epoch})
+            #wandb.log({"epoch":epoch})
             data = {k: v.cuda() for k, v in data.items()}
             int_score = torch.round(data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor).cuda()
             with torch.cuda.amp.autocast():
@@ -107,6 +109,7 @@ def main(cfg: DictConfig):
 
         s_wei = weight_d._calc_scale_weights()
         diff_wei = weight_d._calc_diff_weights()
+        """
         wandb.log({
             "all_loss":lossall/num_train_batch,
             "Scale_Weight_mse":s_wei[1], 
@@ -118,11 +121,12 @@ def main(cfg: DictConfig):
             "Diff_Weight_mse":diff_wei[1],
             "Diff_Weight_cross":diff_wei[0],
         })
+        """
         weight_d.update(lossall/num_train_batch, cross_loss/num_train_batch, mse_loss/num_train_batch)
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
         earlystopping(devlossall/num_dev_batch, model)
         if(earlystopping.early_stop == True): break
-    wandb.finish()
+    #wandb.finish()
     """
     # Plot trainloss_list in blue
     plt.plot(trainloss_list, color='blue', label='Train Loss')

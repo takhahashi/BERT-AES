@@ -56,7 +56,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], [] 
     ##reg_trust_score####
     for foldr in five_fold_results:
@@ -78,6 +78,7 @@ def main(cfg: DictConfig):
     save_path = save_dir_path + '/reg_trust_score'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
+    """
 
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##reg_dp###

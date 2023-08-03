@@ -102,13 +102,13 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
     """
-    
+
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##reg_ense###
     for foldr in five_fold_results:
         true = foldr['labels']
         pred = foldr['ense_score']
-        uncertainty = foldr['calib_ense_var']
+        uncertainty = foldr['ense_var']
         risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
         rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
         rpp = calc_rpp(conf=-uncertainty, risk=risk)

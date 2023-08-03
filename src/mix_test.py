@@ -102,6 +102,5 @@ def main(cfg: DictConfig):
     with open(cfg.path.results_save_path, mode="wt", encoding="utf-8") as f:
         json.dump(list_results, f, ensure_ascii=False)
     
-
 if __name__ == "__main__":
     main()

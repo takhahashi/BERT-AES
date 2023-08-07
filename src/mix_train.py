@@ -65,7 +65,7 @@ def main(cfg: DictConfig):
     model.train()
     crossentropy = nn.CrossEntropyLoss()
     mseloss = nn.MSELoss()
-    weight_d = ScaleDiffBalance(num_tasks=2, beta=1.)
+    weight_d = ScaleDiffBalance(num_tasks=2, beta=0.)
 
     trainloss_list, devloss_list, dev_mse_list, dev_cross_list = [], [], [], []
     scaler = torch.cuda.amp.GradScaler()

@@ -435,7 +435,126 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
+    five_fold_results = []
+    for fold in range(5):
+        with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt{}/fold_{}/pred_results_scale_only'.format(cfg.aes.prompt_id, fold)) as f:
+            fold_results = json.load(f)
+        five_fold_results.append({k: np.array(v) for k, v in fold_results.items()})
 
+    save_dir_path = cfg.path.save_dir_path
+
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##Mix conf####
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = foldr['score']
+        uncertainty = -foldr['mix_conf']
+        risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='reg', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': fresults_rcc_y}
+    save_path = save_dir_path + '/mix_scale_only'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
+
+
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##Mix_dp###
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = foldr['mcdp_score']
+        uncertainty = -foldr['mcdp_MP']
+        risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='reg', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': fresults_rcc_y}
+    save_path = save_dir_path + '/mix_dp_scale_only'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
+
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##Mix_dp_ent##
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = foldr['mcdp_score']
+        uncertainty = foldr['mcdp_entropy']
+        risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='reg', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': fresults_rcc_y}
+    save_path = save_dir_path + '/mix_dp_entropy_scale_only'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
+
+
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##MIx_Ense##
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = foldr['ense_score']
+        uncertainty = -foldr['ense_MP']
+        risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='reg', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': fresults_rcc_y}
+    save_path = save_dir_path + '/mix_mul_scale_only'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
+
+
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##Mix_Ense_entropy
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = foldr['ense_score']
+        uncertainty = foldr['ense_entropy']
+        risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='reg', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': fresults_rcc_y}
+    save_path = save_dir_path + '/mix_mul_entropy_scale_only'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
     """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##Mix MP####

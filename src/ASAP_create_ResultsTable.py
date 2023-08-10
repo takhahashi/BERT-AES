@@ -51,11 +51,12 @@ def main():
     rpp_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rpp_talbe.tsv', sep='\t', index=True)
 
     ##rcc###
+    rcc_ue_type = ['simplevar_rcc', 'MP_rcc', 'class_trust_score_rcc', 'mix_rcc', 'mix_mul_rcc']
     rcc_dic = {}
-    for utype in utypes:
+    for utype in rcc_ue_type:
         rcc_dic[utype] = []
     for prompt_id in range(1, 9):
-        for utype in utypes:
+        for utype in rcc_ue_type:
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -64,13 +65,13 @@ def main():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rcc_dic[k] = n_v
     rcc_table = pd.DataFrame.from_dict(rcc_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
-    rcc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc_talbe.tsv', sep='\t', index=True)
+    rcc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc_talbe_qwk.tsv', sep='\t', index=True)
 
 
     ##rcc_y_fig###
     for prompt_id in range(1, 9):
         plt.figure()
-        for utype in ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp', 'class_mul', 'class_trust_score']:
+        for utype in ['simplevar_rcc', 'MP_rcc', 'class_trust_score_rcc', 'mix_rcc', 'mix_mul_rcc']:
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -83,14 +84,14 @@ def main():
                 rcc_y_list.append(np.array(rcc_y)[:min_len])
             mean_rcc_y = np.mean(rcc_y_list, axis=0)
             
-            fraction = 1 / len(mean_rcc_y)
-            rcc_x = [fraction]
+            fraction = 1 / (len(mean_rcc_y) - 1)
+            rcc_x = [0]
             for i in range(len(mean_rcc_y)-1):
                 rcc_x = np.append(rcc_x, fraction+rcc_x[-1])
-            down_data = down_sample([rcc_x, mean_rcc_y], samples=50)
-            plt.plot(down_data[0], down_data[1], label=utype)
+            #down_data = down_sample([rcc_x, mean_rcc_y], samples=50)
+            plt.plot(rcc_x, rcc_y, label=utype)
         plt.legend()
-        plt.savefig('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}.png'.format(prompt_id)) 
+        plt.savefig('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}_qwk.png'.format(prompt_id)) 
         plt.show()
 
     #table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix', 'dp_mix', 'mul_mix']

@@ -53,10 +53,10 @@ def main():
     ##rcc###
     rcc_ue_type = ['simplevar_rcc', 'MP_rcc', 'class_trust_score_rcc', 'mix_rcc', 'mix_mul_rcc']
     rcc_dic = {}
-    for utype in utypes:
+    for utype in rcc_ue_type:
         rcc_dic[utype] = []
     for prompt_id in range(1, 9):
-        for utype in utypes:
+        for utype in rcc_ue_type:
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
@@ -65,7 +65,7 @@ def main():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rcc_dic[k] = n_v
     rcc_table = pd.DataFrame.from_dict(rcc_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
-    rcc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc_talbe.tsv', sep='\t', index=True)
+    rcc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc_talbe_qwk.tsv', sep='\t', index=True)
 
 
     ##rcc_y_fig###

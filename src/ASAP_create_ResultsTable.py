@@ -89,7 +89,7 @@ def main():
             for i in range(len(mean_rcc_y)-1):
                 rcc_x = np.append(rcc_x, fraction+rcc_x[-1])
             #down_data = down_sample([rcc_x, mean_rcc_y], samples=50)
-            plt.plot(rcc_x, rcc_y, label=utype)
+            plt.plot(rcc_x, mean_rcc_y, label=utype)
         plt.legend()
         plt.savefig('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}_qwk.png'.format(prompt_id)) 
         plt.show()

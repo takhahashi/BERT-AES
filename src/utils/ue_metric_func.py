@@ -51,7 +51,7 @@ def calc_rcc_auc_qwk(pred, true, conf, prompt_id, reg_or_class, num_el):
       auc += (points_y[-1] + score_fn_subset) * (n%num_el) /2
       points_x.append(1.)
       points_y.append(score_fn_subset)
-  return auc, points_x, points_y, ptc_pair
+  return auc, points_x, points_y
 
   
 

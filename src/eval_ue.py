@@ -52,7 +52,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': fresults_rcc_y}
-    save_path = save_dir_path + '/simplevar_rcc'
+    save_path = save_dir_path + '/simplevar_rcc_corr'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -153,7 +153,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': fresults_rcc_y}
-    save_path = save_dir_path + '/MP_rcc'
+    save_path = save_dir_path + '/MP_rcc_corr'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -176,7 +176,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': fresults_rcc_y}
-    save_path = save_dir_path + '/class_trust_score_rcc'
+    save_path = save_dir_path + '/class_trust_score_rcc_corr'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
     """
@@ -340,7 +340,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': fresults_rcc_y}
-    save_path = save_dir_path + '/mix_rcc'
+    save_path = save_dir_path + '/mix_rcc_corr'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -408,7 +408,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': fresults_rcc_y}
-    save_path = save_dir_path + '/mix_mul_rcc'
+    save_path = save_dir_path + '/mix_mul_rcc_corr'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 

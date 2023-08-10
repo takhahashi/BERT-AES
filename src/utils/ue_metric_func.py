@@ -43,11 +43,13 @@ def calc_rcc_auc_qwk(pred, true, conf, prompt_id, reg_or_class, num_el):
       points_x.append(n/(k+num_el))
       points_y.append(score_fn_subset)
     else:
+      pred_subset = [i[0] for i in ptc_pair[k:]]
+      true_subset = [i[1] for i in ptc_pair[k:]]
       score_fn_subset = 1 - cohen_kappa_score(true_sorted, pred_sorted, labels = list(range(low, high + 1)), weights='quadratic')
       auc += (points_y[-1] + score_fn_subset) * (n%25) /2
       points_x.append(1.)
       points_y.append(score_fn_subset)
-  return auc, points_x, points_y
+  return auc, points_x, points_y, ptc_pair
 
   
 

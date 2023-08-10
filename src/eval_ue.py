@@ -16,7 +16,7 @@ from utils.utils_data import TrainDataModule
 from utils.cfunctions import simple_collate_fn
 from utils.utils_models import create_module
 from utils.dataset import get_Dataset
-from utils.ue_metric_func import calc_rcc_auc, calc_rpp, calc_roc_auc, calc_risk, calc_rcc_auc_qwk
+from utils.ue_metric_func import calc_rcc_auc, calc_rpp, calc_roc_auc, calc_risk, calc_rcc_auc_qwk, calc_rcc_auc_corr
 from models.functions import return_predresults
 from ue4nlp.ue_estimater_ensemble import UeEstimatorEnsemble
 from ue4nlp.ue_estimater_trust import UeEstimatorTrustscore
@@ -41,7 +41,7 @@ def main(cfg: DictConfig):
         pred = foldr['score']
         uncertainty = foldr['calib_var']
         risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
-        rcc_auc, rcc_x, rcc_y = calc_rcc_auc_qwk(pred, true, conf=-uncertainty, prompt_id=cfg.aes.prompt_id, reg_or_class='reg', num_el=25)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc_corr(pred, true, conf=-uncertainty, prompt_id=cfg.aes.prompt_id, reg_or_class='reg', num_el=25)
         rpp = calc_rpp(conf=-uncertainty, risk=risk)
         roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='reg', prompt_id=cfg.aes.prompt_id)
         fresults_rcc = np.append(fresults_rcc, rcc_auc)
@@ -142,7 +142,7 @@ def main(cfg: DictConfig):
         pred = np.argmax(foldr['logits'], axis=-1)
         uncertainty = -foldr['MP']
         risk = calc_risk(pred, true, 'class', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
-        rcc_auc, rcc_x, rcc_y = calc_rcc_auc_qwk(pred, true, conf=-uncertainty, prompt_id=cfg.aes.prompt_id, reg_or_class='class', num_el=25)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc_corr(pred, true, conf=-uncertainty, prompt_id=cfg.aes.prompt_id, reg_or_class='class', num_el=25)
         rpp = calc_rpp(conf=-uncertainty, risk=risk)
         roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='class', prompt_id=cfg.aes.prompt_id)
         fresults_rcc = np.append(fresults_rcc, rcc_auc)
@@ -165,7 +165,7 @@ def main(cfg: DictConfig):
         pred = np.argmax(foldr['logits'], axis=-1)
         uncertainty = -foldr['trust_score']
         risk = calc_risk(pred, true, 'class', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
-        rcc_auc, rcc_x, rcc_y = calc_rcc_auc_qwk(pred, true, conf=-uncertainty, prompt_id=cfg.aes.prompt_id, reg_or_class='class', num_el=25)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc_corr(pred, true, conf=-uncertainty, prompt_id=cfg.aes.prompt_id, reg_or_class='class', num_el=25)
         rpp = calc_rpp(conf=-uncertainty, risk=risk)
         roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='class', prompt_id=cfg.aes.prompt_id)
         fresults_rcc = np.append(fresults_rcc, rcc_auc)
@@ -329,7 +329,7 @@ def main(cfg: DictConfig):
         pred = foldr['score']
         uncertainty = -foldr['mix_conf']
         risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
-        rcc_auc, rcc_x, rcc_y = calc_rcc_auc_qwk(pred, true, conf=-uncertainty, prompt_id=cfg.aes.prompt_id, reg_or_class='reg', num_el=25)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc_corr(pred, true, conf=-uncertainty, prompt_id=cfg.aes.prompt_id, reg_or_class='reg', num_el=25)
         rpp = calc_rpp(conf=-uncertainty, risk=risk)
         roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='reg', prompt_id=cfg.aes.prompt_id)
         fresults_rcc = np.append(fresults_rcc, rcc_auc)
@@ -397,7 +397,7 @@ def main(cfg: DictConfig):
         pred = foldr['ense_score']
         uncertainty = -foldr['ense_MP']
         risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
-        rcc_auc, rcc_x, rcc_y = calc_rcc_auc_qwk(pred, true, conf=-uncertainty, prompt_id=cfg.aes.prompt_id, reg_or_class='reg', num_el=25)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc_corr(pred, true, conf=-uncertainty, prompt_id=cfg.aes.prompt_id, reg_or_class='reg', num_el=25)
         rpp = calc_rpp(conf=-uncertainty, risk=risk)
         roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='reg', prompt_id=cfg.aes.prompt_id)
         fresults_rcc = np.append(fresults_rcc, rcc_auc)

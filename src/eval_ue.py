@@ -29,7 +29,7 @@ def calc_mean_rcc_y(rcc_y_lis):
             min_len = len(rcc_y)
     rcc_y_arr = []
     for rcc_y in rcc_y_arr:
-        rcc_y_arr.append(np.array(rcc_y_arr)[:min_len])
+        rcc_y_arr.append(np.array(rcc_y)[:min_len])
     mean_rcc_y = np.mean(rcc_y_arr, axis=0)
     return mean_rcc_y
 

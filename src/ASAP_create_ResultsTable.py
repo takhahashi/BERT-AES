@@ -1,3 +1,5 @@
+import hydra
+from omegaconf import DictConfig
 import numpy as np
 import pandas as pd
 import json
@@ -14,8 +16,8 @@ def down_sample(data, samples=300):
             new_data[1].append(data[1][i])
     return new_data
 
-
-def main():
+@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_ue_config")
+def main(cfg: DictConfig):
     #utypes = ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']
     utypes = ['simplevar', 'MP', 'class_trust_score', 'mix', 'mix_mul', 'mix_scale_only', 'mix_mul_scale_only']
     ###roc_auc###
@@ -64,8 +66,7 @@ def main():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rcc_dic[k] = n_v
     rcc_table = pd.DataFrame.from_dict(rcc_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
-    rcc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc_table/normal_table.tsv', sep='\t', index=True)
-
+    rcc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc_table/{}_table.tsv'.format(cfg.rcc.metric_type), sep='\t', index=True)
 
     ##rcc_y_fig###
     for prompt_id in range(1, 9):
@@ -82,7 +83,7 @@ def main():
             down_data = down_sample([rcc_x, mean_rcc_y], samples=50)
             plt.plot(down_data[0], down_data[1], label=utype)
         plt.legend()
-        plt.savefig('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc_fig/normal_pt{}.png'.format(prompt_id)) 
+        plt.savefig('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc_fig/{}_pt{}.png'.format(cfg.rcc.metric_type, prompt_id)) 
         plt.show()
 
     #table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix', 'dp_mix', 'mul_mix']

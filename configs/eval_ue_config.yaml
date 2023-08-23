@@ -1,7 +1,7 @@
 ue:
   binary_risk: True
 rcc:
-  metric_type: normal
+  metric_type: scaledrmse
 aes:
   prompt_id: 1
 path:

@@ -64,7 +64,7 @@ def main():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rcc_dic[k] = n_v
     rcc_table = pd.DataFrame.from_dict(rcc_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
-    rcc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc/rmse_talbe.tsv', sep='\t', index=True)
+    rcc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc/rmse_table.tsv', sep='\t', index=True)
 
 
     ##rcc_y_fig###

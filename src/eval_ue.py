@@ -31,7 +31,7 @@ def calc_mean_rcc_y(rcc_y_lis):
     for rcc_y in rcc_y_lis:
         rcc_y_arr.append(np.array(rcc_y)[:min_len])
     mean_rcc_y = np.mean(rcc_y_arr, axis=0)
-    return mean_rcc_y
+    return mean_rcc_y.tolist()
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_ue_config")
 def main(cfg: DictConfig):

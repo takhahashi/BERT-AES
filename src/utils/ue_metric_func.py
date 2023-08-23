@@ -5,7 +5,69 @@ from utils.dataset import get_score_range
 
 from utils.cfunctions import score_f2int
 
-def calc_rcc_auc(conf, risk):
+def calc_rcc_auc(true, pred, conf, metric_type, prompt_id, reg_or_class=None, num_el=None, binary_risk=None):
+  if metric_type == 'normal':
+    risk = calc_risk(pred, true, 'reg', prompt_id, binary=binary_risk)
+    auc, points_x, points_y = calc_rcc_auc_simple(conf, risk)
+  elif metric_type == 'rmse':
+    auc, points_x, points_y = calc_rcc_auc_rmse(pred, true, conf, prompt_id, reg_or_class)
+  elif metric_type == 'scaledrmse':
+    auc, points_x, points_y = calc_rcc_auc_scaledrmse(pred, true, conf, prompt_id, reg_or_class)
+  elif metric_type == 'qwk':
+    auc, points_x, points_y = calc_rcc_auc_qwk(pred, true, conf, prompt_id, reg_or_class, num_el)
+  else:
+    raise ValueError("{} is not a valid value for metric_type".format(metric_type))
+  return auc, points_x, points_y
+
+def calc_rcc_auc_simple(conf, risk):
+  n = len(conf)
+  cr_pair = list(zip(conf, risk))
+  cr_pair.sort(key=lambda x: x[0], reverse=True)
+  cumulative_risk = [cr_pair[0][1]]
+  for i in range(1, n):
+    cumulative_risk.append(cr_pair[i][1] + cumulative_risk[-1])
+  points_x, points_y = [], []
+  auc = 0
+  for k in range(n):
+    auc += cumulative_risk[k] / (1+k)
+    points_x.append((1+k) / n)  # coverage
+    points_y.append(cumulative_risk[k] / (1+k))  # current avg. risk
+  return auc, points_x, points_y
+
+def calc_rcc_auc_rmse(pred, true, conf, prompt_id, reg_or_class):
+  low, high = get_score_range(prompt_id)
+  if reg_or_class == 'reg':
+    pred_org = score_f2int(pred, prompt_id)
+    true_org = score_f2int(true, prompt_id)
+  else:
+    pred_org = (pred + low).astype('int32')
+    true_org = (true + low).astype('int32')
+  risk = (pred_org - true_org) ** 2
+  n = len(conf)
+  cr_pair = list(zip(conf, risk))
+  cr_pair.sort(key=lambda x: x[0], reverse=True)
+  cumulative_risk = [cr_pair[0][1]]
+  for i in range(1, n):
+    cumulative_risk.append(cr_pair[i][1] + cumulative_risk[-1])
+  points_x, points_y = [], []
+  auc = 0
+  for k in range(n):
+    auc += cumulative_risk[k] / (1+k)
+    points_x.append((1+k) / n)  # coverage
+    points_y.append(cumulative_risk[k] / (1+k))  # current avg. risk
+  return auc, points_x, points_y
+
+def calc_rcc_auc_scaledrmse(pred, true, conf, prompt_id, reg_or_class):
+  low, high = get_score_range(prompt_id)
+  if reg_or_class == 'reg':
+    pred_org = score_f2int(pred, prompt_id)
+    true_org = score_f2int(true, prompt_id)
+  else:
+    pred_org = (pred + low).astype('int32')
+    true_org = (true + low).astype('int32')
+  pred_scaled = (pred_org - low) / (high - low)
+  true_scaled = (true_org - low) / (high - low)
+  risk = (pred_scaled - true_scaled) ** 2
   n = len(conf)
   cr_pair = list(zip(conf, risk))
   cr_pair.sort(key=lambda x: x[0], reverse=True)

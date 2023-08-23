@@ -65,6 +65,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': mean_rcc_y}
+    print(type(results_dic['rcc']),type(results_dic['rpp']),type(results_dic['roc']),type(results_dic['rcc_y']))
     save_path = save_dir_path + '/simplevar'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)

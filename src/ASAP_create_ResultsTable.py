@@ -17,7 +17,7 @@ def down_sample(data, samples=300):
 
 def main():
     #utypes = ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']
-    utypes = ['simplevar', 'reg_mul', 'MP', 'class_mul_MP', 'class_trust_score', 'mix', 'mix_mul', 'mix_scale_only', 'mix_mul_scale_only']
+    utypes = ['simplevar', 'MP', 'class_trust_score', 'mix', 'mix_mul', 'mix_scale_only', 'mix_mul_scale_only']
     ###roc_auc###
     roc_dic = {}
     for utype in utypes:
@@ -70,7 +70,7 @@ def main():
     ##rcc_y_fig###
     for prompt_id in range(1, 9):
         plt.figure()
-        for utype in ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp', 'class_mul', 'class_trust_score']:
+        for utype in utypes:
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}

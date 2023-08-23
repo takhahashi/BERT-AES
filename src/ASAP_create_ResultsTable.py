@@ -74,15 +74,7 @@ def main():
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
-            min_len = 1000000
-            for rcc_y in results['rcc_y']:
-                if len(rcc_y) < min_len:
-                    min_len = len(rcc_y)
-            rcc_y_list = []
-            for rcc_y in results['rcc_y']:
-                rcc_y_list.append(np.array(rcc_y)[:min_len])
-            mean_rcc_y = np.mean(rcc_y_list, axis=0)
-            
+            mean_rcc_y = results['rcc_y']
             fraction = 1 / len(mean_rcc_y)
             rcc_x = [fraction]
             for i in range(len(mean_rcc_y)-1):

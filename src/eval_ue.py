@@ -22,6 +22,17 @@ from ue4nlp.ue_estimater_ensemble import UeEstimatorEnsemble
 from ue4nlp.ue_estimater_trust import UeEstimatorTrustscore
 from ue4nlp.ue_estimater_mcd import UeEstimatorDp
 
+def calc_mean_rcc_y(rcc_y_lis):
+    min_len = len(rcc_y_lis[0])
+    for rcc_y in rcc_y_lis:
+        if len(rcc_y) < min_len:
+            min_len = len(rcc_y)
+    rcc_y_arr = []
+    for rcc_y in rcc_y_arr:
+        rcc_y_arr.append(np.array(rcc_y_arr)[:min_len])
+    mean_rcc_y = np.mean(rcc_y_arr, axis=0)
+    return mean_rcc_y
+
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_ue_config")
 def main(cfg: DictConfig):
     
@@ -49,10 +60,11 @@ def main(cfg: DictConfig):
         fresults_rcc_y.append(rcc_y)
         fresults_roc = np.append(fresults_roc, roc_auc)
         fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
     results_dic = {'rcc': np.mean(fresults_rcc), 
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
-                   'rcc_y': fresults_rcc_y}
+                   'rcc_y': mean_rcc_y}
     save_path = save_dir_path + '/simplevar'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
@@ -150,10 +162,11 @@ def main(cfg: DictConfig):
         fresults_rcc_y.append(rcc_y)
         fresults_roc = np.append(fresults_roc, roc_auc)
         fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
     results_dic = {'rcc': np.mean(fresults_rcc), 
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
-                   'rcc_y': fresults_rcc_y}
+                   'rcc_y': mean_rcc_y}
     save_path = save_dir_path + '/MP'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
@@ -173,10 +186,11 @@ def main(cfg: DictConfig):
         fresults_rcc_y.append(rcc_y)
         fresults_roc = np.append(fresults_roc, roc_auc)
         fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
     results_dic = {'rcc': np.mean(fresults_rcc), 
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
-                   'rcc_y': fresults_rcc_y}
+                   'rcc_y': mean_rcc_y}
     save_path = save_dir_path + '/class_trust_score'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
@@ -337,10 +351,11 @@ def main(cfg: DictConfig):
         fresults_rcc_y.append(rcc_y)
         fresults_roc = np.append(fresults_roc, roc_auc)
         fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
     results_dic = {'rcc': np.mean(fresults_rcc), 
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
-                   'rcc_y': fresults_rcc_y}
+                   'rcc_y': mean_rcc_y}
     save_path = save_dir_path + '/mix'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
@@ -405,10 +420,11 @@ def main(cfg: DictConfig):
         fresults_rcc_y.append(rcc_y)
         fresults_roc = np.append(fresults_roc, roc_auc)
         fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
     results_dic = {'rcc': np.mean(fresults_rcc), 
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
-                   'rcc_y': fresults_rcc_y}
+                   'rcc_y': mean_rcc_y}
     save_path = save_dir_path + '/mix_mul'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
@@ -458,10 +474,11 @@ def main(cfg: DictConfig):
         fresults_rcc_y.append(rcc_y)
         fresults_roc = np.append(fresults_roc, roc_auc)
         fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
     results_dic = {'rcc': np.mean(fresults_rcc), 
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
-                   'rcc_y': fresults_rcc_y}
+                   'rcc_y': mean_rcc_y}
     save_path = save_dir_path + '/mix_scale_only'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
@@ -526,10 +543,11 @@ def main(cfg: DictConfig):
         fresults_rcc_y.append(rcc_y)
         fresults_roc = np.append(fresults_roc, roc_auc)
         fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
     results_dic = {'rcc': np.mean(fresults_rcc), 
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
-                   'rcc_y': fresults_rcc_y}
+                   'rcc_y': mean_rcc_y}
     save_path = save_dir_path + '/mix_mul_scale_only'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)

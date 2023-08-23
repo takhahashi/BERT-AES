@@ -101,17 +101,52 @@ def calc_rcc_auc_qwk(pred, true, conf, prompt_id, reg_or_class, num_el):
       pred_subset = [i[0] for i in ptc_pair[0:k+num_el]]
       true_subset = [i[1] for i in ptc_pair[0:k+num_el]]
       score_fn_subset = 1 - cohen_kappa_score(true_subset, pred_subset, labels = list(range(low, high + 1)), weights='quadratic')
-      auc += (points_y[-1] + score_fn_subset) * 25 /2
+      if np.isnan(score_fn_subset):
+        score_fn_subset = 0.
+      auc += (points_y[-1] + score_fn_subset) * num_el /2
       points_x.append(n/(k+num_el))
       points_y.append(score_fn_subset)
     else:
+      pred_subset = [i[0] for i in ptc_pair[k:]]
+      true_subset = [i[1] for i in ptc_pair[k:]]
       score_fn_subset = 1 - cohen_kappa_score(true_sorted, pred_sorted, labels = list(range(low, high + 1)), weights='quadratic')
-      auc += (points_y[-1] + score_fn_subset) * (n%25) /2
+      auc += (points_y[-1] + score_fn_subset) * (n%num_el) /2
       points_x.append(1.)
       points_y.append(score_fn_subset)
   return auc, points_x, points_y
 
-  
+def calc_rcc_auc_corr(pred, true, conf, prompt_id, reg_or_class, num_el):
+  n = len(conf)
+  low, high = get_score_range(prompt_id)
+  if reg_or_class == 'reg':
+    pred_sorted = score_f2int(pred[np.argsort(-conf)], prompt_id)
+    true_sorted = score_f2int(true[np.argsort(-conf)], prompt_id)
+  else:
+    pred_sorted = (pred[np.argsort(-conf)] + low).astype('int32')
+    true_sorted = (true[np.argsort(-conf)] + low).astype('int32')
+  conf_sorted = conf[np.argsort(-conf)]
+  ptc_pair = list(zip(pred_sorted, true_sorted, conf_sorted))
+  points_x, points_y = [0], [0]
+  auc = 0
+  for k in range(0, n, num_el):
+    if k+num_el <= n:
+      pred_subset = [i[0] for i in ptc_pair[0:k+num_el]]
+      true_subset = [i[1] for i in ptc_pair[0:k+num_el]]
+      score_fn_subset = 1 - np.corrcoef(true_subset, pred_subset)[0][1]
+      if np.isnan(score_fn_subset):
+        score_fn_subset = 0.
+      auc += (points_y[-1] + score_fn_subset) * num_el /2
+      points_x.append(n/(k+num_el))
+      points_y.append(score_fn_subset)
+    else:
+      pred_subset = [i[0] for i in ptc_pair[k:]]
+      true_subset = [i[1] for i in ptc_pair[k:]]
+      score_fn_subset = 1 - np.corrcoef(true_sorted, pred_sorted)[0][1]
+      auc += (points_y[-1] + score_fn_subset) * (n%num_el) /2
+      points_x.append(1.)
+      points_y.append(score_fn_subset)
+  return auc, points_x, points_y
+
 
 def calc_rpp(conf, risk):
   n = len(conf)

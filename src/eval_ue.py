@@ -158,7 +158,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##class trust####
     for foldr in five_fold_results:
@@ -180,7 +180,7 @@ def main(cfg: DictConfig):
     save_path = save_dir_path + '/class_trust_score'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
-
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##class dp MP####
     for foldr in five_fold_results:
@@ -269,7 +269,7 @@ def main(cfg: DictConfig):
     save_path = save_dir_path + '/class_mul_MP'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
-
+    2
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##class mul Ent####
     for foldr in five_fold_results:
@@ -313,7 +313,7 @@ def main(cfg: DictConfig):
     save_path = save_dir_path + '/class_mul_epistemic'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
-
+    """
     
     five_fold_results = []
     for fold in range(5):
@@ -345,7 +345,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##Mix_dp###
     for foldr in five_fold_results:
@@ -390,7 +390,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##MIx_Ense##
     for foldr in five_fold_results:
@@ -413,7 +413,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##Mix_Ense_entropy
     for foldr in five_fold_results:
@@ -443,7 +443,7 @@ def main(cfg: DictConfig):
         five_fold_results.append({k: np.array(v) for k, v in fold_results.items()})
 
     save_dir_path = cfg.path.save_dir_path
-
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##Mix conf####
     for foldr in five_fold_results:
@@ -466,7 +466,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##Mix_dp###
     for foldr in five_fold_results:
@@ -511,7 +511,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##MIx_Ense##
     for foldr in five_fold_results:
@@ -534,7 +534,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##Mix_Ense_entropy
     for foldr in five_fold_results:
@@ -556,7 +556,7 @@ def main(cfg: DictConfig):
     save_path = save_dir_path + '/mix_mul_entropy_scale_only'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
-    """
+
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##Mix MP####
     for foldr in five_fold_results:

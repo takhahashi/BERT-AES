@@ -32,7 +32,7 @@ def main():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         roc_dic[k] = n_v
     roc_table = pd.DataFrame.from_dict(roc_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
-    roc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/roc_talbe.tsv', sep='\t', index=True)
+    roc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/roc_table.tsv', sep='\t', index=True)
 
     ##rpp##
     rpp_dic = {}
@@ -48,7 +48,7 @@ def main():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rpp_dic[k] = n_v
     rpp_table = pd.DataFrame.from_dict(rpp_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
-    rpp_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rpp_talbe.tsv', sep='\t', index=True)
+    rpp_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rpp_table.tsv', sep='\t', index=True)
 
     ##rcc###
     rcc_dic = {}
@@ -64,7 +64,7 @@ def main():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rcc_dic[k] = n_v
     rcc_table = pd.DataFrame.from_dict(rcc_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
-    rcc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc/rmse_table.tsv', sep='\t', index=True)
+    rcc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc_table/scaledrmse_table.tsv', sep='\t', index=True)
 
 
     ##rcc_y_fig###
@@ -82,7 +82,7 @@ def main():
             down_data = down_sample([rcc_x, mean_rcc_y], samples=50)
             plt.plot(down_data[0], down_data[1], label=utype)
         plt.legend()
-        plt.savefig('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc_fig/rmse_pt{}.png'.format(prompt_id)) 
+        plt.savefig('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rcc_fig/scaledrmse_pt{}.png'.format(prompt_id)) 
         plt.show()
 
     #table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix', 'dp_mix', 'mul_mix']

@@ -88,7 +88,7 @@ def main(cfg: DictConfig):
 
     #table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix', 'dp_mix', 'mul_mix']
     #utype_path_name = ['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc', 'mix_acc', 'dp_mix_acc', 'ense_mix_acc']
-    table_idx_name = ['reg', 'mul_reg', 'class', 'class_reg', 'mix', 'mul_mix']
+    table_idx_name = ['reg', 'mul_reg', 'class', 'mul_class', 'mix', 'mul_mix']
     utype_path_name = ['simple_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'ense_class_acc', 'mix_acc', 'ense_mix_acc']
 
     qwk_dic = {}

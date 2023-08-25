@@ -104,7 +104,7 @@ def main(cfg: DictConfig):
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         qwk_dic[k] = n_v
     qwk_table = pd.DataFrame.from_dict(qwk_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
-    qwk_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/qwk_talbe.tsv', sep='\t', index=True)
+    qwk_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/qwk_table.tsv', sep='\t', index=True)
 
     corr_dic = {}
     for utype in table_idx_name:
@@ -119,7 +119,7 @@ def main(cfg: DictConfig):
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         corr_dic[k] = n_v
     corr_table = pd.DataFrame.from_dict(corr_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
-    corr_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/corr_talbe.tsv', sep='\t', index=True)
+    corr_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/corr_table.tsv', sep='\t', index=True)
 
     rmse_dic = {}
     for utype in table_idx_name:
@@ -134,7 +134,7 @@ def main(cfg: DictConfig):
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rmse_dic[k] = n_v
     rmse_table = pd.DataFrame.from_dict(rmse_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
-    rmse_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rmse_talbe.tsv', sep='\t', index=True)
+    rmse_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rmse_table.tsv', sep='\t', index=True)
 
 if __name__ == "__main__":
     main()

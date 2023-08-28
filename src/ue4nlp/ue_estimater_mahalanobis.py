@@ -7,7 +7,7 @@ import numpy as np
 class UeEstimatorMahalanobis:
     def __init__(self, model, train_dataloader, prompt_id, reg_or_class):
         self.model = model
-        self.train_dataset = train_dataloader
+        self.train_dataloader = train_dataloader
         self.reg_or_class = reg_or_class
         self.prompt_id = prompt_id
         
@@ -43,7 +43,6 @@ class UeEstimatorMahalanobis:
         model = self.model
         X_features, predlabels = extract_clsvec_predlabels(model, data_loader)
         return X_features, predlabels
-      
 
     def _predict_with_fitted_cov(self, X_features, y):
         eval_results = {}

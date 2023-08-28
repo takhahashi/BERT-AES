@@ -93,7 +93,7 @@ def main(cfg: DictConfig):
     trust_estimater.fit_ue()
     trust_results = trust_estimater(test_dataloader)
     eval_results.update(trust_results)
-
+    """
     maha_estimater = UeEstimatorMahalanobis(model,
                                              train_dataloader,
                                              cfg.aes.prompt_id,
@@ -102,7 +102,7 @@ def main(cfg: DictConfig):
     maha_estimater.fit_ue()
     maha_results = maha_estimater(test_dataloader)
     eval_results.update(maha_results)
-
+    """
     mcdp_estimater = UeEstimatorDp(model, 
                                    cfg.ue.num_dropout, 
                                    cfg.aes.prompt_id, 
@@ -119,7 +119,7 @@ def main(cfg: DictConfig):
     calib_mcdp_var_estimater.fit_ue()
     calib_mcdp_var = calib_mcdp_var_estimater(logvar = torch.tensor(mcdp_results['mcdp_var']).log())
     eval_results.update({'calib_mcdp_var': calib_mcdp_var})
-    """
+
 
     ensemble_estimater = UeEstimatorEnsemble(model,
                                             cfg.ue.ensemble_model_paths,
@@ -130,7 +130,7 @@ def main(cfg: DictConfig):
     ensemble_results = ensemble_estimater(test_dataloader)
     eval_results.update(ensemble_results)
 
-    """
+
     #####calib ense var ##########
     dev_ense_results = ensemble_estimater(dev_dataloader)
     calib_ense_var_estimater = UeEstimatorCalibvar(dev_labels=torch.tensor(dev_results['labels']),

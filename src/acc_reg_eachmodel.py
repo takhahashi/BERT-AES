@@ -57,12 +57,10 @@ def main(cfg: DictConfig):
     true = score_f2int(test_results['labels'], cfg.aes.prompt_id)
     pred = score_f2int(test_results['score'], cfg.aes.prompt_id)
 
-    corr_arr = np.append(corr_arr, np.corrcoef(true, pred)[0][1])
-    qwk_arr = np.append(qwk_arr, calc_qwk(true, pred, cfg.aes.prompt_id, 'reg'))
-    rmse_arr = np.append(rmse_arr, np.sqrt((true - pred) ** 2).mean())
-    results_dic = {'qwk': np.mean(qwk_arr), 
-                    'corr': np.mean(corr_arr), 
-                    'rmse': np.mean(rmse_arr)}
+    results_dic = {'qwk': np.corrcoef(true, pred)[0][1], 
+                    'corr': calc_qwk(true, pred, cfg.aes.prompt_id, 'reg'), 
+                    'rmse': np.sqrt((true - pred) ** 2).mean()}
+
 
     list_results = {k: v.tolist() for k, v in results_dic.items() if type(v) == type(np.array([1, 2, 3.]))}
     with open(cfg.path.results_save_path, mode="wt", encoding="utf-8") as f:

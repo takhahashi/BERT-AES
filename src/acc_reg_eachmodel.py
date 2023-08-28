@@ -26,7 +26,7 @@ from utils.acc_metric_func import calc_qwk
 from utils.cfunctions import simple_collate_fn, score_f2int
 
 
-@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="acc_reg_eachmodel")
+@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="acc_reg_eachmode")
 def main(cfg: DictConfig):
     test_dataset = get_Dataset(cfg.model.reg_or_class, 
                                cfg.path.testdata_file_name, 

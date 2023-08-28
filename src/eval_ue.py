@@ -113,7 +113,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##reg_ense###
     for foldr in five_fold_results:
@@ -128,14 +128,15 @@ def main(cfg: DictConfig):
         fresults_rcc_y.append(rcc_y)
         fresults_roc = np.append(fresults_roc, roc_auc)
         fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
     results_dic = {'rcc': np.mean(fresults_rcc), 
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
-                   'rcc_y': fresults_rcc_y}
+                   'rcc_y': mean_rcc_y}
     save_path = save_dir_path + '/reg_mul'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
-    """
+
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##class###
     five_fold_results = []
@@ -259,7 +260,7 @@ def main(cfg: DictConfig):
     save_path = save_dir_path + '/class_dp_epistemic'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
-
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##class mul MP####
     for foldr in five_fold_results:
@@ -274,14 +275,15 @@ def main(cfg: DictConfig):
         fresults_rcc_y.append(rcc_y)
         fresults_roc = np.append(fresults_roc, roc_auc)
         fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
     results_dic = {'rcc': np.mean(fresults_rcc), 
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
-                   'rcc_y': fresults_rcc_y}
+                   'rcc_y': mean_rcc_y}
     save_path = save_dir_path + '/class_mul_MP'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
-    2
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##class mul Ent####
     for foldr in five_fold_results:

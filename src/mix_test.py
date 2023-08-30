@@ -58,11 +58,17 @@ def main(cfg: DictConfig):
     model = Reg_class_mixmodel(bert, high-low+1)
     model.load_state_dict(torch.load(cfg.path.model_save_path))
     eval_results = return_predresults(model, test_dataloader, rt_clsvec=False, dropout=False)
+    
+    reg_pred = (eval_results['score'] * (high - low) + low).astype('int32')
+    class_pred = (np.argmax(eval_results['logits'], axis=-1) + low).astype('int32')
+    expected_pred = (((reg_pred + class_pred)/2.) - low)/(high - low)
+    eval_results['score'] = expected_pred
 
     softmax = nn.Softmax(dim=1)
     pred_int_score = torch.tensor(np.round(eval_results['score'] * (high - low)), dtype=torch.int32)
     pred_probs = softmax(torch.tensor(eval_results['logits']))
     mix_trust = pred_probs[torch.arange(len(pred_probs)), pred_int_score]
+
     eval_results.update({'mix_conf': mix_trust.numpy().copy()})
 
     mcdp_estimater = UeEstimatorDp(model,

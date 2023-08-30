@@ -10,9 +10,9 @@ class UeEstimatorDp:
         self.reg_or_class = reg_or_class
         self.prompt_id = prompt_id
         
-    def __call__(self, dataloader):
+    def __call__(self, dataloader, expected_score):
         mul_results = self._multi_pred(dataloader)
-        pre_calib_results = self._calc_var(mul_results)
+        pre_calib_results = self._calc_var(mul_results, expected_score)
         return pre_calib_results
         
     def _multi_pred(self, dataloader):
@@ -27,14 +27,14 @@ class UeEstimatorDp:
                   v1.append(v2)
         return mul_results
         
-    def _calc_var(self, mul_results):
+    def _calc_var(self, mul_results, expected_score):
         mcdp_result = {}
         if self.reg_or_class == 'reg':
             mulscore, mulvar = compute_mulscore_mulvar(mul_results['score'], mul_results['logvar'], self.dropout_num)
             mcdp_result['mcdp_score'] = mulscore
             mcdp_result['mcdp_var'] = mulvar
         elif self.reg_or_class == 'mix':
-            mulscore, mulMP = compute_MixMulMP(mul_results['score'], mul_results['logits'], self.dropout_num, self.prompt_id)
+            mulscore, mulMP = compute_MixMulMP(mul_results['score'], mul_results['logits'], self.dropout_num, self.prompt_id, expected_score)
             _, mul_entropy = compute_mulEntropy(mul_results['logits'], self.dropout_num)
             mcdp_result['mcdp_score'] = mulscore
             mcdp_result['mcdp_MP'] = mulMP

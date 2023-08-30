@@ -26,6 +26,12 @@ from models.models import Reg_class_mixmodel, Bert
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_mix")
 def main(cfg: DictConfig):
+    if cfg.model.inftype == 'expected_score':
+        expected_score = True
+        save_path_str = cfg.path.results_save_path + '_expected_score'
+    else:
+        expected_score = False
+        save_path_str = cfg.path.results_save_path
     train_dataset = get_Dataset('reg', 
                                 cfg.path.traindata_file_name, 
                                 cfg.aes.prompt_id, 
@@ -59,10 +65,11 @@ def main(cfg: DictConfig):
     model.load_state_dict(torch.load(cfg.path.model_save_path))
     eval_results = return_predresults(model, test_dataloader, rt_clsvec=False, dropout=False)
     
-    reg_pred = np.round(eval_results['score'] * (high - low) + low)
-    class_pred = (np.argmax(eval_results['logits'], axis=-1) + low).astype('int32')
-    expected_pred = (((reg_pred + class_pred)/2.) - low)/(high - low)
-    eval_results['score'] = expected_pred
+    if expected_score == True:
+        reg_pred = np.round(eval_results['score'] * (high - low) + low)
+        class_pred = (np.argmax(eval_results['logits'], axis=-1) + low).astype('int32')
+        expected_pred = (((reg_pred + class_pred)/2.) - low)/(high - low)
+        eval_results['score'] = expected_pred
 
     softmax = nn.Softmax(dim=1)
     pred_int_score = torch.tensor(np.round(eval_results['score'] * (high - low)), dtype=torch.int32)
@@ -76,7 +83,7 @@ def main(cfg: DictConfig):
                                    cfg.model.reg_or_class,
                                    cfg.aes.prompt_id,
                                    )
-    mcdp_results = mcdp_estimater(test_dataloader)
+    mcdp_results = mcdp_estimater(test_dataloader, expected_score=expected_score)
     eval_results.update(mcdp_results)
 
 
@@ -85,7 +92,7 @@ def main(cfg: DictConfig):
                                              cfg.model.reg_or_class,
                                              cfg.aes.prompt_id,
                                              )
-    ensemble_results = ensemble_estimater(test_dataloader)
+    ensemble_results = ensemble_estimater(test_dataloader, expected_score=expected_score)
     eval_results.update(ensemble_results)
 
     """
@@ -105,7 +112,7 @@ def main(cfg: DictConfig):
 
     list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}
     
-    with open(cfg.path.results_save_path, mode="wt", encoding="utf-8") as f:
+    with open(save_path_str, mode="wt", encoding="utf-8") as f:
         json.dump(list_results, f, ensure_ascii=False)
     
 if __name__ == "__main__":

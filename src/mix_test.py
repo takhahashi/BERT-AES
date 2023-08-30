@@ -59,7 +59,7 @@ def main(cfg: DictConfig):
     model.load_state_dict(torch.load(cfg.path.model_save_path))
     eval_results = return_predresults(model, test_dataloader, rt_clsvec=False, dropout=False)
     
-    reg_pred = (eval_results['score'] * (high - low) + low).astype('int32')
+    reg_pred = np.round(eval_results['score'] * (high - low) + low)
     class_pred = (np.argmax(eval_results['logits'], axis=-1) + low).astype('int32')
     expected_pred = (((reg_pred + class_pred)/2.) - low)/(high - low)
     eval_results['score'] = expected_pred

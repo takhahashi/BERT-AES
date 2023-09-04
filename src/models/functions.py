@@ -45,6 +45,7 @@ def return_predresults(model, test_dataloader, rt_clsvec, dropout = False):
         print()
     return eval_results
 
+
 def extract_clsvec_truelabels(model, dataloader):
     bert = model.bert
     bert.eval()

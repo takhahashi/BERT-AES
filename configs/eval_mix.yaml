@@ -24,4 +24,4 @@ path:
   traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/train.tsv
   testdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/test.tsv
   model_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${eval.fold}/id${model.id}
-  results_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${eval.fold}/pred_results_expected_score
+  results_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${eval.fold}/pred_results

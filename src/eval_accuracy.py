@@ -217,7 +217,7 @@ def main(cfg: DictConfig):
 
     five_fold_results = []
     for fold in range(5):
-        with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt{}/fold_{}/pred_results_scale_only'.format(cfg.aes.prompt_id, fold)) as f:
+        with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt{}/fold_{}/pred_results_expected_score_expected_score'.format(cfg.aes.prompt_id, fold)) as f:
             fold_results = json.load(f)
         five_fold_results.append({k: np.array(v) for k, v in fold_results.items()})
 
@@ -235,7 +235,7 @@ def main(cfg: DictConfig):
                     'corr': np.mean(corr_arr), 
                     'rmse': np.mean(rmse_arr)}
 
-    save_path = save_dir_path + '/mix_acc_scale_only'
+    save_path = save_dir_path + '/mix_acc_expected_score'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -252,7 +252,7 @@ def main(cfg: DictConfig):
                     'corr': np.mean(corr_arr), 
                     'rmse': np.mean(rmse_arr)}
 
-    save_path = save_dir_path + '/dp_mix_acc_scale_only'
+    save_path = save_dir_path + '/dp_mix_expected_score_acc'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -270,8 +270,10 @@ def main(cfg: DictConfig):
                     'corr': np.mean(corr_arr), 
                     'rmse': np.mean(rmse_arr)}
 
-    save_path = save_dir_path + '/ense_mix_acc_scale_only'
+    save_path = save_dir_path + '/ense_mix_expected_score_acc'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
+
+
 if __name__ == "__main__":
     main()

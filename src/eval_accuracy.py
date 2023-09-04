@@ -235,7 +235,7 @@ def main(cfg: DictConfig):
                     'corr': np.mean(corr_arr), 
                     'rmse': np.mean(rmse_arr)}
 
-    save_path = save_dir_path + '/mix_acc_expected_score'
+    save_path = save_dir_path + '/mix_expected_score_acc'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 

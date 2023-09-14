@@ -22,37 +22,39 @@ import wandb
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_class_mix_normal")
 def main(cfg: DictConfig):
-    #wandb.init(project=cfg.wandb.project, 
-    #           name=cfg.wandb.project_name, 
-    #           settings=wandb.Settings(start_method="thread"))
-    
-    tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
-    train_dataset = get_Dataset('reg',
-                                cfg.path.traindata_file_name,
-                                cfg.aes.prompt_id,
-                                tokenizer,
+    train_dataset = get_Dataset('reg', 
+                                cfg.path.traindata_file_name, 
+                                cfg.aes.prompt_id, 
+                                AutoTokenizer.from_pretrained(cfg.model.model_name_or_path),
                                 )
-    dev_dataset = get_Dataset('reg',
-                            cfg.path.valdata_file_name,
-                            cfg.aes.prompt_id,
-                            tokenizer,
-                            )
+    dev_dataset = get_Dataset('reg', 
+                                cfg.path.devdata_file_name, 
+                                cfg.aes.prompt_id, 
+                                AutoTokenizer.from_pretrained(cfg.model.model_name_or_path),
+                                )
+
+    if cfg.eval.collate_fn == True:
+        collate_fn = simple_collate_fn
+    else:
+        collate_fn = None
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset,
-                                                    batch_size=cfg.training.batch_size,
-                                                    shuffle=True,
-                                                    collate_fn=simple_collate_fn,
-                                                    )
+                                                batch_size=cfg.eval.batch_size,
+                                                shuffle=False,
+                                                collate_fn=collate_fn,
+                                                )
     dev_dataloader = torch.utils.data.DataLoader(dev_dataset,
-                                                    batch_size=cfg.training.batch_size,
-                                                    shuffle=True,
-                                                    collate_fn=simple_collate_fn,
-                                                    )
+                                                batch_size=cfg.eval.batch_size,
+                                                shuffle=False,
+                                                collate_fn=collate_fn,
+                                                )
 
     low, high = get_score_range(cfg.aes.prompt_id)
-    bert = Bert(cfg.model.model_name_or_path)
+    bert = Bert(cfg.model.model_name_or_path) 
     model = Reg_class_mixmodel(bert, high-low+1)
-    model.train()
+    model.load_state_dict(torch.load(cfg.path.model_save_path))
+
+    model.eval()
     model = model.cuda()
     optimizer = optim.AdamW(model.parameters(), lr=1e-5)
 

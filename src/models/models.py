@@ -182,3 +182,14 @@ class Reg_class_mixmodel(nn.Module):
         outputs = self.bert(dataset['input_ids'], token_type_ids=dataset['token_type_ids'], attention_mask=dataset['attention_mask'])
         sequence_output = outputs['last_hidden_state'][:, 0, :] 
         return {'word_vec': sequence_output}
+    
+class EscoreScaler(torch.nn.Module):
+    def __init__(self, init_S=1.0):
+        super().__init__()
+        self.S = torch.nn.Parameter(torch.tensor([init_S]))
+        self.sigmoid = nn.Sigmoid()
+    #e_scaler * class_pred + (1 - e_scaler) * reg_pred
+    def right(self, x):
+        return (torch.tensor(1.) - self.sigmoid(self.S))*x
+    def left(self, x):
+        return self.sigmoid(self.S)*x

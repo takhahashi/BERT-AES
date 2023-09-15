@@ -1,20 +1,12 @@
 import os
 import hydra
 import numpy as np
-import pandas as pd
-import pytorch_lightning as pl
 import torch
 import torch.nn as nn
-import torch.optim as optim
 from omegaconf import DictConfig
-from pytorch_lightning.loggers import WandbLogger
 from transformers import AutoTokenizer
-from utils.utils_data import TrainDataModule
 from utils.dataset import get_score_range, get_Dataset
 from utils.cfunctions import simple_collate_fn
-from utils.utils_models import create_module
-from models.functions import return_predresults
-from utils.cfunctions import regvarloss, EarlyStopping
 from models.models import Reg_class_mixmodel, Bert, EscoreScaler
 
     
@@ -22,7 +14,7 @@ from models.models import Reg_class_mixmodel, Bert, EscoreScaler
 def main(cfg: DictConfig):
     para_savepath = cfg.path.savepath
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
-    train_dataset = get_Dataset(cfg.model.reg_or_class,
+    train_dataset = get_Dataset('reg',
                                 cfg.path.traindata_file_name,
                                 cfg.aes.prompt_id,
                                 tokenizer,

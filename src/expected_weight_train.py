@@ -71,7 +71,7 @@ def main(cfg: DictConfig):
     s_opt.step(closure)
     scale_pred = e_scaler.left(class_pred) + e_scaler.right(reg_pred)
     scale_loss = mseloss(scale_pred, train_labels)
-    print(f'No_s:{noscale_loss}, Apply_S:{scale_loss}, S_Value:{e_scaler.S}')
+    print(f'No_s:{noscale_loss}, Apply_S:{scale_loss}, S_Value:{torch.sigmoid(e_scaler.S)}')
     torch.save(e_scaler.state_dict(), para_savepath)
 
 if __name__ == "__main__":

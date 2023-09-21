@@ -36,7 +36,7 @@ def main(cfg: DictConfig):
     e_scaler = EscoreScaler(init_S=1.0).cuda()
 
     mseloss = nn.MSELoss()
-    s_opt = torch.optim.LBFGS([e_scaler.S], lr=3e-2, max_iter=2000)
+    s_opt = torch.optim.LBFGS([e_scaler.S], lr=cfg.train.learning_rate, max_iter=cfg.train.max_iteration)
     all_class_pred = []
     all_reg_pred = []
     all_true_score = []

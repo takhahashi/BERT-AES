@@ -5,9 +5,9 @@ import torch
 import torch.nn as nn
 from omegaconf import DictConfig
 from transformers import AutoTokenizer
-from utils.dataset import get_score_range, get_Dataset
-from utils.cfunctions import simple_collate_fn
-from models.models import Reg_class_mixmodel, Bert, EscoreScaler
+from ..utils.dataset import get_score_range, get_Dataset
+from ..utils.cfunctions import simple_collate_fn
+from ..models.models import Reg_class_mixmodel, Bert, EscoreScaler
 
     
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="Escaler_train")

@@ -1,6 +1,6 @@
 train:
-  lr: 0.03
-  max_iter: 200
+  learning_rate: 0.001
+  max_iteration: 200
   fold: 0
   batch_size: 8
   collate_fn: True
@@ -15,6 +15,7 @@ aes:
   prompt_id: 1
   friendly_score: True
 path:
-  savepath: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt}/fold_${train.fold}/ExpectedW_modelid${model.id}
+  savepath: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${train.fold}/ExpectedW_modelid${model.id}
   traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${train.fold}/train.tsv
   testdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${train.fold}/test.tsv
+  model_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${train.fold}/id${model.id}

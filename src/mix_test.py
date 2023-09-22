@@ -32,7 +32,7 @@ def main(cfg: DictConfig):
         save_path_str = cfg.path.results_save_path + '_weighted_exp_score'
     else:
         save_path_str = cfg.path.results_save_path
-        
+
     train_dataset = get_Dataset('reg', 
                                 cfg.path.traindata_file_name, 
                                 cfg.aes.prompt_id, 
@@ -77,7 +77,7 @@ def main(cfg: DictConfig):
         reg_pred = np.round(eval_results['score'] * (high - low) + low)
         class_pred = (np.argmax(eval_results['logits'], axis=-1) + low).astype('int32')
         weighted_exp_score = e_scaler.left(class_pred) + e_scaler.right(reg_pred)
-        eval_results['score'] = weighted_exp_score
+        eval_results['score'] = (weighted_exp_score - low) / (high - low)
 
     softmax = nn.Softmax(dim=1)
     pred_int_score = torch.tensor(np.round(eval_results['score'] * (high - low)), dtype=torch.int32)
@@ -85,6 +85,7 @@ def main(cfg: DictConfig):
     mix_trust = pred_probs[torch.arange(len(pred_probs)), pred_int_score]
 
     eval_results.update({'mix_conf': mix_trust.numpy().copy()})
+
     """
     mcdp_estimater = UeEstimatorDp(model,
                                    cfg.ue.num_dropout,

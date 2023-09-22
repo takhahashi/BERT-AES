@@ -72,11 +72,11 @@ def main(cfg: DictConfig):
         expected_pred = (((reg_pred + class_pred)/2.) - low)/(high - low)
         eval_results['score'] = expected_pred
     elif cfg.model.inftype == 'weighted_exp_score':
-        e_scaler = EscoreScaler(init_S=1.0).cuda()
+        e_scaler = EscoreScaler(init_S=1.0)
         e_scaler.load_state_dict(torch.load(cfg.path.scaler_savepath))
-        reg_pred = np.round(eval_results['score'] * (high - low) + low)
-        class_pred = (np.argmax(eval_results['logits'], axis=-1) + low).astype('int32')
-        weighted_exp_score = e_scaler.left(class_pred) + e_scaler.right(reg_pred)
+        reg_pred = torch.tensor(np.round(eval_results['score'] * (high - low) + low))
+        class_pred = torch.tensor((np.argmax(eval_results['logits'], axis=-1) + low).astype('int32'))
+        weighted_exp_score = e_scaler.left(class_pred).detach().numpy() + e_scaler.right(reg_pred).detach().numpy()
         eval_results['score'] = (weighted_exp_score - low) / (high - low)
 
     softmax = nn.Softmax(dim=1)

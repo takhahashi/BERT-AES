@@ -21,17 +21,18 @@ from ue4nlp.ue_estimater_ensemble import UeEstimatorEnsemble
 from ue4nlp.ue_estimater_trust import UeEstimatorTrustscore
 from ue4nlp.ue_estimater_mcd import UeEstimatorDp
 from ue4nlp.ue_estimater_calibvar import UeEstimatorCalibvar
-from models.models import Reg_class_mixmodel, Bert
+from models.models import Reg_class_mixmodel, Bert, EscoreScaler
 
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_mix")
 def main(cfg: DictConfig):
-    if cfg.model.inftype == 'expected_score':
-        expected_score = True
-        save_path_str = cfg.path.results_save_path + '_expected_score'
+    if cfg.model.inftype == 'exp_score':
+        save_path_str = cfg.path.results_save_path + '_exp_score'
+    elif cfg.model.inftype == 'weighted_exp_score':
+        save_path_str = cfg.path.results_save_path + '_weighted_exp_score'
     else:
-        expected_score = False
         save_path_str = cfg.path.results_save_path
+        
     train_dataset = get_Dataset('reg', 
                                 cfg.path.traindata_file_name, 
                                 cfg.aes.prompt_id, 
@@ -65,11 +66,18 @@ def main(cfg: DictConfig):
     model.load_state_dict(torch.load(cfg.path.model_save_path))
     eval_results = return_predresults(model, test_dataloader, rt_clsvec=False, dropout=False)
     
-    if expected_score == True:
+    if cfg.model.inftype == 'exp_score':
         reg_pred = np.round(eval_results['score'] * (high - low) + low)
         class_pred = (np.argmax(eval_results['logits'], axis=-1) + low).astype('int32')
         expected_pred = (((reg_pred + class_pred)/2.) - low)/(high - low)
         eval_results['score'] = expected_pred
+    elif cfg.model.inftype == 'weighted_exp_score':
+        e_scaler = EscoreScaler(init_S=1.0).cuda()
+        e_scaler.load_state_dict(torch.load(cfg.path.scaler_savepath))
+        reg_pred = np.round(eval_results['score'] * (high - low) + low)
+        class_pred = (np.argmax(eval_results['logits'], axis=-1) + low).astype('int32')
+        weighted_exp_score = e_scaler.left(class_pred) + e_scaler.right(reg_pred)
+        eval_results['score'] = weighted_exp_score
 
     softmax = nn.Softmax(dim=1)
     pred_int_score = torch.tensor(np.round(eval_results['score'] * (high - low)), dtype=torch.int32)
@@ -77,7 +85,7 @@ def main(cfg: DictConfig):
     mix_trust = pred_probs[torch.arange(len(pred_probs)), pred_int_score]
 
     eval_results.update({'mix_conf': mix_trust.numpy().copy()})
-
+    """
     mcdp_estimater = UeEstimatorDp(model,
                                    cfg.ue.num_dropout,
                                    cfg.model.reg_or_class,
@@ -95,7 +103,7 @@ def main(cfg: DictConfig):
     ensemble_results = ensemble_estimater(test_dataloader, expected_score=expected_score)
     eval_results.update(ensemble_results)
 
-    """
+
     max_prob = pred_probs[torch.arange(len(pred_probs)), torch.argmax(pred_probs, dim=-1)]
     eval_results.update({'MP': max_prob.numpy().copy()})
 

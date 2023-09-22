@@ -25,3 +25,4 @@ path:
   testdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/test.tsv
   model_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${eval.fold}/id${model.id}
   results_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${eval.fold}/pred_results
+  scaler_savepath: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${eval.fold}/ExpectedW_modelid${model.id}

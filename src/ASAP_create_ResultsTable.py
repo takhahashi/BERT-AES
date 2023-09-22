@@ -18,18 +18,19 @@ def down_sample(data, samples=300):
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_ue_config")
 def main(cfg: DictConfig):
+    u_idx_name = ['reg', 'mul_reg', 'class', 'mul_class', 'mix', 'mul_mix', 'mix_weighted_exp_score']
     #utypes = ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']
-    utypes = ['simplevar', 'reg_mul', 'MP', 'class_trust_score', 'class_mul_MP', 'mix', 'mix_mul', 'mix_expected_score', 'mix_mul_expected_score', 'mix_weighted_exp_score']
+    utypes = ['simplevar', 'reg_mul', 'MP', 'class_mul_MP', 'mix', 'mix_mul', 'mix_expected_score', 'mix_weighted_exp_score']#'mix_mul_expected_score', 'mix_weighted_exp_score']
     ###roc_auc###
     roc_dic = {}
-    for utype in utypes:
+    for utype in u_idx_name:
         roc_dic[utype] = []
     for prompt_id in range(1, 9):
-        for utype in utypes:
+        for uname, utype in zip(u_idx_name, utypes):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
-            roc_dic[utype] = np.append(roc_dic[utype], np.round(results['roc'], decimals=3))
+            roc_dic[uname] = np.append(roc_dic[utype], np.round(results['roc'], decimals=3))
     for k, v in roc_dic.items():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         roc_dic[k] = n_v
@@ -38,14 +39,14 @@ def main(cfg: DictConfig):
 
     ##rpp##
     rpp_dic = {}
-    for utype in utypes:
+    for utype in u_idx_name:
         rpp_dic[utype] = []
     for prompt_id in range(1, 9):
-        for utype in utypes:
+        for uname, utype in zip(u_idx_name, utypes):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
-            rpp_dic[utype] = np.append(rpp_dic[utype], np.round(results['rpp'], decimals=3))
+            rpp_dic[uname] = np.append(rpp_dic[utype], np.round(results['rpp'], decimals=3))
     for k, v in rpp_dic.items():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rpp_dic[k] = n_v
@@ -54,14 +55,14 @@ def main(cfg: DictConfig):
 
     ##rcc###
     rcc_dic = {}
-    for utype in utypes:
+    for utype in u_idx_name:
         rcc_dic[utype] = []
     for prompt_id in range(1, 9):
-        for utype in utypes:
+        for uname, utype in zip(u_idx_name, utypes):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
-            rcc_dic[utype] = np.append(rcc_dic[utype], np.round(results['rcc'], decimals=3))
+            rcc_dic[uname] = np.append(rcc_dic[utype], np.round(results['rcc'], decimals=3))
     for k, v in rcc_dic.items():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rcc_dic[k] = n_v
@@ -88,8 +89,8 @@ def main(cfg: DictConfig):
 
     #table_idx_name = ['simple_reg', 'dp_reg', 'mul_reg', 'simple_class', 'dp_class', 'mul_class', 'mix', 'dp_mix', 'mul_mix']
     #utype_path_name = ['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc', 'mix_acc', 'dp_mix_acc', 'ense_mix_acc']
-    table_idx_name = ['reg', 'mul_reg', 'class', 'mul_class', 'mix', 'mul_mix', 'exp_score', 'mul_exp_score', 'weighted_epx_score']
-    utype_path_name = ['simple_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'ense_class_acc', 'mix_acc', 'ense_mix_acc', 'mix_expected_score_acc', 'ense_mix_expected_score_acc', 'mix_weighted_exp_score_acc']
+    table_idx_name = ['reg', 'mul_reg', 'class', 'mul_class', 'mix', 'mul_mix', 'weighted_epx_score']#'exp_score', 'mul_exp_score', 'weighted_epx_score']
+    utype_path_name = ['simple_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'ense_class_acc', 'mix_acc', 'ense_mix_acc', 'mix_weighted_exp_score_acc']#'mix_expected_score_acc', 'ense_mix_expected_score_acc', 'mix_weighted_exp_score_acc']
 
     qwk_dic = {}
     for utype in table_idx_name:

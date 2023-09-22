@@ -30,7 +30,7 @@ def main(cfg: DictConfig):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
-            roc_dic[uname] = np.append(roc_dic[utype], np.round(results['roc'], decimals=3))
+            roc_dic[uname] = np.append(roc_dic[uname], np.round(results['roc'], decimals=3))
     for k, v in roc_dic.items():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         roc_dic[k] = n_v
@@ -46,7 +46,7 @@ def main(cfg: DictConfig):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
-            rpp_dic[uname] = np.append(rpp_dic[utype], np.round(results['rpp'], decimals=3))
+            rpp_dic[uname] = np.append(rpp_dic[uname], np.round(results['rpp'], decimals=3))
     for k, v in rpp_dic.items():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rpp_dic[k] = n_v
@@ -62,7 +62,7 @@ def main(cfg: DictConfig):
             with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/pt{}/{}'.format(prompt_id, utype)) as f:
                 fold_results = json.load(f)
             results = {k: np.array(v) for k, v in fold_results.items()}
-            rcc_dic[uname] = np.append(rcc_dic[utype], np.round(results['rcc'], decimals=3))
+            rcc_dic[uname] = np.append(rcc_dic[uname], np.round(results['rcc'], decimals=3))
     for k, v in rcc_dic.items():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rcc_dic[k] = n_v

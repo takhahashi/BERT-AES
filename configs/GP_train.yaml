@@ -1,0 +1,17 @@
+training:
+  fold: 0
+  iter_num: 800
+  patience: 3
+  lr: 0.1
+scoring_model:
+  model_name_or_path: 'bert-base-uncased'
+  reg_or_class: 'class'
+  max_length: 512
+  id: 0
+aes:
+  prompt_id: 1
+  friendly_score: True
+path:  
+  traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${training.fold}/train.tsv
+  scoring_model_savepath: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Class-torchlightning/pt${aes.prompt_id}/fold_${training.fold}/id${scoring_model.id}
+  save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/GP-git/pt${aes.prompt_id}/fold_${training.fold}/id${scoring_model.id}

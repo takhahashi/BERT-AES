@@ -16,10 +16,10 @@ from models.models import GPModel
 def main(cfg: DictConfig):
     low, high = get_score_range(cfg.aes.prompt_id)
     train_dataset = get_Dataset('class', 
-                               cfg.path.traindata_file_name, 
-                               cfg.aes.prompt_id, 
-                               AutoTokenizer.from_pretrained(cfg.scoring_model.model_name_or_path),
-                               )
+                                cfg.path.traindata_file_name, 
+                                cfg.aes.prompt_id, 
+                                AutoTokenizer.from_pretrained(cfg.scoring_model.model_name_or_path),
+                                )
 
     train_dataloader = torch.utils.data.DataLoader(train_dataset,
                                                   batch_size=8,
@@ -28,17 +28,17 @@ def main(cfg: DictConfig):
                                                   )
 
     num_labels = high - low + 1
-    classifier = create_module(cfg.scoring_model_name_or_path,
+    classifier = create_module(cfg.scoring_model.model_name_or_path,
                                 cfg.scoring_model.reg_or_class,
                                 learning_rate=1e-5,
                                 num_labels=num_labels,
                                 )
     classifier = classifier.cuda()
-    classifier.load_state_dict(torch.load(cfg.path.scoring_model_save_path, strict=False), strict=False)
+    classifier.load_state_dict(torch.load(cfg.path.scoring_model_savepath), strict=False)
     classifier.eval()
 
     word_vec, labels = extract_clsvec_truelabels(classifier, train_dataloader)
-    train_x = torch.FloatTensor(np.concatenate(word_vec))
+    train_x = torch.FloatTensor(word_vec)
     train_y = torch.FloatTensor(labels)
 
     likelihood = gpytorch.likelihoods.GaussianLikelihood()
@@ -46,7 +46,7 @@ def main(cfg: DictConfig):
     training_iter = cfg.training.iter_num
     model.train()
     likelihood.train()
-    
+
     # Use the adam optimizer
     optimizer = torch.optim.Adam([
         {'params': model.parameters()},  # Includes GaussianLikelihood parameters
@@ -59,11 +59,13 @@ def main(cfg: DictConfig):
       output = model(train_x)
       loss = -mll(output, train_y)
       loss.backward()
+      """
       print('Iter %d/%d - Loss: %.3f lengthscale: %.3f noise: %.3f' % (
           i+1, training_iter, loss.item(),
           model.covar_module.base_kernel.lengthscale.item(),
           model.likelihood.noise.item()
       ))
+      """
       optimizer.step()
 
     torch.save(model.state_dict(), cfg.path.save_path)

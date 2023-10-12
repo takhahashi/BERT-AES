@@ -79,7 +79,7 @@ def compute_mulEntropy(numpy_logits, mulnum):
     
     return torch_scores.numpy(), mean_entro.numpy()
 
-def compute_MixMulMP(score, numpy_logits, mulnum, prompt_id, expected_score):
+def compute_MixMulMP(score, numpy_logits, mulnum, prompt_id, expected_score, scaler_path=None):
     low, high = get_score_range(prompt_id)
     if expected_score == True:
         class_scores = np.argmax(numpy_logits, axis=2)
@@ -87,6 +87,9 @@ def compute_MixMulMP(score, numpy_logits, mulnum, prompt_id, expected_score):
         e_scores = np.divide(class_scores + reg_scores, 2)
         sumscore = np.sum(np.divide(e_scores, (high - low)), axis=0)
         mulscore = np.divide(sumscore, mulnum)
+    elif score_type == 'WeightedExpectedScore':
+        class_scores = np.argmax()
+        scaler = 
     else:
         sumscore = np.sum(score, axis=0)
         mulscore = np.divide(sumscore, mulnum)
@@ -114,7 +117,6 @@ def compute_covariance(centroids, train_features, train_labels):
             d = (x - mu_c)[:, None]
             cov += d @ d.T
     cov /= train_features.shape[0]
-    
     try:
         sigma_inv = np.linalg.inv(cov)
     except:

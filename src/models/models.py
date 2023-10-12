@@ -196,10 +196,10 @@ class EscoreScaler(torch.nn.Module):
         return self.sigmoid(self.S)*x
     
 class GPModel(gpytorch.models.ExactGP):
-  def __init__(self, train_x, train_y, likelihood):
+  def __init__(self, train_x, train_y, likelihood, lengthscale=None):
     super(GPModel, self).__init__(train_x, train_y, likelihood)
     self.mean_module = gpytorch.means.ConstantMean()
-    self.covar_module = gpytorch.kernels.ScaleKernel(gpytorch.kernels.RBFKernel())
+    self.covar_module = gpytorch.kernels.ScaleKernel(gpytorch.kernels.RBFKernel(lengthscale_prior=lengthscale))
   def forward(self, x):
     mean_x = self.mean_module(x)
     covar_x = self.covar_module(x)

@@ -156,7 +156,7 @@ def main(cfg: DictConfig):
         risk = calc_risk(pred, true, 'class', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
         rcc_auc, rcc_x, rcc_y = calc_rcc_auc(pred, true, -uncertainty, cfg.rcc.metric_type, cfg.aes.prompt_id, reg_or_class='class', num_el=25, binary_risk=True)
         rpp = calc_rpp(conf=-uncertainty, risk=risk)
-        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='class', prompt_id=cfg.aes.prompt_id)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='gp', prompt_id=cfg.aes.prompt_id)
         fresults_rcc = np.append(fresults_rcc, rcc_auc)
         fresults_rcc_y.append(rcc_y)
         fresults_roc = np.append(fresults_roc, roc_auc)
@@ -335,14 +335,14 @@ def main(cfg: DictConfig):
         five_fold_results.append({k: np.array(v) for k, v in fold_results.items()})
 
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
-    ##simple var####
+    ##GP####
     for foldr in five_fold_results:
         true = foldr['labels']
         pred = foldr['score']
         uncertainty = foldr['std']
-        risk = calc_risk(pred, true, 'class', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        risk = calc_risk(pred, true, 'gp', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
         #rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
-        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(pred, true, -uncertainty, cfg.rcc.metric_type, cfg.aes.prompt_id, reg_or_class='class', num_el=25, binary_risk=True)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(pred, true, -uncertainty, cfg.rcc.metric_type, cfg.aes.prompt_id, reg_or_class='gp', num_el=25, binary_risk=True)
         rpp = calc_rpp(conf=-uncertainty, risk=risk)
         roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='class', prompt_id=cfg.aes.prompt_id)
         fresults_rcc = np.append(fresults_rcc, rcc_auc)

@@ -87,9 +87,9 @@ def compute_MixMulMP(score, numpy_logits, mulnum, prompt_id, expected_score, sca
         e_scores = np.divide(class_scores + reg_scores, 2)
         sumscore = np.sum(np.divide(e_scores, (high - low)), axis=0)
         mulscore = np.divide(sumscore, mulnum)
-    elif score_type == 'WeightedExpectedScore':
+    elif expected_score == 'WeightedExpectedScore':
         class_scores = np.argmax()
-        scaler = 
+        return class_scores
     else:
         sumscore = np.sum(score, axis=0)
         mulscore = np.divide(sumscore, mulnum)

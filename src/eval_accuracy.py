@@ -171,7 +171,7 @@ def main(cfg: DictConfig):
     results_dic = {'qwk': np.mean(qwk_arr), 
                     'corr': np.mean(corr_arr), 
                     'rmse': np.mean(rmse_arr)}
-    save_path = save_dir_path + '/GP'
+    save_path = save_dir_path + '/GP_acc'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
     """

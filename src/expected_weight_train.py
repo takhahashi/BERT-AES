@@ -59,7 +59,6 @@ def main(cfg: DictConfig):
     reg_pred = torch.tensor(np.concatenate(all_reg_pred)).cuda()
     train_labels = torch.concat(all_true_score)
 
-
     def closure():
         s_opt.zero_grad()
         pred = e_scaler.left(class_pred) + e_scaler.right(reg_pred)

@@ -29,7 +29,7 @@ def main(cfg: DictConfig):
     if cfg.model.inftype == 'exp_score':
         save_path_str = cfg.path.results_save_path + '_exp_score'
     elif cfg.model.inftype == 'weighted_exp_score':
-        save_path_str = cfg.path.results_savepath + '_weighted_exp_score'
+        save_path_str = cfg.path.results_save_path + '_weighted_exp_score'
     else:
         save_path_str = cfg.path.results_save_path
     train_dataset = get_Dataset('reg', 

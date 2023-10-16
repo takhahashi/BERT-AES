@@ -73,7 +73,6 @@ def main(cfg: DictConfig):
     elif cfg.model.inftype == 'weighted_exp_score':
         e_scaler = EscoreScaler(init_S=1.0)
         e_scaler.load_state_dict(torch.load(cfg.path.scaler_savepath))
-
         reg_pred_org = torch.tensor(np.round(eval_results['score'] * (high - low) + low))
         class_pred_org = torch.tensor((np.argmax(eval_results['logits'], axis=-1) + low).astype('int32'))
         weighted_exp_score = e_scaler.left(class_pred_org).detach().numpy() + e_scaler.right(reg_pred_org).detach().numpy()

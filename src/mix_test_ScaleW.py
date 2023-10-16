@@ -71,7 +71,7 @@ def main(cfg: DictConfig):
         expected_pred = (((reg_pred_org + class_pred_org)/2.) - low)/(high - low)
         eval_results['score'] = expected_pred
     elif cfg.model.inftype == 'weighted_exp_score':
-        e_scaler = EscoreScaler(init_S=1.0).cuda()
+        e_scaler = EscoreScaler(init_S=1.0)
         e_scaler.load_state_dict(torch.load(cfg.path.scaler_savepath))
 
         reg_pred_org = torch.tensor(np.round(eval_results['score'] * (high - low) + low))

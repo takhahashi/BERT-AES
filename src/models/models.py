@@ -5,6 +5,7 @@ import torch.optim as optim
 import pytorch_lightning as pl
 from transformers import AutoModel
 from utils.cfunctions import regvarloss
+from models.spectral_normalization import spectral_norm
 
 
 class Bert(nn.Module):
@@ -120,6 +121,50 @@ class BertClass(pl.LightningModule):
     def configure_optimizers(self):
         return optim.AdamW(self.parameters(), lr=self.lr)
 
+class BertClassSpectralNorm(pl.LightningModule):
+    def __init__(
+        self,
+        bert,
+        num_classes,
+        learning_rate: float,
+        criterion=nn.CrossEntropyLoss(),
+    ):
+        super().__init__()
+        self.bert = bert
+        self.linear1 = spectral_norm(nn.Linear(768, num_classes),
+                                     n_power_iterations=1, norm_boumd=0.95)
+        self.lr = learning_rate
+        self.criterion = criterion
+
+    def forward(self, inputs):
+        hidden_state = self.bert(inputs)['hidden_state']
+        return {'logits': self.linear1(hidden_state)}
+
+    def training_step(self, batch, batch_idx):
+        x = {'input_ids':batch['input_ids'],
+             'attention_mask':batch['attention_mask'],
+             'token_type_ids':batch['token_type_ids']}
+        y = batch['labels']
+        logits = self.forward(x)
+        loss = self.criterion(logits['logits'], y)
+        self.log("train_loss", loss)
+        y_hat = torch.argmax(logits['logits'], dim=-1)
+        return {"loss": loss, "batch_preds": y_hat, "batch_labels": y}
+
+    def validation_step(self, batch, batch_idx):
+        x = {'input_ids':batch['input_ids'],
+             'attention_mask':batch['attention_mask'],
+             'token_type_ids':batch['token_type_ids']}
+        y = batch['labels']
+        logits = self.forward(x)
+        loss = self.criterion(logits['logits'], y)
+        self.log("val_loss", loss)
+        y_hat = torch.argmax(logits['logits'], dim=-1)
+        return {"loss": loss, "batch_preds": y_hat, "batch_labels": y}
+
+    def configure_optimizers(self):
+        return optim.AdamW(self.parameters(), lr=self.lr)
+    
 class Scaler(torch.nn.Module):
     def __init__(self, init_S=1.0):
         super().__init__()

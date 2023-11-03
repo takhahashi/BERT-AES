@@ -132,7 +132,7 @@ class BertClassSpectralNorm(pl.LightningModule):
         super().__init__()
         self.bert = bert
         self.linear1 = spectral_norm(nn.Linear(768, num_classes),
-                                     n_power_iterations=1, norm_boumd=0.95)
+                                     n_power_iterations=1, norm_bound=0.95)
         self.lr = learning_rate
         self.criterion = criterion
 

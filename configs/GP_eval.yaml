@@ -9,7 +9,7 @@ scoring_model:
 aes:
   prompt_id: 1
   friendly_score: True
-path:  
+path:  a
   train_data_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/train.tsv
   test_data_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/test.tsv
   scoring_model_savepath: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Class-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id${scoring_model.id}

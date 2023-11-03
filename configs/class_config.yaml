@@ -12,6 +12,7 @@ model:
   max_length: 512
   id: 0
   num_labels: None
+  spectral_norm: True
 aes:
   prompt_id: 1
   friendly_score: True

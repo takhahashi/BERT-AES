@@ -50,6 +50,7 @@ def main(cfg: DictConfig):
         cfg.model.reg_or_class,
         cfg.training.learning_rate,
         num_labels=num_labels,
+        spectral_norm=cfg.model.spectral_norm
         )
     optimizer = optim.AdamW(model.parameters(), lr=cfg.training.learning_rate)
 

@@ -60,7 +60,7 @@ def main(cfg: DictConfig):
     model = model.cuda()
 
     if cfg.model.spectral_norm == True:
-        save_path = cfg.path.save_path + 'sepctralnorm'
+        save_path = cfg.path.save_path + '_sepctralnorm'
     else:
         save_path = cfg.path.save_path
     earlystopping = EarlyStopping(patience=cfg.training.patience, verbose=True, path=save_path)

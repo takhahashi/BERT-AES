@@ -40,7 +40,7 @@ def main(cfg: DictConfig):
     num_labels = high - low + 1
     if cfg.scoring_model.spectral_norm == True:
        #scoring_model_path = cfg.path.scoring_model_savepath + 'spectralnorm'
-       results_save_path = cfg.path.results_save_path + 'spectralnorm'
+       results_save_path = cfg.path.results_save_path + '_spectralnorm'
     else:
        #scoring_model_path = cfg.path.scoring_model_savepath
        results_save_path = cfg.path.results_save_path

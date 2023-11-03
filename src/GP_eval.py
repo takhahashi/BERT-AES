@@ -42,6 +42,7 @@ def main(cfg: DictConfig):
                                 cfg.scoring_model.reg_or_class,
                                 learning_rate=1e-5,
                                 num_labels=num_labels,
+                                spectral_norm=cfg.scoring_model.spectral_norm,
                                 )
     classifier = classifier.cuda()
     classifier.load_state_dict(torch.load(cfg.path.scoring_model_savepath), strict=False)

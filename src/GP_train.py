@@ -28,7 +28,14 @@ def main(cfg: DictConfig):
                                                   )
 
     num_labels = high - low + 1
-    classifier = create_module(cfg.scoring_model.model_name_or_path,
+    if cfg.scoring_model.spectral_norm == True:
+       scoring_model_path = cfg.path.scoring_model_savepath + 'spectralnorm'
+       gp_save_path = cfg.path.save_path + 'spectralnorm'
+    else:
+       scoring_model_path = cfg.path.scoring_model_savepath
+       gp_save_path = cfg.path.save_path
+       
+    classifier = create_module(scoring_model_path,
                                 cfg.scoring_model.reg_or_class,
                                 learning_rate=1e-5,
                                 num_labels=num_labels,
@@ -69,7 +76,7 @@ def main(cfg: DictConfig):
       """
       optimizer.step()
 
-    torch.save(model.state_dict(), cfg.path.save_path)
+    torch.save(model.state_dict(), gp_save_path)
 
 
 if __name__ == "__main__":

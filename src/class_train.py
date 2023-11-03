@@ -61,8 +61,10 @@ def main(cfg: DictConfig):
 
     if cfg.model.spectral_norm == True:
         save_path = cfg.path.save_path + '_sepctralnorm'
+        print('SpectralNorm is applyed!')
     else:
         save_path = cfg.path.save_path
+        print('SpectralNorm is not applyed!')
     earlystopping = EarlyStopping(patience=cfg.training.patience, verbose=True, path=save_path)
 
     scaler = torch.cuda.amp.GradScaler()

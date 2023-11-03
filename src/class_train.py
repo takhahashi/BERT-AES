@@ -21,6 +21,7 @@ from models.models import Scaler
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
 
+
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
     train_dataset = get_Dataset(cfg.model.reg_or_class,
                                 cfg.path.traindata_file_name,
@@ -57,7 +58,12 @@ def main(cfg: DictConfig):
 
     model.train()
     model = model.cuda()
-    earlystopping = EarlyStopping(patience=cfg.training.patience, verbose=True, path=cfg.path.save_path)
+
+    if cfg.model.spectral_norm == True:
+        save_path = cfg.path.save_path + 'sepctralnorm'
+    else:
+        save_path = cfg.path.save_path
+    earlystopping = EarlyStopping(patience=cfg.training.patience, verbose=True, path=save_path)
 
     scaler = torch.cuda.amp.GradScaler()
 

@@ -38,6 +38,12 @@ def main(cfg: DictConfig):
     
     low, high = get_score_range(cfg.aes.prompt_id)
     num_labels = high - low + 1
+    if cfg.scoring_model.spectral_norm == True:
+       #scoring_model_path = cfg.path.scoring_model_savepath + 'spectralnorm'
+       results_save_path = cfg.path.results_save_path + 'spectralnorm'
+    else:
+       #scoring_model_path = cfg.path.scoring_model_savepath
+       results_save_path = cfg.path.results_save_path
     classifier = create_module(cfg.scoring_model.model_name_or_path,
                                 cfg.scoring_model.reg_or_class,
                                 learning_rate=1e-5,
@@ -68,7 +74,7 @@ def main(cfg: DictConfig):
     eval_results = {'labels':labels, 'score':mean, 'std':std}
     list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}
     
-    with open(cfg.path.results_save_path, mode="wt", encoding="utf-8") as f:
+    with open(results_save_path, mode="wt", encoding="utf-8") as f:
         json.dump(list_results, f, ensure_ascii=False)
 
 if __name__ == "__main__":

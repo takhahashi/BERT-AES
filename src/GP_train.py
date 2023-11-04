@@ -30,7 +30,7 @@ def main(cfg: DictConfig):
     num_labels = high - low + 1
     if cfg.scoring_model.spectral_norm == True:
        print('SpectralNorm is applyed!')
-       scoring_model_path = cfg.path.scoring_model_savepath + '_spectralnorm'
+       scoring_model_path = cfg.path.scoring_model_savepath + '_sepctralnorm'
        gp_save_path = cfg.path.save_path + '_spectralnorm'
     else:
        print('SpectralNorm is not applyed!')

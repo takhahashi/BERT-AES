@@ -39,7 +39,7 @@ def main(cfg: DictConfig):
     low, high = get_score_range(cfg.aes.prompt_id)
     num_labels = high - low + 1
     if cfg.scoring_model.spectral_norm == True:
-       #scoring_model_path = cfg.path.scoring_model_savepath + 'spectralnorm'
+       #scoring_model_path = cfg.path.scoring_model_savepath + '_sepctralnorm'
        results_save_path = cfg.path.results_save_path + '_spectralnorm'
     else:
        #scoring_model_path = cfg.path.scoring_model_savepath

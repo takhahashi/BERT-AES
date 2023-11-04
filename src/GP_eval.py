@@ -39,10 +39,12 @@ def main(cfg: DictConfig):
     low, high = get_score_range(cfg.aes.prompt_id)
     num_labels = high - low + 1
     if cfg.scoring_model.spectral_norm == True:
-       #scoring_model_path = cfg.path.scoring_model_savepath + '_sepctralnorm'
+       scoring_model_path = cfg.path.scoring_model_savepath + '_sepctralnorm'
+       gp_model_path = cfg.path.GPmodel_save_path + '_spectralnorm'
        results_save_path = cfg.path.results_save_path + '_spectralnorm'
     else:
-       #scoring_model_path = cfg.path.scoring_model_savepath
+       scoring_model_path = cfg.path.scoring_model_savepath
+       gp_model_path = cfg.path.GPmodel_save_path
        results_save_path = cfg.path.results_save_path
     classifier = create_module(cfg.scoring_model.model_name_or_path,
                                 cfg.scoring_model.reg_or_class,
@@ -51,7 +53,7 @@ def main(cfg: DictConfig):
                                 spectral_norm=cfg.scoring_model.spectral_norm,
                                 )
     classifier = classifier.cuda()
-    classifier.load_state_dict(torch.load(cfg.path.scoring_model_savepath), strict=False)
+    classifier.load_state_dict(torch.load(scoring_model_path), strict=False)
     classifier.eval()
 
     word_vec, labels = extract_clsvec_truelabels(classifier, train_dataloader)
@@ -63,7 +65,7 @@ def main(cfg: DictConfig):
 
     likelihood = gpytorch.likelihoods.GaussianLikelihood()
     model = GPModel(train_x, train_y, likelihood)
-    model.load_state_dict(torch.load(cfg.path.GPmodel_save_path))
+    model.load_state_dict(torch.load(gp_model_path))
     likelihood.eval()
     model.eval()    
 

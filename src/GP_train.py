@@ -69,13 +69,13 @@ def main(cfg: DictConfig):
       output = model(train_x)
       loss = -mll(output, train_y)
       loss.backward()
-      """
+      
       print('Iter %d/%d - Loss: %.3f lengthscale: %.3f noise: %.3f' % (
           i+1, training_iter, loss.item(),
           model.covar_module.base_kernel.lengthscale.item(),
           model.likelihood.noise.item()
       ))
-      """
+      
       optimizer.step()
 
     torch.save(model.state_dict(), gp_save_path)

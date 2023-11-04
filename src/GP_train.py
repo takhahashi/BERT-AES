@@ -37,8 +37,9 @@ def main(cfg: DictConfig):
        scoring_model_path = cfg.path.scoring_model_savepath
        gp_save_path = cfg.path.save_path
        
-    classifier = create_module(scoring_model_path,
-                                cfg.scoring_model.reg_or_class,
+    classifier = create_module(model_name_or_path=cfg.scoring_model.model_name_or_path,
+                               reg_or_class=cfg.scoring_model.reg_or_class,
+                                save_path=scoring_model_path,
                                 learning_rate=1e-5,
                                 num_labels=num_labels,
                                 spectral_norm=cfg.scoring_model.spectral_norm

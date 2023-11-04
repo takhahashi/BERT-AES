@@ -328,6 +328,7 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
     """
+
     five_fold_results = []
     for fold in range(5):
         with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/GP-git/pt{}/fold_{}/pred_results'.format(cfg.aes.prompt_id, fold)) as f:
@@ -355,6 +356,37 @@ def main(cfg: DictConfig):
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': mean_rcc_y}
     save_path = save_dir_path + '/GP'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
+
+
+    five_fold_results = []
+    for fold in range(5):
+        with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/GP-git/pt{}/fold_{}/pred_results_spectralnorm'.format(cfg.aes.prompt_id, fold)) as f:
+            fold_results = json.load(f)
+        five_fold_results.append({k: np.array(v) for k, v in fold_results.items()})
+
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##GP_spectralnorm####
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = foldr['score']
+        uncertainty = foldr['std']
+        risk = calc_risk(pred, true, 'gp', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        #rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(pred, true, -uncertainty, cfg.rcc.metric_type, cfg.aes.prompt_id, reg_or_class='gp', num_el=25, binary_risk=True)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='gp', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': mean_rcc_y}
+    save_path = save_dir_path + '/GP_spectralnorm'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
     """

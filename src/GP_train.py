@@ -39,13 +39,12 @@ def main(cfg: DictConfig):
        
     classifier = create_module(model_name_or_path=cfg.scoring_model.model_name_or_path,
                                reg_or_class=cfg.scoring_model.reg_or_class,
-                                save_path=scoring_model_path,
                                 learning_rate=1e-5,
                                 num_labels=num_labels,
                                 spectral_norm=cfg.scoring_model.spectral_norm
                                 )
     classifier = classifier.cuda()
-    classifier.load_state_dict(torch.load(cfg.path.scoring_model_savepath), strict=False)
+    classifier.load_state_dict(torch.load(scoring_model_path), strict=False)
     classifier.eval()
 
     word_vec, labels = extract_clsvec_truelabels(classifier, train_dataloader)

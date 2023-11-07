@@ -68,6 +68,9 @@ def calc_rcc_auc_scaledrmse(pred, true, conf, prompt_id, reg_or_class):
   elif reg_or_class == 'gp':
     pred_org = np.round(pred + low).astype('int32')
     true_org = np.round(true + low).astype('int32')
+  print(pred_org)
+  print(true_org)
+  print('------------')
   pred_scaled = (pred_org - low) / (high - low)
   true_scaled = (true_org - low) / (high - low)
   risk = (pred_scaled - true_scaled) ** 2

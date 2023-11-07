@@ -56,7 +56,8 @@ def main(cfg: DictConfig):
     training_iter = cfg.training.iter_num
     model.train()
     likelihood.train()
-
+    model.covar_module.base_kernel.lengthscale = np.linalg.norm(train_x[0].numpy() - train_x[1].numpy().T) ** 2 / 2
+    
     # Use the adam optimizer
     optimizer = torch.optim.Adam([
         {'params': model.parameters()},  # Includes GaussianLikelihood parameters

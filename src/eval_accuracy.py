@@ -174,7 +174,7 @@ def main(cfg: DictConfig):
     save_path = save_dir_path + '/GP_acc'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
-
+    """
     five_fold_results = []
     for fold in range(5):
         with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/GP-git/pt{}/fold_{}/pred_results_spectralnorm'.format(cfg.aes.prompt_id, fold)) as f:
@@ -193,7 +193,6 @@ def main(cfg: DictConfig):
     save_path = save_dir_path + '/GP_spectralnorm_acc'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
-    """
     five_fold_results = []
     for fold in range(5):
         with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt{}/fold_{}/pred_results'.format(cfg.aes.prompt_id, fold)) as f:

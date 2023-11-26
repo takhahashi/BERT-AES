@@ -55,7 +55,6 @@ def main(cfg: DictConfig):
         )
     optimizer = optim.AdamW(model.parameters(), lr=cfg.training.learning_rate)
 
-
     model.train()
     model = model.cuda()
 

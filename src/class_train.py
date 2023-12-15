@@ -76,6 +76,8 @@ def main(cfg: DictConfig):
         model.train()
         for idx, t_batch in enumerate(train_dataloader):
             batch = {k: v.cuda() for k, v in t_batch.items()}
+            if epoch == 0 and idx == 0:
+                print(batch['labels'])
             with torch.cuda.amp.autocast():
                 training_step_outputs = model.training_step(batch, idx)
             scaler.scale(training_step_outputs['loss']).backward()

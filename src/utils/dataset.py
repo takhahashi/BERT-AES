@@ -48,23 +48,38 @@ class DataSet:
             'attention_mask': self.attention_mask[index], 
             'token_type_ids': self.token_type_ids[index], 
             'labels': self.labels[index]}
+  
+def create_softlabels(labels, categories, metric_loss_fnc, num_categoris=None):
+  logits = []
+  for y in labels:
+    logits.append([-metric_loss_fnc(y, k) for k in categories])
+  soft_labels = torch.tensor(logits, dtype=torch.float64).softmax(dim=1)
+  return soft_labels
+
+def squared_error(y, k):
+  return (y-k)**2
 
 def get_Dataset(reg_or_class, datapath, prompt_id, tokenizer):
-	low, high = asap_ranges[prompt_id]
-	dataf = pd.read_table(datapath, sep='\t')
-	dat_p = dataf[dataf["essay_set"] == prompt_id]
-	x = dat_p["essay"].tolist()
-	encoding = tokenizer(x, max_length=max_length, padding='max_length', truncation=True, return_tensors='pt')
-	if reg_or_class == 'reg':
-		y = get_model_friendly_scores(np.array(dat_p["domain1_score"]), prompt_id).tolist()
-		labels = torch.tensor(y, dtype=torch.float32)
-		return DataSet(encoding, labels)
-	elif reg_or_class == 'class':
-		y = (np.array(dat_p["domain1_score"]) - low).tolist()
-		labels = torch.tensor(y, dtype=torch.int32)
-		return DataSet(encoding, labels.type(torch.LongTensor))
-	else:
-		raise ValueError("{} is not a valid value for reg_or_class".format(reg_or_class))
+  low, high = asap_ranges[prompt_id]
+  dataf = pd.read_table(datapath, sep='\t')
+  dat_p = dataf[dataf["essay_set"] == prompt_id]
+  x = dat_p["essay"].tolist()
+  encoding = tokenizer(x, max_length=max_length, padding='max_length', truncation=True, return_tensors='pt')
+  if reg_or_class == 'reg':
+    y = get_model_friendly_scores(np.array(dat_p["domain1_score"]), prompt_id).tolist()
+    labels = torch.tensor(y, dtype=torch.float32)
+    return DataSet(encoding, labels)
+  elif reg_or_class == 'class':
+    y = (np.array(dat_p["domain1_score"]) - low).tolist()
+    labels = torch.tensor(y, dtype=torch.int32)
+    return DataSet(encoding, labels.type(torch.LongTensor))
+  elif reg_or_class == 'ordinal_reg':
+    categories = list(range(high - low +1))
+    soft_labels = create_softlabels(np.array(dat_p["domain1_score"]) - low, categories, metric_loss_fnc=squared_error)
+    labels = soft_labels
+    return DataSet(encoding, labels)
+  else:
+    raise ValueError("{} is not a valid value for reg_or_class".format(reg_or_class))
 
 
 def get_theta(scores_array):
@@ -114,7 +129,7 @@ class RaterDataSet:
 		    'token_type_ids': self.token_type_ids[index],
             'attention_mask': self.attention_mask[index], 
             'score': self.score[index]}
- 
+
 def get_asap2_dataset(dataf, scoretype, tokenizer):
   x = dataf["essay"].tolist()
   encoding = tokenizer(x, max_length=max_length, padding='max_length', truncation=True, return_tensors='pt')

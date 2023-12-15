@@ -17,7 +17,7 @@ def create_module(model_name_or_path, reg_or_class, learning_rate, num_labels=No
             model = BertReg.load_from_checkpoint(save_path, bert = Bert(model_name_or_path), learning_rate = learning_rate)
         else:
             model = BertReg(bert, learning_rate, criterion=criterion)
-    elif reg_or_class == 'class':
+    elif reg_or_class == 'class' or reg_or_class == 'ordinal_reg':
         if save_path is not None:
             if spectral_norm == True:
                 model = BertClassSpectralNorm.load_from_checkpoint(save_path, bert = Bert(model_name_or_path), num_labels=num_labels, learning_rate = learning_rate)

@@ -14,7 +14,7 @@ class UeEstimatorEnsemble:
         self.prompt_id = prompt_id
         self.calib_estimater = calib_estimater
         
-    def __call__(self, dataloader, expected_score):
+    def __call__(self, dataloader, expected_score=None):
         ense_results = self._predict_with_multimodel(dataloader, expected_score)
         return ense_results
     

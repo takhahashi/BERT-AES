@@ -15,18 +15,18 @@ from utils.cfunctions import simple_collate_fn, theta_collate_fn, simplevar_rate
 from utils.utils_models import create_module
 from models.functions import return_predresults
 from models.models import Reg_class_mixmodel, Bert
-from utils.cfunctions import regvarloss, EarlyStopping, DynamicWeightAverage, ScaleDiffBalance
+from utils.cfunctions import regvarloss, EarlyStopping, DynamicWeightAverage, ScaleDiffBalance, mix_loss
 from models.models import Scaler
 import matplotlib.pyplot as plt
 import wandb
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_class_mix")
 def main(cfg: DictConfig):
-    """
+
     wandb.init(project=cfg.wandb.project, 
-               name=cfg.wandb.project_name, 
-               settings=wandb.Settings(start_method="thread"))
-    """
+               name=cfg.wandb.project_name,)
+               #settings=wandb.Settings(start_method="thread"))
+
     
     tokenizer = AutoTokenizer.from_pretrained(cfg.model.model_name_or_path)
     train_dataset = get_Dataset('reg',
@@ -65,7 +65,7 @@ def main(cfg: DictConfig):
     model.train()
     crossentropy = nn.CrossEntropyLoss()
     mseloss = nn.MSELoss()
-    weight_d = ScaleDiffBalance(num_tasks=2, beta=1.)
+    #weight_d = ScaleDiffBalance(num_tasks=2, beta=1.)
 
     trainloss_list, devloss_list, dev_mse_list, dev_cross_list = [], [], [], []
     scaler = torch.cuda.amp.GradScaler()
@@ -75,22 +75,25 @@ def main(cfg: DictConfig):
         model.train()
         mse_loss_list, cross_loss_list = [], []
         for data in train_dataloader:
-            #wandb.log({"epoch":epoch})
+            wandb.log({"epoch":epoch+0.001})
             data = {k: v.cuda() for k, v in data.items()}
             int_score = torch.round(data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor).cuda()
             with torch.cuda.amp.autocast():
                 outputs = model(data)
+                """
                 crossentropy_el = crossentropy(outputs['logits'], int_score)
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
-                
+                """
+                loss, mse_loss, cross_loss = mix_loss(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
+            wandb.log({"all_loss":loss, "mse_loss":mse_loss, "cross_loss":cross_loss})
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
             model.zero_grad()
             lossall += loss.to('cpu').detach().numpy().copy()
-            cross_loss += crossentropy_el.to('cpu').detach().numpy().copy()
-            mse_loss += mseloss_el.to('cpu').detach().numpy().copy()
+            #cross_loss += crossentropy_el.to('cpu').detach().numpy().copy()
+            #mse_loss += mseloss_el.to('cpu').detach().numpy().copy()
 
         # dev QWKの計算
         
@@ -99,16 +102,18 @@ def main(cfg: DictConfig):
             d_data = {k: v.cuda() for k, v in dev_data.items()}
             int_score = torch.round(d_data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor).to('cpu')
             dev_outputs = {k: v.to('cpu').detach() for k, v in model(d_data).items()}
-            crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
-            mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
-            loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
+            #crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
+            #mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
+            #loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
+            loss, mse_loss, cross_loss = mix_loss(d_data['labels'].to('cpu').detach().squeeze(), dev_outputs['score'].squeeze(), dev_outputs['logits'], high, low)
+            wandb.log({"dev_loss":loss})
             devlossall += loss.to('cpu').detach().numpy().copy()
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
-        dev_mse_list = np.append(dev_mse_list, mseloss_el)
-        dev_cross_list = np.append(dev_cross_list, crossentropy_el)
-
-        s_wei = weight_d._calc_scale_weights()
-        diff_wei = weight_d._calc_diff_weights()
+        #dev_mse_list = np.append(dev_mse_list, mseloss_el)
+        #dev_cross_list = np.append(dev_cross_list, crossentropy_el)
+        
+        #s_wei = weight_d._calc_scale_weights()
+        #diff_wei = weight_d._calc_diff_weights()
         """
         wandb.log({
             "all_loss":lossall/num_train_batch,
@@ -122,11 +127,11 @@ def main(cfg: DictConfig):
             "Diff_Weight_cross":diff_wei[0],
         })
         """
-        weight_d.update(lossall/num_train_batch, cross_loss/num_train_batch, mse_loss/num_train_batch)
+        #weight_d.update(lossall/num_train_batch, cross_loss/num_train_batch, mse_loss/num_train_batch)
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
         earlystopping(devlossall/num_dev_batch, model)
         if(earlystopping.early_stop == True): break
-    #wandb.finish()
+    wandb.finish()
     """
     # Plot trainloss_list in blue
     plt.plot(trainloss_list, color='blue', label='Train Loss')

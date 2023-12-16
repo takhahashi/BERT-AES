@@ -789,5 +789,153 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
+
+
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##class###
+    five_fold_results = []
+    for fold in range(5):
+        with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Ord_reg-torchlightning/pt{}/fold_{}/pred_results'.format(cfg.aes.prompt_id, fold)) as f:
+            fold_results = json.load(f)
+        five_fold_results.append({k: np.array(v) for k, v in fold_results.items()})
+
+    save_dir_path = cfg.path.save_dir_path
+
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##MP####
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = np.argmax(foldr['logits'], axis=-1)
+        uncertainty = -foldr['MP']
+        risk = calc_risk(pred, true, 'class', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(pred, true, -uncertainty, cfg.rcc.metric_type, cfg.aes.prompt_id, reg_or_class='class', num_el=25, binary_risk=True)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='class', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': mean_rcc_y}
+    save_path = save_dir_path + '/ordinal_reg'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
+
+    
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##class trust####
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = np.argmax(foldr['logits'], axis=-1)
+        uncertainty = -foldr['trust_score']
+        risk = calc_risk(pred, true, 'class', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(pred, true, -uncertainty, cfg.rcc.metric_type, cfg.aes.prompt_id, reg_or_class='class', num_el=25, binary_risk=True)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='class', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': mean_rcc_y}
+    save_path = save_dir_path + '/ordinal_reg_trust_score'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
+    """
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##class dp MP####
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = foldr['mcdp_score'] 
+        uncertainty = -foldr['mcdp_MP']
+        risk = calc_risk(pred, true, 'class', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='class', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': fresults_rcc_y}
+    save_path = save_dir_path + '/class_dp_MP'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
+
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##class dp Ent###
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = foldr['mcdp_score'] 
+        uncertainty = foldr['mcdp_entropy'] 
+        risk = calc_risk(pred, true, 'class', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='class', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': fresults_rcc_y}
+    save_path = save_dir_path + '/class_dp_entropy'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
+
+
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##class dp Epistemic####
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = foldr['mcdp_score'] 
+        uncertainty = foldr['mcdp_epi_uncertainty']
+        risk = calc_risk(pred, true, 'class', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(conf=-uncertainty, risk=risk)
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='class', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': fresults_rcc_y}
+    save_path = save_dir_path + '/class_dp_epistemic'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
+    """
+    fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
+    ##class mul MP####
+    for foldr in five_fold_results:
+        true = foldr['labels']
+        pred = foldr['ense_score']
+        uncertainty = -foldr['ense_MP']
+        risk = calc_risk(pred, true, 'class', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
+        rcc_auc, rcc_x, rcc_y = calc_rcc_auc(pred, true, -uncertainty, cfg.rcc.metric_type, cfg.aes.prompt_id, reg_or_class='class')
+        rpp = calc_rpp(conf=-uncertainty, risk=risk)
+        roc_auc = calc_roc_auc(pred, true, conf=-uncertainty, reg_or_class='class', prompt_id=cfg.aes.prompt_id)
+        fresults_rcc = np.append(fresults_rcc, rcc_auc)
+        fresults_rcc_y.append(rcc_y)
+        fresults_roc = np.append(fresults_roc, roc_auc)
+        fresults_rpp = np.append(fresults_rpp, rpp)
+    mean_rcc_y = calc_mean_rcc_y(fresults_rcc_y)
+    results_dic = {'rcc': np.mean(fresults_rcc), 
+                   'rpp': np.mean(fresults_rpp), 
+                   'roc': np.mean(fresults_roc), 
+                   'rcc_y': mean_rcc_y}
+    save_path = save_dir_path + '/ordinal_reg_mul_MP'
+    with open(save_path, mode="wt", encoding="utf-8") as f:
+        json.dump(results_dic, f, ensure_ascii=False)
 if __name__ == "__main__":
     main()

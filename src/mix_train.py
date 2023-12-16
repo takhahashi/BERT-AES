@@ -85,7 +85,7 @@ def main(cfg: DictConfig):
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
                 """
-                loss, mse_loss, cross_loss = mix_loss(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
+                loss, mse_loss, cross_loss = mix_loss(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low, alpha=2.)
             wandb.log({"all_loss":loss, "mse_loss":mse_loss, "cross_loss":cross_loss})
             scaler.scale(loss).backward()
             scaler.step(optimizer)

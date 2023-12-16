@@ -23,8 +23,8 @@ import wandb
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_class_mix")
 def main(cfg: DictConfig):
 
-    wandb.init(project=cfg.wandb.project, 
-               name=cfg.wandb.project_name,)
+    #wandb.init(project=cfg.wandb.project, 
+    #           name=cfg.wandb.project_name,)
                #settings=wandb.Settings(start_method="thread"))
 
     
@@ -75,7 +75,7 @@ def main(cfg: DictConfig):
         model.train()
         mse_loss_list, cross_loss_list = [], []
         for data in train_dataloader:
-            wandb.log({"epoch":epoch+0.001})
+            #wandb.log({"epoch":epoch+0.001})
             data = {k: v.cuda() for k, v in data.items()}
             int_score = torch.round(data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor).cuda()
             with torch.cuda.amp.autocast():
@@ -86,7 +86,7 @@ def main(cfg: DictConfig):
                 loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
                 """
                 loss, mse_loss, cross_loss = mix_loss(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low, alpha=1.)
-            wandb.log({"all_loss":loss, "mse_loss":mse_loss, "cross_loss":cross_loss})
+            #wandb.log({"all_loss":loss, "mse_loss":mse_loss, "cross_loss":cross_loss})
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
@@ -106,7 +106,7 @@ def main(cfg: DictConfig):
             #mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
             #loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
             loss, mse_loss, cross_loss = mix_loss(d_data['labels'].to('cpu').detach().squeeze(), dev_outputs['score'].squeeze(), dev_outputs['logits'], high, low, alpha=1.)
-            wandb.log({"dev_loss":loss})
+            #wandb.log({"dev_loss":loss})
             devlossall += loss.to('cpu').detach().numpy().copy()
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
         #dev_mse_list = np.append(dev_mse_list, mseloss_el)
@@ -131,7 +131,7 @@ def main(cfg: DictConfig):
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
         earlystopping(devlossall/num_dev_batch, model)
         if(earlystopping.early_stop == True): break
-    wandb.finish()
+    #wandb.finish()
     """
     # Plot trainloss_list in blue
     plt.plot(trainloss_list, color='blue', label='Train Loss')

@@ -792,7 +792,7 @@ def main(cfg: DictConfig):
 
 
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
-    ##class###
+    ##ordinal_reg###
     five_fold_results = []
     for fold in range(5):
         with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Ord_reg-torchlightning/pt{}/fold_{}/pred_results'.format(cfg.aes.prompt_id, fold)) as f:
@@ -802,7 +802,7 @@ def main(cfg: DictConfig):
     save_dir_path = cfg.path.save_dir_path
 
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
-    ##MP####
+    ##ordinal_reg####
     for foldr in five_fold_results:
         true = foldr['labels']
         pred = np.argmax(foldr['logits'], axis=-1)
@@ -824,9 +824,9 @@ def main(cfg: DictConfig):
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
-    
+    """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
-    ##class trust####
+    ##ordinal_reg trust####
     for foldr in five_fold_results:
         true = foldr['labels']
         pred = np.argmax(foldr['logits'], axis=-1)
@@ -847,7 +847,7 @@ def main(cfg: DictConfig):
     save_path = save_dir_path + '/ordinal_reg_trust_score'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
-    """
+
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
     ##class dp MP####
     for foldr in five_fold_results:
@@ -916,7 +916,7 @@ def main(cfg: DictConfig):
         json.dump(results_dic, f, ensure_ascii=False)
     """
     fresults_rcc, fresults_rpp, fresults_roc, fresults_rcc_y = [], [], [], []
-    ##class mul MP####
+    ##ordinal_reg mul MP####
     for foldr in five_fold_results:
         true = foldr['labels']
         pred = foldr['ense_score']

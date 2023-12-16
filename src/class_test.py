@@ -68,7 +68,7 @@ def main(cfg: DictConfig):
     max_prob = probs[torch.arange(len(probs)), torch.argmax(probs, dim=-1)]
     eval_results.update({'MP': max_prob.numpy().copy()})
 
-
+    """
     trust_estimater = UeEstimatorTrustscore(model, 
                                             train_dataloader, 
                                             cfg.aes.prompt_id,
@@ -96,7 +96,7 @@ def main(cfg: DictConfig):
     eval_results.update(mcdp_results)
     
 
-
+    """
     ensemble_estimater = UeEstimatorEnsemble(model, 
                                              cfg.ue.ensemble_model_paths,
                                              cfg.model.reg_or_class,

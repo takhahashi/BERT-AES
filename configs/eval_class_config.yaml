@@ -14,13 +14,13 @@ aes:
 ue:
   num_dropout: 5
   ensemble_model_paths: 
-    - /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Class-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id0
-    - /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Class-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id1
-    - /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Class-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id2
-    - /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Class-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id3
-    - /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Class-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id4
+    - /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Ord_reg-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id0
+    - /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Ord_reg-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id1
+    - /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Ord_reg-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id2
+    - /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Ord_reg-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id3
+    - /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Ord_reg-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id4
 path:
   traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/train.tsv
   testdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/test.tsv
-  model_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Class-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id${model.id}
-  results_save_path: '/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Class-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/pred_results'
+  model_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Ord_reg-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id${model.id}
+  results_save_path: '/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Ord_reg-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/pred_results'

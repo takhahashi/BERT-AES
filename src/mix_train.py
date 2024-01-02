@@ -85,7 +85,7 @@ def main(cfg: DictConfig):
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
                 """
-                loss, mse_loss, cross_loss = mix_loss1(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low, alpha=2.)
+                loss, mse_loss, cross_loss = mix_loss1(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low, alpha=100.)
             wandb.log({"all_loss":loss, "mse_loss":mse_loss, "cross_loss":cross_loss})
             scaler.scale(loss).backward()
             scaler.step(optimizer)
@@ -105,7 +105,7 @@ def main(cfg: DictConfig):
             #crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
             #mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
             #loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
-            loss, mse_loss, cross_loss = mix_loss1(d_data['labels'].to('cpu').detach().squeeze(), dev_outputs['score'].squeeze(), dev_outputs['logits'], high, low, alpha=2.)
+            loss, mse_loss, cross_loss = mix_loss1(d_data['labels'].to('cpu').detach().squeeze(), dev_outputs['score'].squeeze(), dev_outputs['logits'], high, low, alpha=100.)
             devlossall += loss.to('cpu').detach().numpy().copy()
 
         wandb.log({"dev_loss":devlossall})

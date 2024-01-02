@@ -109,7 +109,7 @@ def mix_loss1(y_trues, y_preds, logits, high, low, alpha): #  \frac{\|\hat{y}-y\
    y_trues_org = np.round(torch.flatten(y_trues).to('cpu').detach().numpy().copy() * (high - low))
    probs = logits.softmax(dim=1)[list(range(len(y_trues_org))), y_trues_org]
    neg_ln_probs = -torch.log(probs)
-   loss = (((torch.flatten(y_trues) - torch.flatten(y_preds)) ** 2)/neg_ln_probs) + neg_ln_probs
+   loss = alpha * (((torch.flatten(y_trues) - torch.flatten(y_preds)) ** 2)/neg_ln_probs) + neg_ln_probs
    mse_loss = torch.sum((torch.flatten(y_trues) - torch.flatten(y_preds)) ** 2)
    cross_loss = torch.sum(-torch.log(probs))
    loss = torch.sum(loss)

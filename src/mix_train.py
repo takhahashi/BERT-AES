@@ -69,12 +69,20 @@ def main(cfg: DictConfig):
 
     trainloss_list, devloss_list, dev_mse_list, dev_cross_list = [], [], [], []
     scaler = torch.cuda.amp.GradScaler()
-    mse_weights = 1.
+
+    lossall, mse_lossall = 0, 0
+    for data in train_dataloader:
+        data = {k: v.cuda() for k, v in data.items()}
+        outputs = model(data)
+        loss, mse_loss, cross_loss = mix_loss1(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low, alpha=mse_weights)
+
+        lossall += loss.to('cpu').detach().numpy().copy()
+        mse_lossall += mse_loss.to('cpu').detach().numpy().copy()
+    mse_weights = lossall / mse_lossall
+
     for epoch in range(cfg.training.n_epochs):
         model.train()
         mse_loss_list, cross_loss_list = [], []
-        if epoch == 1:
-            mse_weights = lossall / mse_lossall
         lossall, cross_lossall, mse_lossall = 0, 0, 0
         devlossall = 0
         for data in train_dataloader:
@@ -88,7 +96,6 @@ def main(cfg: DictConfig):
                 loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
                 """
                 loss, mse_loss, cross_loss = mix_loss1(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low, alpha=mse_weights)
-            
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
@@ -133,9 +140,8 @@ def main(cfg: DictConfig):
         """
         #weight_d.update(lossall/num_train_batch, cross_loss/num_train_batch, mse_loss/num_train_batch)
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
-        if 0 < epoch:
-            earlystopping(devlossall/num_dev_batch, model)
-            if(earlystopping.early_stop == True): break
+        earlystopping(devlossall/num_dev_batch, model)
+        if(earlystopping.early_stop == True): break
     #wandb.finish()
     """
     # Plot trainloss_list in blue

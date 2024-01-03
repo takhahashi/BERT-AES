@@ -133,8 +133,9 @@ def main(cfg: DictConfig):
         """
         #weight_d.update(lossall/num_train_batch, cross_loss/num_train_batch, mse_loss/num_train_batch)
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
-        earlystopping(devlossall/num_dev_batch, model)
-        if(earlystopping.early_stop == True): break
+        if 0 < epoch:
+            earlystopping(devlossall/num_dev_batch, model)
+            if(earlystopping.early_stop == True): break
     wandb.finish()
     """
     # Plot trainloss_list in blue

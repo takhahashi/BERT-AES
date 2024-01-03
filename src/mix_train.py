@@ -69,12 +69,11 @@ def main(cfg: DictConfig):
 
     trainloss_list, devloss_list, dev_mse_list, dev_cross_list = [], [], [], []
     scaler = torch.cuda.amp.GradScaler()
+    mse_weights = 1.
     for epoch in range(cfg.training.n_epochs):
         model.train()
         mse_loss_list, cross_loss_list = [], []
-        if epoch == 0:
-            mse_weights = 1.
-        else:
+        if epoch == 1:
             mse_weights = lossall / mse_lossall
         lossall, cross_lossall, mse_lossall = 0, 0, 0
         devlossall = 0

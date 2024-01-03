@@ -111,7 +111,7 @@ def main(cfg: DictConfig):
             loss, mse_loss, cross_loss = mix_loss1(d_data['labels'].to('cpu').detach().squeeze(), dev_outputs['score'].squeeze(), dev_outputs['logits'], high, low, alpha=mse_weights)
             devlossall += loss.to('cpu').detach().numpy().copy()
 
-        wandb.log({"epoch":epoch+0.001,"all_loss":lossall, "mse_loss":mse_lossall, "cross_loss":cross_lossall,"dev_loss":devlossall})
+        wandb.log({"epoch":epoch+0.001,"all_loss":lossall, "mse_loss":mse_lossall, "cross_loss":cross_lossall,"dev_loss":devlossall,"mse_weights":mse_weights})
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
         #dev_mse_list = np.append(dev_mse_list, mseloss_el)
         #dev_cross_list = np.append(dev_cross_list, crossentropy_el)

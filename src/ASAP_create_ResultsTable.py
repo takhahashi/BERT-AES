@@ -19,7 +19,7 @@ def down_sample(data, samples=300):
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_ue_config")
 def main(cfg: DictConfig):
     #u_idx_name = ['reg', 'mul_reg', 'class', 'mul_class', 'mix', 'mul_mix', 'mix_weighted_exp_score']
-    u_idx_name = ['reg', 'mul_reg', 'class', 'mul_class', 'mix', 'mul_mix', 'mix_my_loss', 'mul_mix_my_loss', 'ordinal_reg_mul', 'trust_score', 'gp']
+    u_idx_name = ['reg', 'mul_reg', 'class', 'mul_class', 'mix', 'mul_mix', 'mix_my_loss', 'mul_mix_my_loss', 'trust_score', 'gp']
     #utypes = ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']
     utypes = ['simplevar', 'reg_mul', 'MP', 'class_mul_MP', 'mix', 'mix_mul', 'mix_org_loss', 'ense_mix_org_loss', 'class_trust_score', 'GP']#'mix_mul_expected_score', 'mix_weighted_exp_score']
     ###roc_auc###

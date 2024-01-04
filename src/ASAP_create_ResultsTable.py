@@ -35,6 +35,7 @@ def main(cfg: DictConfig):
     for k, v in roc_dic.items():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         roc_dic[k] = n_v
+    print(roc_dic)
     roc_table = pd.DataFrame.from_dict(roc_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
     roc_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/roc_table.tsv', sep='\t', index=True)
 
@@ -51,6 +52,7 @@ def main(cfg: DictConfig):
     for k, v in rpp_dic.items():
         n_v = np.append(v, np.round(np.mean(v), decimals=3))
         rpp_dic[k] = n_v
+    print(rpp_dic)
     rpp_table = pd.DataFrame.from_dict(rpp_dic, orient='index', columns=['pt1', 'pt2', 'pt3', 'pt4', 'pt5', 'pt6', 'pt7', 'pt8', 'mean'])
     rpp_table.to_csv('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/torchlightning/rpp_table.tsv', sep='\t', index=True)
 

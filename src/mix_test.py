@@ -95,20 +95,20 @@ def main(cfg: DictConfig):
     mcdp_results = mcdp_estimater(test_dataloader, expected_score=expected_score)
     eval_results.update(mcdp_results)
 
-
+    """
     ensemble_estimater = UeEstimatorEnsemble(model, 
                                              cfg.ue.ensemble_model_paths,
                                              cfg.model.reg_or_class,
                                              cfg.aes.prompt_id,
                                              )
-    ensemble_results = ensemble_estimater(test_dataloader, expected_score=expected_score)
+    ensemble_results = ensemble_estimater(test_dataloader)
     eval_results.update(ensemble_results)
 
-
+    """
     max_prob = pred_probs[torch.arange(len(pred_probs)), torch.argmax(pred_probs, dim=-1)]
     eval_results.update({'MP': max_prob.numpy().copy()})
 
-    
+
     trust_estimater = UeEstimatorTrustscore(model, 
                                             train_dataloader, 
                                             cfg.aes.prompt_id,

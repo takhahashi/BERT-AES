@@ -378,5 +378,6 @@ def main(cfg: DictConfig):
     save_path = save_dir_path + '/ense_ord_reg_acc'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
+        
 if __name__ == "__main__":
     main()

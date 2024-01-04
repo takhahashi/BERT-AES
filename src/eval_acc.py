@@ -406,7 +406,7 @@ def main(cfg: DictConfig):
                     'corr': np.mean(corr_arr), 
                     'rmse': np.mean(rmse_arr)}
 
-    save_path = save_dir_path + '/mix_org_loss'
+    save_path = save_dir_path + '/mix_org_loss_acc'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 
@@ -442,7 +442,7 @@ def main(cfg: DictConfig):
                     'corr': np.mean(corr_arr), 
                     'rmse': np.mean(rmse_arr)}
 
-    save_path = save_dir_path + '/ense_mix_org_loss'
+    save_path = save_dir_path + '/ense_mix_org_loss_acc'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 

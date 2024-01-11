@@ -6,6 +6,7 @@ training:
   learning_rate: 0.00001
   collate_fn: True
   patience: 5
+  original_loss_weight: 100
 model:
   model_name_or_path: 'bert-base-uncased'
   reg_or_class: 'reg'

@@ -79,7 +79,7 @@ def main(cfg: DictConfig):
         lossall += loss.to('cpu').detach().numpy().copy()
         mse_lossall += mse_loss.to('cpu').detach().numpy().copy()
     """
-    mse_weights = 1.
+    mse_weights = cfg.training.original_loss_weight
 
     for epoch in range(cfg.training.n_epochs):
         model.train()

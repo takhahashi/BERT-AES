@@ -23,8 +23,8 @@ import wandb
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_class_mix")
 def main(cfg: DictConfig):
 
-    #wandb.init(project=cfg.wandb.project, 
-    #           name=cfg.wandb.project_name,)
+    wandb.init(project=cfg.wandb.project, 
+               name=cfg.wandb.project_name,)
                #settings=wandb.Settings(start_method="thread"))
 
     
@@ -119,7 +119,7 @@ def main(cfg: DictConfig):
             loss, mse_loss, cross_loss = mix_loss1(d_data['labels'].to('cpu').detach().squeeze(), dev_outputs['score'].squeeze(), dev_outputs['logits'], high, low, alpha=mse_weights)
             devlossall += loss.to('cpu').detach().numpy().copy()
 
-        #wandb.log({"epoch":epoch+0.001,"all_loss":lossall, "mse_loss":mse_lossall, "cross_loss":cross_lossall,"dev_loss":devlossall,"mse_weights":mse_weights})
+        wandb.log({"epoch":epoch+0.001,"all_loss":lossall, "mse_loss":mse_lossall, "cross_loss":cross_lossall,"dev_loss":devlossall,"mse_weights":mse_weights})
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
         #dev_mse_list = np.append(dev_mse_list, mseloss_el)
         #dev_cross_list = np.append(dev_cross_list, crossentropy_el)
@@ -143,7 +143,7 @@ def main(cfg: DictConfig):
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
         earlystopping(devlossall/num_dev_batch, model)
         if(earlystopping.early_stop == True): break
-    #wandb.finish()
+    wandb.finish()
     """
     # Plot trainloss_list in blue
     plt.plot(trainloss_list, color='blue', label='Train Loss')

@@ -19,9 +19,9 @@ def down_sample(data, samples=300):
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_ue_config")
 def main(cfg: DictConfig):
     #u_idx_name = ['reg', 'mul_reg', 'class', 'mul_class', 'mix', 'mul_mix', 'mix_weighted_exp_score']
-    u_idx_name = ['reg', 'class', 'mix', 'mix_original']
+    u_idx_name = ['reg', 'class', 'mix', 'mix_50', 'mix_100', 'mix_1000']
     #utypes = ['simplevar', 'reg_dp', 'reg_mul', 'reg_trust_score', 'MP', 'class_dp_MP', 'class_dp_entropy', 'class_dp_epistemic', 'class_mul_MP', 'class_mul_entropy', 'class_mul_epistemic', 'class_trust_score', 'mix', 'mix_dp', 'mix_dp_entropy', 'mix_mul', 'mix_mul_entropy']
-    utypes = ['simplevar', 'MP', 'mix', 'mix_org_loss_50']#'mix_mul_expected_score', 'mix_weighted_exp_score']
+    utypes = ['simplevar', 'MP', 'mix', 'mix_org_loss_50', 'mix_org_loss_100', 'mix_org_loss_1000']#'mix_mul_expected_score', 'mix_weighted_exp_score']
     ###roc_auc###
     roc_dic = {}
     for utype in u_idx_name:
@@ -94,8 +94,8 @@ def main(cfg: DictConfig):
     #utype_path_name = ['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc', 'mix_acc', 'dp_mix_acc', 'ense_mix_acc']
     #table_idx_name = ['reg', 'mul_reg', 'class', 'mul_class', 'mix', 'mul_mix', 'weighted_epx_score']#'exp_score', 'mul_exp_score', 'weighted_epx_score']
     #utype_path_name = ['simple_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'ense_class_acc', 'mix_acc', 'ense_mix_acc', 'mix_weighted_exp_score_acc']#'mix_expected_score_acc', 'ense_mix_expected_score_acc', 'mix_weighted_exp_score_acc']
-    table_idx_name = ['reg', 'class', 'mix', 'mix_original']#'exp_score', 'mul_exp_score', 'weighted_epx_score']
-    utype_path_name = ['simple_reg_acc', 'simple_class_acc', 'mix_acc', 'mix_org_loss_50_acc']#'mix_expected_score_acc', 'ense_mix_expected_score_acc', 'mix_weighted_exp_score_acc']
+    table_idx_name = ['reg', 'class', 'mix', 'mix_50', 'mix_100', 'mix_1000']#'exp_score', 'mul_exp_score', 'weighted_epx_score']
+    utype_path_name = ['simple_reg_acc', 'simple_class_acc', 'mix_acc', 'mix_org_loss_50_acc', 'mix_org_loss_100_acc', 'mix_org_loss_1000_acc']#'mix_expected_score_acc', 'ense_mix_expected_score_acc', 'mix_weighted_exp_score_acc']
 
     qwk_dic = {}
     for utype in table_idx_name:

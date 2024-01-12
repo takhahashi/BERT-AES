@@ -134,7 +134,8 @@ def mix_loss3(y_trues, y_preds, logits, high, low): #  -\hat{P}_{y} + \hat{P}_{y
    neg_ln_probs = -(torch.log(probs_true) + torch.log(probs_pred))/2
    mse_loss = torch.mean((torch.flatten(y_trues) - torch.flatten(y_preds)) ** 2)
    cross_loss = torch.mean(neg_ln_probs)
-   return mse_loss, cross_loss
+   normal_cross_loss = torch.mean(-torch.log(probs_true))
+   return mse_loss, cross_loss, normal_cross_loss
 
 def simple_collate_fn(list_of_data):
   pad_max_len = torch.tensor(0)

@@ -84,7 +84,7 @@ def main(cfg: DictConfig):
     for epoch in range(cfg.training.n_epochs):
         model.train()
         mse_loss_list, cross_loss_list = [], []
-        lossall, cross_lossall, mse_lossall = 0, 0, 0
+        lossall, cross_lossall, mse_lossall, normal_cross_lossall = 0, 0, 0, 0
         s_weiall, diff_weiall = 0, 0
         devlossall = 0
         for data in train_dataloader:
@@ -97,7 +97,7 @@ def main(cfg: DictConfig):
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
                 """
-                mse_loss, cross_loss = mix_loss3(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
+                mse_loss, cross_loss, normal_cross_loss = mix_loss3(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
                 loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mse_loss, cross_loss)
             scaler.scale(loss).backward()
             scaler.step(optimizer)
@@ -106,8 +106,7 @@ def main(cfg: DictConfig):
             lossall += loss.to('cpu').detach().numpy().copy()
             mse_lossall += mse_loss.to('cpu').detach().numpy().copy()
             cross_lossall += cross_loss.to('cpu').detach().numpy().copy()
-            s_weiall += s_wei
-            diff_weiall += diff_wei
+            normal_cross_lossall += normal_cross_loss.to('cpu').detach().numpy().copy()
         # dev QWKの計算
         
         model.eval()
@@ -118,11 +117,11 @@ def main(cfg: DictConfig):
             #crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
             #mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
             #loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
-            mse_loss, cross_loss = mix_loss3(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
+            mse_loss, cross_loss, normal_cross_loss = mix_loss3(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
             loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mse_loss, cross_loss)
             devlossall += loss.to('cpu').detach().numpy().copy()
 
-        wandb.log({"epoch":epoch+0.001,"all_loss":lossall/num_train_batch, "mse_loss":mse_lossall/num_train_batch, "cross_loss":cross_lossall/num_train_batch,"dev_loss":devlossall/num_dev_batch,"scale_weight":s_weiall/num_train_batch,"diff_weight":diff_weiall/num_train_batch})
+        wandb.log({"epoch":epoch+0.001,"all_loss":lossall/num_train_batch, "mse_loss":mse_lossall/num_train_batch, "cross_loss":cross_lossall/num_train_batch,"dev_loss":devlossall/num_dev_batch,"normal_cross_loss": normal_cross_lossall/num_train_batch})
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
         #dev_mse_list = np.append(dev_mse_list, mseloss_el)
         #dev_cross_list = np.append(dev_cross_list, crossentropy_el)

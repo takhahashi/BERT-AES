@@ -6,7 +6,6 @@ training:
   learning_rate: 0.00001
   collate_fn: True
   patience: 5
-  original_loss_weight: 100
 model:
   model_name_or_path: 'bert-base-uncased'
   reg_or_class: 'reg'
@@ -19,7 +18,7 @@ aes:
 path:
   traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${training.fold}/train.tsv
   valdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${training.fold}/dev.tsv
-  save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${training.fold}/id${model.id}_org_loss_${training.original_loss_weight}
+  save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${training.fold}/id${model.id}_org_loss
 wandb:
   project: Mix_Train_Pt${aes.prompt_id}
   project_name: fold${training.fold}_id${model.id}

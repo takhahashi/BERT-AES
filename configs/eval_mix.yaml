@@ -24,6 +24,6 @@ ue:
 path:
   traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/train.tsv
   testdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/test.tsv
-  model_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${eval.fold}/id${model.id}_org_loss_${model.original_loss_weight}
-  results_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${eval.fold}/pred_results_org_loss_${model.original_loss_weight}
+  model_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${eval.fold}/id${model.id}_org_loss
+  results_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${eval.fold}/pred_results_org_loss
   scaler_savepath: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${eval.fold}/ExpectedW_modelid${model.id}

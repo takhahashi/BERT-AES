@@ -120,14 +120,23 @@ def main(cfg: DictConfig):
             mse_loss, cross_loss, normal_cross_loss = mix_loss3(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
             loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mse_loss, cross_loss)
             devlossall += loss.to('cpu').detach().numpy().copy()
-
-        wandb.log({"epoch":epoch+0.001,"all_loss":lossall/num_train_batch, "mse_loss":mse_lossall/num_train_batch, "cross_loss":cross_lossall/num_train_batch,"dev_loss":devlossall/num_dev_batch,"normal_cross_loss": normal_cross_lossall/num_train_batch})
+        s_wei = weight_d._calc_scale_weights()
+        diff_wei = weight_d._calc_diff_weights()
+        wandb.log({"epoch":epoch+0.001,
+                   "all_loss":lossall/num_train_batch, 
+                   "mse_loss":mse_lossall/num_train_batch, 
+                   "cross_loss":cross_lossall/num_train_batch,
+                   "dev_loss":devlossall/num_dev_batch,
+                   "normal_cross_loss": normal_cross_lossall/num_train_batch,
+                   "scale_mse_w":s_wei[0],
+                   "scale_cross_w":s_wei[1],
+                   "diff_mse_w:":diff_wei[0],
+                   "diff_cross_w":diff_wei[1]})
         devloss_list = np.append(devloss_list, devlossall/num_dev_batch)
         #dev_mse_list = np.append(dev_mse_list, mseloss_el)
         #dev_cross_list = np.append(dev_cross_list, crossentropy_el)
         
-        #s_wei = weight_d._calc_scale_weights()
-        #diff_wei = weight_d._calc_diff_weights()
+
         """
         wandb.log({
             "all_loss":lossall/num_train_batch,

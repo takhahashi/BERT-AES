@@ -146,7 +146,7 @@ def main(cfg: DictConfig):
             "Diff_Weight_cross":diff_wei[0],
         })
         """
-        weight_d.update(lossall/num_train_batch, cross_lossall/num_train_batch, mse_lossall/num_train_batch)
+        weight_d.update(lossall/num_train_batch, mse_lossall/num_train_batch, cross_lossall/num_train_batch)
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
         earlystopping(devlossall/num_dev_batch, model)
         if(earlystopping.early_stop == True): break

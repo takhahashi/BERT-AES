@@ -107,6 +107,8 @@ def main(cfg: DictConfig):
             lossall += loss.to('cpu').detach().numpy().copy()
             mse_lossall += mse_loss.to('cpu').detach().numpy().copy()
             cross_lossall += cross_loss.to('cpu').detach().numpy().copy()
+            break
+        break
         # dev QWKの計算
         
         model.eval()

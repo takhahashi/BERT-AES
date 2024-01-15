@@ -93,21 +93,20 @@ def main(cfg: DictConfig):
             int_score = torch.round(data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor).cuda()
             with torch.cuda.amp.autocast():
                 outputs = model(data)
-                """
+
                 crossentropy_el = crossentropy(outputs['logits'], int_score)
                 mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
-                loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
-                """
-                mse_loss, cross_loss, normal_cross_loss = mix_loss3(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
-                loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mse_loss, cross_loss)
+                loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mseloss_el, crossentropy_el)
+
+                #mse_loss, cross_loss, normal_cross_loss = mix_loss3(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
+                #loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mse_loss, cross_loss)
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
             model.zero_grad()
             lossall += loss.to('cpu').detach().numpy().copy()
-            mse_lossall += mse_loss.to('cpu').detach().numpy().copy()
-            cross_lossall += cross_loss.to('cpu').detach().numpy().copy()
-            normal_cross_lossall += normal_cross_loss.to('cpu').detach().numpy().copy()
+            mse_lossall += mseloss_el.to('cpu').detach().numpy().copy()
+            cross_lossall += crossentropy_el.to('cpu').detach().numpy().copy()
         # dev QWKの計算
         
         model.eval()
@@ -115,11 +114,11 @@ def main(cfg: DictConfig):
             d_data = {k: v.cuda() for k, v in dev_data.items()}
             int_score = torch.round(d_data['labels'] * (high - low)).to(torch.int32).type(torch.LongTensor).to('cpu')
             dev_outputs = {k: v.to('cpu').detach() for k, v in model(d_data).items()}
-            #crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
-            #mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
-            #loss, s_wei, diff_wei, alpha, pre_loss = weight_d(crossentropy_el, mseloss_el)
-            mse_loss, cross_loss, normal_cross_loss = mix_loss3(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
-            loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mse_loss, cross_loss)
+            crossentropy_el = crossentropy(dev_outputs['logits'], int_score)
+            mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
+            loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mseloss_el, crossentropy_el)
+            #mse_loss, cross_loss, normal_cross_loss = mix_loss3(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
+            #loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mse_loss, cross_loss)
             devlossall += loss.to('cpu').detach().numpy().copy()
         s_wei = weight_d._calc_scale_weights()
         diff_wei = weight_d._calc_diff_weights()

@@ -129,7 +129,7 @@ def mix_loss3(y_trues, y_preds, logits, high, low): #  -\hat{P}_{y} + \hat{P}_{y
    mse_loss, cross_loss = 0, 0
    y_trues_org = np.round(torch.flatten(y_trues).to('cpu').detach().numpy().copy() * (high - low))
    y_preds_org = np.round(torch.flatten(y_preds).to('cpu').detach().numpy().copy() * (high - low))
-   correct_probs = logits.softmax(dim=1)[y_trues_org == y_preds_org, y_trues_org]
+   correct_probs = logits.softmax(dim=1)[y_trues_org == y_preds_org, y_trues_org[y_trues_org == y_preds_org]]
    wrong_probs = logits.softmax(dim=1)[y_trues_org != y_preds_org]
 
    correct_ln_probs = -torch.log(correct_probs)

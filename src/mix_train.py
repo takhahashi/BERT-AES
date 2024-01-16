@@ -109,9 +109,10 @@ def main(cfg: DictConfig):
             scaler.step(optimizer)
             scaler.update()
             model.zero_grad()
-            lossall += loss.to('cpu').detach().numpy().copy()
-            mse_lossall += mse_loss.to('cpu').detach().numpy().copy()
-            cross_lossall += cross_loss.to('cpu').detach().numpy().copy()
+            if epoch != 0:
+                lossall += loss.to('cpu').detach().numpy().copy()
+                mse_lossall += mse_loss.to('cpu').detach().numpy().copy()
+                cross_lossall += cross_loss.to('cpu').detach().numpy().copy()
             if epoch == 1:
                 break
         if epoch == 1:
@@ -155,7 +156,8 @@ def main(cfg: DictConfig):
             "Diff_Weight_cross":diff_wei[0],
         })
         """
-        weight_d.update(lossall/num_train_batch, mse_lossall/num_train_batch, cross_lossall/num_train_batch)
+        if epoch != 0:
+            weight_d.update(lossall/num_train_batch, mse_lossall/num_train_batch, cross_lossall/num_train_batch)
         print(f'Epoch:{epoch}, train_Loss:{lossall/num_train_batch:.4f}, dev_loss:{devlossall/num_dev_batch:.4f}')
         earlystopping(devlossall/num_dev_batch, model)
         if(earlystopping.early_stop == True): break

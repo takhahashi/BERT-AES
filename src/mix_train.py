@@ -98,8 +98,11 @@ def main(cfg: DictConfig):
                 #mseloss_el = mseloss(outputs['score'].squeeze(), data['labels'])
                 #loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mseloss_el, crossentropy_el)
 
-                mse_loss, cross_loss, normal_cross_loss = mix_loss3(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
-                loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mse_loss, cross_loss)
+                if epoch == 0:
+                    loss = mseloss(outputs['score'].squeeze(), data['labels'])
+                else:
+                    mse_loss, cross_loss, normal_cross_loss = mix_loss3(data['labels'].squeeze(), outputs['score'].squeeze(), outputs['logits'], high, low)
+                    loss, s_wei, diff_wei, alpha, pre_loss = weight_d(mse_loss, cross_loss)
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()

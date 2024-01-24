@@ -57,7 +57,7 @@ def main(cfg: DictConfig):
                                                     collate_fn=simple_collate_fn,
                                                     )
     dev_dataloader = torch.utils.data.DataLoader(dev_dataset,
-                                                    batch_size=cfg.training.batch_size,
+                                                    batch_size=16,
                                                     shuffle=True,
                                                     collate_fn=simple_collate_fn,
                                                     )
@@ -86,7 +86,6 @@ def main(cfg: DictConfig):
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():
                 outputs = model(batch)
-                print(outputs['score'].squeeze(), batch['labels'].squeeze())
                 loss = mseloss(outputs['score'].squeeze(), batch['labels'].squeeze())
             scaler.scale(loss).backward()
             scaler.step(optimizer)

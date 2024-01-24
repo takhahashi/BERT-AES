@@ -48,9 +48,6 @@ class UeEstimatorTrustscore:
         
     def _predict_with_fitted_clsvec(self, X_features, labels):
         trust_score_values = []
-        print(X_features[:10], labels[:10])
-        print(len(X_features), len(labels))
-        print(self.class_features['6'])
         
         for x_feature, label in zip(X_features, labels):
             diffclass_dist = diffclass_euclid_dist(x_feature, label, self.class_features)

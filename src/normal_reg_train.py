@@ -16,8 +16,26 @@ from utils.utils_models import create_module
 from models.functions import return_predresults
 from utils.cfunctions import regvarloss, EarlyStopping
 from models.models import Scaler
+from transformers import AutoModel
 
-@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="reg_config")
+class Bert_reg(nn.Module):
+    def __init__(self, model_name_or_path, lr):
+        super(Bert_reg, self).__init__()
+        self.bert = AutoModel.from_pretrained(model_name_or_path)
+        self.linear = nn.Linear(768, 1)
+        self.sigmoid = nn.Sigmoid()
+        self.lr = lr
+
+        nn.init.normal_(self.linear.weight, std=0.02)  # 重みの初期化
+
+    def forward(self, dataset):
+        outputs = self.bert(dataset['input_ids'], token_type_ids=dataset['token_type_ids'], attention_mask=dataset['attention_mask'])
+        last_hidden_state = outputs['last_hidden_state'][:, 0, :]
+        score = self.sigmoid(self.linear(last_hidden_state))
+        return {'score': score}
+
+
+@hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="normal_reg_train")
 def main(cfg: DictConfig):
     cwd = hydra.utils.get_original_cwd()
 
@@ -44,9 +62,8 @@ def main(cfg: DictConfig):
                                                     collate_fn=simple_collate_fn,
                                                     )
 
-    model = create_module(
+    model = Bert_reg(
         cfg.model.model_name_or_path,
-        cfg.model.reg_or_class,
         cfg.training.learning_rate,
         )
     optimizer = optim.AdamW(model.parameters(), lr=1e-5)
@@ -57,10 +74,10 @@ def main(cfg: DictConfig):
     earlystopping = EarlyStopping(patience=cfg.training.patience, verbose=True, path=cfg.path.save_path)
 
     scaler = torch.cuda.amp.GradScaler()
-    sigma_scaler = Scaler(init_S=1.0).cuda()
 
     num_train_batch = len(train_dataloader)
     num_dev_batch = len(dev_dataloader)
+    mseloss = nn.MSELoss()
     for epoch in range(cfg.training.n_epochs):
         train_loss_all = 0
         dev_loss_all = 0
@@ -68,40 +85,22 @@ def main(cfg: DictConfig):
         for idx, t_batch in enumerate(train_dataloader):
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():
-                training_step_outputs = model.training_step(batch, idx)
-            scaler.scale(training_step_outputs['loss']).backward()
+                outputs = model(batch)
+                loss = mseloss(outputs['score'].squeeze(), batch['labels'].squeeze())
+            scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
             model.zero_grad()
 
-            train_loss_all += training_step_outputs['loss'].to('cpu').detach().numpy().copy()
-
+            train_loss_all += loss.to('cpu').detach().numpy().copy()
 
         ###calibrate_step###calibrate_step###
         model.eval()
-        with torch.no_grad():
-            dev_results = return_predresults(model, dev_dataloader, rt_clsvec=False, dropout=False)
-        dev_mu = torch.tensor(dev_results['score']).cuda()
-        dev_std = torch.tensor(dev_results['logvar']).exp().sqrt().cuda()
-        dev_labels = torch.tensor(dev_results['labels']).cuda()
-
-        # find optimal S
-        s_opt = torch.optim.LBFGS([sigma_scaler.S], lr=3e-2, max_iter=2000)
-
-        def closure():
-            s_opt.zero_grad()
-            loss = regvarloss(y_true=dev_labels, y_pre_ave=dev_mu, y_pre_var=sigma_scaler(dev_std).pow(2).log())
-            loss.backward()
-            return loss
-        s_opt.step(closure)
-
         for idx, d_batch in enumerate(dev_dataloader):
             batch = {k: v.cuda() for k, v in d_batch.items()}
-            dev_step_outputs = model.validation_step(batch, idx)
-            dev_mu = dev_step_outputs['score']
-            dev_std = dev_step_outputs['logvar'].exp().sqrt()
-            dev_labels = dev_step_outputs['labels']
-            dev_loss_all += regvarloss(y_true=dev_labels, y_pre_ave=dev_mu, y_pre_var=sigma_scaler(dev_std.cuda()).pow(2).log()).to('cpu').detach().numpy().copy()
+            dev_score = model(batch)['score'].to('cpu').detach().numpy().copy()
+            dev_loss = mseloss(dev_score.squeeze(), batch['labels'].to('cpu').detach().squeeze().numpy().copy())
+            dev_loss_all += dev_loss
 
         print(f'Epoch:{epoch}, train_loss:{train_loss_all/num_train_batch}, dev_loss:{dev_loss_all/num_dev_batch}')
         earlystopping(dev_loss_all, model)

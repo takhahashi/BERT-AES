@@ -50,7 +50,7 @@ def main(cfg: DictConfig):
         cfg.model.model_name_or_path,
         cfg.training.learning_rate,
         )
-    model.load_state_dict(torch.load(cfg.path.model_save_path))
+    model.load_state_dict(torch.load(cfg.path.save_path))
 
     eval_results = return_predresults(model, test_dataloader, rt_clsvec=False, dropout=False)
     list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}

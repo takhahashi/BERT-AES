@@ -36,7 +36,7 @@ class Bert_reg(nn.Module):
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="normal_reg_train")
 def main(cfg: DictConfig):
     test_dataset = get_Dataset(cfg.model.reg_or_class,
-                                cfg.path.tesetdata_file_name,
+                                cfg.path.testdata_file_name,
                                 cfg.aes.prompt_id,
                                 AutoTokenizer.from_pretrained(cfg.model.model_name_or_path),
                                 )

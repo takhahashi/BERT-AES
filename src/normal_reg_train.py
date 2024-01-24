@@ -99,8 +99,7 @@ def main(cfg: DictConfig):
         for idx, d_batch in enumerate(dev_dataloader):
             batch = {k: v.cuda() for k, v in d_batch.items()}
             dev_score = model(batch)['score'].to('cpu').detach().squeeze().numpy().copy()
-            print(dev_score)
-            dev_loss = mseloss(dev_score, batch['labels'].to('cpu').detach().numpy().copy())
+            dev_loss = mseloss(model(batch)['score'].to('cpu').detach().squeeze(), batch['labels'].to('cpu').detach())
             dev_loss_all += dev_loss
 
         print(f'Epoch:{epoch}, train_loss:{train_loss_all/num_train_batch}, dev_loss:{dev_loss_all/num_dev_batch}')

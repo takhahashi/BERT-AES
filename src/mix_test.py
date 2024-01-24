@@ -108,7 +108,7 @@ def main(cfg: DictConfig):
     max_prob = pred_probs[torch.arange(len(pred_probs)), torch.argmax(pred_probs, dim=-1)]
     eval_results.update({'MP': max_prob.numpy().copy()})
 
-
+    """
     trust_estimater = UeEstimatorTrustscore(model, 
                                             train_dataloader, 
                                             cfg.aes.prompt_id,
@@ -117,7 +117,7 @@ def main(cfg: DictConfig):
     trust_estimater.fit_ue()
     trust_results = trust_estimater(test_dataloader)
     eval_results.update(trust_results)
-    """
+
 
     list_results = {k: v.tolist() for k, v in eval_results.items() if type(v) == type(np.array([1, 2, 3.]))}
     

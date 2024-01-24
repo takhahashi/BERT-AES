@@ -17,7 +17,7 @@ class UeEstimatorTrustscore:
             return self._predict_with_fitted_clsvec(X_features, int_scores)
         else:
             X_features, scores = self._extract_features_and_predlabels(dataloader)
-            if self.reg_or_class == 'reg':
+            if self.reg_or_class == 'reg' or self.reg_or_class == 'mix':
                 int_scores = score_f2int(scores, self.prompt_id)
             else:
                 int_scores = scores.astype('int32')
@@ -25,7 +25,7 @@ class UeEstimatorTrustscore:
     
     def fit_ue(self):
         X_features, y = self._extract_features_and_truelabels(self.train_dataloader)
-        if self.reg_or_class == 'reg':
+        if self.reg_or_class == 'reg' or self.reg_or_class == 'mix':
             int_labels = score_f2int(y, self.prompt_id)
             self.class_features = self._fit_classfeatures(X_features, int_labels)
         else:

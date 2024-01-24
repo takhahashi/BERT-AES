@@ -18,7 +18,7 @@ aes:
 path:
   traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${training.fold}/train.tsv
   valdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${training.fold}/dev.tsv
-  tesetdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${training.fold}/test.tsv
+  testdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${training.fold}/test.tsv
   save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Reg-torchlightning/pt${aes.prompt_id}/fold_${training.fold}/id${model.id}_normal
 wandb:
   project: Regression_Train_Pt${aes.prompt_id}

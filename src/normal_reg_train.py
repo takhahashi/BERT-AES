@@ -86,6 +86,7 @@ def main(cfg: DictConfig):
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():
                 outputs = model(batch)
+                print(outputs['score'].squeeze(), batch['labels'].squeeze())
                 loss = mseloss(outputs['score'].squeeze(), batch['labels'].squeeze())
             scaler.scale(loss).backward()
             scaler.step(optimizer)

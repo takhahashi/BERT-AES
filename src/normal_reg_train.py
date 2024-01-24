@@ -86,7 +86,7 @@ def main(cfg: DictConfig):
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():
                 outputs = model(batch)
-                loss = mseloss(outputs['score'].squeeze(), batch['labels'].squeeze())
+                loss = mseloss(outputs['score'].squeeze(), batch['labels'])
             scaler.scale(loss).backward()
             scaler.step(optimizer)
             scaler.update()
@@ -99,7 +99,8 @@ def main(cfg: DictConfig):
         for idx, d_batch in enumerate(dev_dataloader):
             batch = {k: v.cuda() for k, v in d_batch.items()}
             dev_score = model(batch)['score'].to('cpu').detach().numpy().copy()
-            dev_loss = mseloss(dev_score.squeeze(), batch['labels'].to('cpu').detach().squeeze().numpy().copy())
+            print(batch['labels'].to('cpu').detach().numpy().copy())
+            dev_loss = mseloss(dev_score.squeeze(), batch['labels'].to('cpu').detach().numpy().copy())
             dev_loss_all += dev_loss
 
         print(f'Epoch:{epoch}, train_loss:{train_loss_all/num_train_batch}, dev_loss:{dev_loss_all/num_dev_batch}')

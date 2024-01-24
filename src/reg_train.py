@@ -61,6 +61,7 @@ def main(cfg: DictConfig):
 
     num_train_batch = len(train_dataloader)
     num_dev_batch = len(dev_dataloader)
+    mseloss = nn.MSELoss()
     for epoch in range(cfg.training.n_epochs):
         train_loss_all = 0
         dev_loss_all = 0
@@ -68,7 +69,9 @@ def main(cfg: DictConfig):
         for idx, t_batch in enumerate(train_dataloader):
             batch = {k: v.cuda() for k, v in t_batch.items()}
             with torch.cuda.amp.autocast():
-                training_step_outputs = model.training_step(batch, idx)
+                #training_step_outputs = model.training_step(batch, idx)
+
+                mseloss_el = mseloss(dev_outputs['score'].squeeze(), d_data['labels'].to('cpu').detach())
             scaler.scale(training_step_outputs['loss']).backward()
             scaler.step(optimizer)
             scaler.update()

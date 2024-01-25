@@ -37,7 +37,7 @@ def calc_mean_rcc_y(rcc_y_lis):
 def main(cfg: DictConfig):
     five_fold_results = []
     for fold in range(5):
-        with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt{}/fold_{}/pred_results_org_loss'.format(cfg.aes.prompt_id, fold)) as f:
+        with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt{}/fold_{}/pred_results'.format(cfg.aes.prompt_id, fold)) as f:
             fold_results = json.load(f)
         five_fold_results.append({k: np.array(v) for k, v in fold_results.items()})
 
@@ -48,7 +48,7 @@ def main(cfg: DictConfig):
     for foldr in five_fold_results:
         true = foldr['labels']
         pred = foldr['score']
-        uncertainty = -foldr['mix_conf']
+        uncertainty = -foldr['trust_score']
         risk = calc_risk(pred, true, 'reg', cfg.aes.prompt_id, binary=cfg.ue.binary_risk)
         rcc_auc, rcc_x, rcc_y = calc_rcc_auc(pred, true, -uncertainty, cfg.rcc.metric_type, cfg.aes.prompt_id, reg_or_class='reg', num_el=25, binary_risk=True)
         rpp = calc_rpp(conf=-uncertainty, risk=risk)
@@ -62,7 +62,7 @@ def main(cfg: DictConfig):
                    'rpp': np.mean(fresults_rpp), 
                    'roc': np.mean(fresults_roc), 
                    'rcc_y': mean_rcc_y}
-    save_path = save_dir_path + '/mix_org_loss'
+    save_path = save_dir_path + '/mix_trust'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 

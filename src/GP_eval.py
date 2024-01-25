@@ -46,21 +46,21 @@ def main(cfg: DictConfig):
        scoring_model_path = cfg.path.scoring_model_savepath
        gp_model_path = cfg.path.GPmodel_save_path
        results_save_path = cfg.path.results_save_path
-    classifier = create_module(cfg.scoring_model.model_name_or_path,
+    model = create_module(cfg.scoring_model.model_name_or_path,
                                 cfg.scoring_model.reg_or_class,
                                 learning_rate=1e-5,
                                 num_labels=num_labels,
                                 spectral_norm=cfg.scoring_model.spectral_norm,
                                 )
-    classifier = classifier.cuda()
-    classifier.load_state_dict(torch.load(scoring_model_path), strict=False)
-    classifier.eval()
+    model = model.cuda()
+    model.load_state_dict(torch.load(scoring_model_path), strict=False)
+    model.eval()
 
-    word_vec, labels = extract_clsvec_truelabels(classifier, train_dataloader)
+    word_vec, labels = extract_clsvec_truelabels(model, train_dataloader)
     train_x = torch.FloatTensor(word_vec)
     train_y = torch.FloatTensor(labels)
 
-    word_vec, labels = extract_clsvec_truelabels(classifier, test_dataloader)
+    word_vec, labels = extract_clsvec_truelabels(model, test_dataloader)
     test_x = torch.FloatTensor(word_vec)
 
     likelihood = gpytorch.likelihoods.GaussianLikelihood()

@@ -9,13 +9,13 @@ from utils.dataset import get_Dataset, get_score_range
 from utils.cfunctions import simple_collate_fn
 from utils.utils_models import create_module
 from models.functions import extract_clsvec_truelabels
-from models.models import GPModel
+from models.models import GPModel, Reg_class_mixmodel, Bert
 
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="GP_train")
 def main(cfg: DictConfig):
     low, high = get_score_range(cfg.aes.prompt_id)
-    train_dataset = get_Dataset('class', 
+    train_dataset = get_Dataset('reg', 
                                 cfg.path.traindata_file_name, 
                                 cfg.aes.prompt_id, 
                                 AutoTokenizer.from_pretrained(cfg.scoring_model.model_name_or_path),
@@ -36,18 +36,14 @@ def main(cfg: DictConfig):
        print('SpectralNorm is not applyed!')
        scoring_model_path = cfg.path.scoring_model_savepath
        gp_save_path = cfg.path.save_path
-       
-    classifier = create_module(model_name_or_path=cfg.scoring_model.model_name_or_path,
-                               reg_or_class=cfg.scoring_model.reg_or_class,
-                                learning_rate=1e-5,
-                                num_labels=num_labels,
-                                spectral_norm=cfg.scoring_model.spectral_norm
-                                )
-    classifier = classifier.cuda()
-    classifier.load_state_dict(torch.load(scoring_model_path), strict=False)
-    classifier.eval()
+    
+    bert = Bert(cfg.model.model_name_or_path)
+    model = Reg_class_mixmodel(bert, high-low+1)
+    model = model.cuda()
+    model.load_state_dict(torch.load(scoring_model_path), strict=False)
+    model.eval()
 
-    word_vec, labels = extract_clsvec_truelabels(classifier, train_dataloader)
+    word_vec, labels = extract_clsvec_truelabels(model, train_dataloader)
     train_x = torch.FloatTensor(word_vec)
     train_y = torch.FloatTensor(labels)
 

@@ -94,8 +94,8 @@ def main(cfg: DictConfig):
     #utype_path_name = ['simple_reg_acc', 'dp_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'dp_class_acc', 'ense_class_acc', 'mix_acc', 'dp_mix_acc', 'ense_mix_acc']
     #table_idx_name = ['reg', 'mul_reg', 'class', 'mul_class', 'mix', 'mul_mix', 'weighted_epx_score']#'exp_score', 'mul_exp_score', 'weighted_epx_score']
     #utype_path_name = ['simple_reg_acc', 'ense_reg_acc', 'simple_class_acc', 'ense_class_acc', 'mix_acc', 'ense_mix_acc', 'mix_weighted_exp_score_acc']#'mix_expected_score_acc', 'ense_mix_expected_score_acc', 'mix_weighted_exp_score_acc']
-    table_idx_name = ['reg', 'class', 'mix', 'mix_org_loss']#'exp_score', 'mul_exp_score', 'weighted_epx_score']
-    utype_path_name = ['simple_reg_acc', 'simple_class_acc', 'mix_acc', 'mix_org_loss_acc']#'mix_expected_score_acc', 'ense_mix_expected_score_acc', 'mix_weighted_exp_score_acc']
+    table_idx_name = ['reg', 'class', 'mix', 'reg_normal']#'exp_score', 'mul_exp_score', 'weighted_epx_score']
+    utype_path_name = ['simple_reg_acc', 'simple_class_acc', 'mix_acc', 'reg_normal_acc']#'mix_expected_score_acc', 'ense_mix_expected_score_acc', 'mix_weighted_exp_score_acc']
 
     qwk_dic = {}
     for utype in table_idx_name:

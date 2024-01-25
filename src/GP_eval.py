@@ -14,7 +14,7 @@ import json
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="GP_eval")
 def main(cfg: DictConfig):
-    train_dataset = get_Dataset('class', 
+    train_dataset = get_Dataset('reg', 
                                 cfg.path.train_data_file_name, 
                                 cfg.aes.prompt_id, 
                                 AutoTokenizer.from_pretrained(cfg.scoring_model.model_name_or_path),
@@ -25,7 +25,7 @@ def main(cfg: DictConfig):
                                                   collate_fn=simple_collate_fn,
                                                   )
     
-    test_dataset = get_Dataset('class', 
+    test_dataset = get_Dataset('reg', 
                                 cfg.path.test_data_file_name, 
                                 cfg.aes.prompt_id, 
                                 AutoTokenizer.from_pretrained(cfg.scoring_model.model_name_or_path),

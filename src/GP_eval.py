@@ -9,7 +9,7 @@ from utils.dataset import get_Dataset, get_score_range
 from utils.cfunctions import simple_collate_fn
 from utils.utils_models import create_module
 from models.functions import extract_clsvec_truelabels
-from models.models import GPModel
+from models.models import GPModel, Reg_class_mixmodel, Bert
 import json
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="GP_eval")
@@ -46,12 +46,8 @@ def main(cfg: DictConfig):
        scoring_model_path = cfg.path.scoring_model_savepath
        gp_model_path = cfg.path.GPmodel_save_path
        results_save_path = cfg.path.results_save_path
-    model = create_module(cfg.scoring_model.model_name_or_path,
-                                cfg.scoring_model.reg_or_class,
-                                learning_rate=1e-5,
-                                num_labels=num_labels,
-                                spectral_norm=cfg.scoring_model.spectral_norm,
-                                )
+    bert = Bert(cfg.scoring_model.model_name_or_path)
+    model = Reg_class_mixmodel(bert, high-low+1)
     model = model.cuda()
     model.load_state_dict(torch.load(scoring_model_path), strict=False)
     model.eval()

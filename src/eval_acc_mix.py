@@ -16,13 +16,7 @@ from utils.utils_data import TrainDataModule
 from utils.cfunctions import simple_collate_fn, score_f2int
 from utils.utils_models import create_module
 from utils.dataset import get_Dataset, get_score_range
-from utils.ue_metric_func import calc_rcc_auc, calc_rpp, calc_roc_auc, calc_risk
 from utils.acc_metric_func import calc_qwk
-from models.functions import return_predresults
-from ue4nlp.ue_estimater_ensemble import UeEstimatorEnsemble
-from ue4nlp.ue_estimater_trust import UeEstimatorTrustscore
-from ue4nlp.ue_estimater_mcd import UeEstimatorDp
-from sklearn.metrics import cohen_kappa_score
 
 
 @hydra.main(config_path="/content/drive/MyDrive/GoogleColab/1.AES/ASAP/BERT-AES/configs", config_name="eval_acc_config")

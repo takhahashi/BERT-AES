@@ -51,27 +51,23 @@ def main(cfg: DictConfig):
 
 
 
+    ##GP###
     five_fold_results = []
     for fold in range(5):
-        with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt{}/fold_{}/pred_results'.format(cfg.aes.prompt_id, fold)) as f:
+        with open('/content/drive/MyDrive/GoogleColab/1.AES/ASAP/GP-git/pt{}/fold_{}/pred_results_mix'.format(cfg.aes.prompt_id, fold)) as f:
             fold_results = json.load(f)
         five_fold_results.append({k: np.array(v) for k, v in fold_results.items()})
-
-
     corr_arr, qwk_arr, rmse_arr = [], [], []
-    ##Mix####
     for foldr in five_fold_results:
-        true = score_f2int(foldr['labels'], prompt_id)
-        pred = score_f2int(foldr['score'], prompt_id)
-
+        true = foldr['labels'].astype('int32') + low
+        pred = np.round(foldr['score'] + low).astype('int32')
         corr_arr = np.append(corr_arr, np.corrcoef(true, pred)[0][1])
-        qwk_arr = np.append(qwk_arr, calc_qwk(true, pred, prompt_id, 'reg'))
+        qwk_arr = np.append(qwk_arr, calc_qwk(true, pred, prompt_id, 'class'))
         rmse_arr = np.append(rmse_arr, np.sqrt((true - pred) ** 2).mean())
     results_dic = {'qwk': np.mean(qwk_arr), 
                     'corr': np.mean(corr_arr), 
                     'rmse': np.mean(rmse_arr)}
-
-    save_path = save_dir_path + '/mix__acc'
+    save_path = save_dir_path + '/GP_mix_acc'
     with open(save_path, mode="wt", encoding="utf-8") as f:
         json.dump(results_dic, f, ensure_ascii=False)
 

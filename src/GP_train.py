@@ -37,7 +37,7 @@ def main(cfg: DictConfig):
        scoring_model_path = cfg.path.scoring_model_savepath
        gp_save_path = cfg.path.save_path
     
-    bert = Bert(cfg.model.model_name_or_path)
+    bert = Bert(cfg.scoring_model.model_name_or_path)
     model = Reg_class_mixmodel(bert, high-low+1)
     model = model.cuda()
     model.load_state_dict(torch.load(scoring_model_path), strict=False)

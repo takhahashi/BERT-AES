@@ -14,5 +14,5 @@ aes:
   friendly_score: True
 path:  
   traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${training.fold}/train.tsv
-  scoring_model_savepath: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/pt${aes.prompt_id}/fold_${training.fold}/id${scoring_model.id}
+  scoring_model_savepath: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Mix-torchlightning/prompt${aes.prompt_id}/fold_${training.fold}/id${scoring_model.id}
   save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/GP-git/pt${aes.prompt_id}/fold_${training.fold}/id${scoring_model.id}_mix

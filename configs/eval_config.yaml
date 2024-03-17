@@ -3,7 +3,7 @@ eval:
   batch_size: 8
   collate_fn: True
 model:
-  model_name_or_path: 'bert-base-uncased'
+  model_name_or_path: 'microsoft/deberta-v3-base'
   reg_or_class: 'reg'
   max_length: 512
   num_labels: None
@@ -23,5 +23,5 @@ path:
   traindata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/train.tsv
   devdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/dev.tsv
   testdata_file_name: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/data/fold_${eval.fold}/test.tsv
-  model_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Reg-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id${model.id}
+  model_save_path: /content/drive/MyDrive/GoogleColab/1.AES/ASAP/Reg-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/id${model.id}_deberta
   results_save_path: '/content/drive/MyDrive/GoogleColab/1.AES/ASAP/Reg-torchlightning/pt${aes.prompt_id}/fold_${eval.fold}/pred_results'

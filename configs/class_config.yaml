@@ -8,7 +8,7 @@ training:
   patience: 3
 model:
   model_name_or_path: 'bert-base-uncased'
-  reg_or_class: 'ordinal_reg'
+  reg_or_class: 'class'
   max_length: 512
   id: 0
   num_labels: None

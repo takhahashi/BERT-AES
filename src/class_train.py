@@ -93,7 +93,7 @@ def main(cfg: DictConfig):
             dev_step_outputs = model.validation_step(batch, idx)
             dev_loss_all += dev_step_outputs['loss'].to('cpu').detach().numpy().copy()
 
-        print(f'Epoch:{epoch}, train_loss:{train_loss_all/num_train_batch}, dev_loss:{dev_loss_all/num_dev_batch}')
+        print(f'Epoch:{epoch}, train_loss:{train_loss_all/num_train_batch}, dev_loss:{dev_loss_all}, dev_loss_mean:{dev_loss_all/num_dev_batch}')
         earlystopping(dev_loss_all, model)
         if earlystopping.early_stop == True:
             break
